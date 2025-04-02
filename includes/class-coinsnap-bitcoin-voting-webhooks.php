@@ -147,7 +147,7 @@ class Bitcoin_Voting_Webhooks
 
     public function register_webhook_endpoint()
     {
-        register_rest_route('bitcoin-voting/v1', 'webhook', [
+        register_rest_route('coinsnap-bitcoin-voting/v1', 'webhook', [
             'methods'  => ['POST'],
             'callback' => [$this, 'handle_webhook'],
             'permission_callback' => [$this, 'verify_webhook_request']
@@ -180,7 +180,7 @@ class Bitcoin_Voting_Webhooks
         $payload_data = $request->get_json_params();
 
         if (isset($payload_data['type']) && ($payload_data['type'] === 'Settled' || $payload_data['type'] === 'InvoiceSettled')) {
-
+            error_log('Webhook received: ' . json_encode($payload_data));
             // Voting
             if (isset($payload_data['metadata']['type']) && $payload_data['metadata']['type'] == "Bitcoin Voting") {
                 global $wpdb;
@@ -241,15 +241,15 @@ class Bitcoin_Voting_Webhooks
                     $post_id = wp_insert_post($post_data);
 
                     if ($post_id) {
-                        update_post_meta($post_id, '_bitcoin_voting_donor_name', sanitize_text_field($name));
-                        update_post_meta($post_id, '_bitcoin_voting_amount', sanitize_text_field($amount));
-                        update_post_meta($post_id, '_bitcoin_voting_message', sanitize_text_field($message));
-                        update_post_meta($post_id, '_bitcoin_voting_form_type', sanitize_text_field($type));
-                        update_post_meta($post_id, '_bitcoin_voting_dont_show', $opt_out_value);
-                        update_post_meta($post_id, '_bitcoin_voting_email', sanitize_email($email));
-                        update_post_meta($post_id, '_bitcoin_voting_address', sanitize_text_field($address));
-                        update_post_meta($post_id, '_bitcoin_voting_payment_id', sanitize_text_field($invoiceId));
-                        update_post_meta($post_id, '_bitcoin_voting_custom_field', sanitize_text_field($custom));
+                        update_post_meta($post_id, '_coinsnap_bitcoin_voting_donor_name', sanitize_text_field($name));
+                        update_post_meta($post_id, '_coinsnap_bitcoin_voting_amount', sanitize_text_field($amount));
+                        update_post_meta($post_id, '_coinsnap_bitcoin_voting_message', sanitize_text_field($message));
+                        update_post_meta($post_id, '_coinsnap_bitcoin_voting_form_type', sanitize_text_field($type));
+                        update_post_meta($post_id, '_coinsnap_bitcoin_voting_dont_show', $opt_out_value);
+                        update_post_meta($post_id, '_coinsnap_bitcoin_voting_email', sanitize_email($email));
+                        update_post_meta($post_id, '_coinsnap_bitcoin_voting_address', sanitize_text_field($address));
+                        update_post_meta($post_id, '_coinsnap_bitcoin_voting_payment_id', sanitize_text_field($invoiceId));
+                        update_post_meta($post_id, '_coinsnap_bitcoin_voting_custom_field', sanitize_text_field($custom));
                     }
                 }
             }

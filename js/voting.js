@@ -1,12 +1,12 @@
 jQuery(document).ready(function ($) {
 
-    if (document.getElementById('bitcoin-voting-form')) {
+    if (document.getElementById('coinsnap-bitcoin-voting-form')) {
 
-        if (document.getElementById('bitcoin-voting-form')) {
+        if (document.getElementById('coinsnap-bitcoin-voting-form')) {
             fetchCoinsnapExchangeRates().then(rates => {
-                const pollId = document.querySelector('#bitcoin-voting-form').dataset.pollId
-                const amount = document.querySelector('#bitcoin-voting-form').dataset.pollAmount
-                const donorInfo = document.querySelector('#bitcoin-voting-form')?.dataset.donorInfo
+                const pollId = document.querySelector('#coinsnap-bitcoin-voting-form').dataset.pollId
+                const amount = document.querySelector('#coinsnap-bitcoin-voting-form').dataset.pollAmount
+                const donorInfo = document.querySelector('#coinsnap-bitcoin-voting-form')?.dataset.donorInfo
                 addWindowListeners()
                 popupButtonListener(rates, pollId, amount, donorInfo)
             })
@@ -54,7 +54,7 @@ jQuery(document).ready(function ($) {
         const showResultsFn = (pollId) => {
             document.querySelector(".poll-options").style.display = "none";
             document.querySelector(".poll-results").style.display = "block";
-            const oneVote = document.querySelector('#bitcoin-voting-form')?.dataset.oneVote
+            const oneVote = document.querySelector('#coinsnap-bitcoin-voting-form')?.dataset.oneVote
             const voted = getCookie('coinsnap_poll_' + pollId)
             if (oneVote && voted) {
                 returnButton.classList.remove('return-buton-visible')
@@ -64,7 +64,7 @@ jQuery(document).ready(function ($) {
             fetchResultsFromDb(pollId)
         }
 
-        const pollId = document.querySelector('#bitcoin-voting-form')?.dataset.pollId
+        const pollId = document.querySelector('#coinsnap-bitcoin-voting-form')?.dataset.pollId
 
         if (pollId) {// Check cookie and show results if user voted already
             const voted = getCookie('coinsnap_poll_' + pollId)
@@ -94,7 +94,7 @@ jQuery(document).ready(function ($) {
 
         // On vote click
         document.querySelectorAll(".poll-option").forEach(button => {
-            const donorInfo = document.querySelector('#bitcoin-voting-form')?.dataset.donorInfo
+            const donorInfo = document.querySelector('#coinsnap-bitcoin-voting-form')?.dataset.donorInfo
             addVotingPopupListener(button, donorInfo)
         });
     }

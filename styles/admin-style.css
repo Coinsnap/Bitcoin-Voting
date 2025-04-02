@@ -3,8 +3,8 @@
   margin-bottom: 20px;
 }
 
-.bitcoin-voting-settings-form input[type="text"],
-.bitcoin-voting-settings-form select {
+.coinsnap-bitcoin-voting-settings-form input[type="text"],
+.coinsnap-bitcoin-voting-settings-form select {
   width: 100%;
   max-width: 500px;
   padding: 8px;
@@ -14,7 +14,7 @@
   margin-bottom: 15px;
 }
 
-.bitcoin-voting-settings-form label {
+.coinsnap-bitcoin-voting-settings-form label {
   font-weight: bold;
   margin-bottom: 5px;
   display: block;

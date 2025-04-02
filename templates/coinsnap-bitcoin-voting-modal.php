@@ -1,6 +1,5 @@
 <?php if (!defined('ABSPATH')) exit ?>
 <?php
-error_log(print_r($first_name, true));
 ?>
 <div id="<?php echo esc_html($prefix); ?>qr-container<?php echo esc_html($sufix); ?>" class="qr-container" data-public-donors="<?php echo esc_attr($public_donors); ?>">
     <div class="close-popup">×</div>

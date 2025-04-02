@@ -1,15 +1,15 @@
 <?php
 
-class Bitcoin_Voting_List
+class Bitcoin_Donation_List
 {
 
 	public function __construct()
 	{
-		add_action('wp_ajax_refresh_votings', array($this, 'refresh_votings_ajax'));
+		add_action('wp_ajax_refresh_donations', array($this, 'refresh_donations_ajax'));
 	}
-	private function fetch_votings()
+	private function fetch_donations()
 	{
-		$options = get_option('bitcoin_voting_options');
+		$options = get_option('coinsnap_bitcoin_voting_options');
 		$provider = $options['provider'];
 
 		if ($provider == 'coinsnap') {
@@ -52,25 +52,25 @@ class Bitcoin_Voting_List
 		return array_values($filtered_invoices);
 	}
 
-	public function render_voting_page()
+	public function render_donations_page()
 	{
 		if (!current_user_can('manage_options')) {
 			return;
 		}
 
-		$options          = get_option('bitcoin_voting_options');
+		$options          = get_option('coinsnap_bitcoin_voting_options');
 		$provider         = $options['provider'];
 		$btcpay_store_id  = $options['btcpay_store_id'];
 		$btcpay_url       = $options['btcpay_url'];
 		$btcpay_href      = $btcpay_url . '/stores/' . $btcpay_store_id . '/invoices';
-		$votings        = $this->fetch_votings();
+		$donations        = $this->fetch_donations();
 
-		$votings_per_page = 20;
+		$donations_per_page = 20;
 		$current_page = isset($_GET['paged']) ? max(1, intval($_GET['paged'])) : 1;
-		$total_votings = count($votings);
-		$total_pages   = ceil($total_votings / $votings_per_page);
-		$offset = ($current_page - 1) * $votings_per_page;
-		$votings_page = array_slice($votings, $offset, $votings_per_page);
+		$total_donations = count($donations);
+		$total_pages   = ceil($total_donations / $donations_per_page);
+		$offset = ($current_page - 1) * $donations_per_page;
+		$donations_page = array_slice($donations, $offset, $donations_per_page);
 
 ?>
 		<div class="wrap">
@@ -95,11 +95,11 @@ class Bitcoin_Voting_List
 				</thead>
 				<tbody id="voting-list-body">
 					<?php
-					if (empty($votings_page)) {
-						echo '<tr><td colspan="5">No votings found.</td></tr>';
+					if (empty($donations_page)) {
+						echo '<tr><td colspan="5">No donations found.</td></tr>';
 					} else {
-						foreach ($votings_page as $voting) {
-							$this->render_voting_row($voting);
+						foreach ($donations_page as $donation) {
+							$this->render_donation_row($donation);
 						}
 					}
 					?>
@@ -127,28 +127,28 @@ class Bitcoin_Voting_List
 	<?php
 	}
 
-	private function render_voting_row($voting)
+	private function render_donation_row($donation)
 	{
-		$invoice_id = $voting['id'];
-		$options = get_option('bitcoin_voting_options');
+		$invoice_id = $donation['id'];
+		$options = get_option('coinsnap_bitcoin_voting_options');
 		$provider = $options['provider'];
 		$isBtcpay = $provider === 'btcpay';
 		$href = ($isBtcpay)
 			? "https://btcpay.coincharge.io/invoices/" . esc_html($invoice_id)
 			: "https://app.coinsnap.io/td/" . esc_html($invoice_id);
-		$message = isset($voting['metadata']['orderNumber']) ? $voting['metadata']['orderNumber'] : '';
+		$message = isset($donation['metadata']['orderNumber']) ? $donation['metadata']['orderNumber'] : '';
 		$message = strlen($message) > 150 ? substr($message, 0, 150) . ' ...' : $message;
-		$type = isset($voting['metadata']['type']) ? $voting['metadata']['type'] : '';
+		$type = isset($donation['metadata']['type']) ? $donation['metadata']['type'] : '';
 	?>
 		<tr>
 			<td>
-				<?php echo esc_html(date('Y-m-d H:i:s', (int)$voting[$isBtcpay ? 'createdTime' :  'createdAt'])); ?>
+				<?php echo esc_html(date('Y-m-d H:i:s', (int)$donation[$isBtcpay ? 'createdTime' :  'createdAt'])); ?>
 			</td>
 
 			<td>
 				<?php
-				$amount =  $voting['amount'];
-				$currency = $voting['currency'];
+				$amount =  $donation['amount'];
+				$currency = $donation['currency'];
 				echo esc_html(number_format($amount, $isBtcpay ? 2 : 0) . ' ' . ($isBtcpay ? $currency : 'sats'));
 				?>
 			</td>
