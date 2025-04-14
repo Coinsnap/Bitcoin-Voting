@@ -202,7 +202,8 @@ class Bitcoin_Voting_Shortcode_Voting
                 'address' => $collect_donor_info ? $address : 0,
                 'custom' => $collect_donor_info ? $custom : 0,
                 'custom_name' => $collect_donor_info ? $custom_name : 0,
-                'public_donors' => $collect_donor_info
+                'public_donors' => $collect_donor_info,
+                'thank_you' => $thank_you ?? "Your payment was successful",
             ]);
             ?>
 

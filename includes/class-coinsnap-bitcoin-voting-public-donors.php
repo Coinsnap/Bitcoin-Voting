@@ -11,13 +11,13 @@ class Bitcoin_Voting_Public_Donors
         add_action('init', [$this, 'register_custom_meta_fields']);
         add_action('add_meta_boxes', [$this, 'add_public_donors_metaboxes']);
         add_action('save_post', [$this, 'save_public_donors_meta'], 10, 2);
-        add_filter('manage_bitcoin-pds_posts_columns', [$this, 'add_custom_columns']);
-        add_action('manage_bitcoin-pds_posts_custom_column', [$this, 'populate_custom_columns'], 10, 2);
+        add_filter('manage_voting-pds_posts_columns', [$this, 'add_custom_columns']);
+        add_action('manage_voting-pds_posts_custom_column', [$this, 'populate_custom_columns'], 10, 2);
     }
 
     public function register_public_donors_post_type()
     {
-        register_post_type('bitcoin-pds', [
+        register_post_type('voting-pds', [
             'labels' => [
                 'name'               => 'Donor Information',
                 'singular_name'      => 'Donor Information',
@@ -36,7 +36,7 @@ class Bitcoin_Voting_Public_Donors
             'show_ui'            => true,
             'show_in_menu'       => false,
             'query_var'          => true,
-            'rewrite'            => ['slug' => 'bitcoin-pds'],
+            'rewrite'            => ['slug' => 'voting-pds'],
             'capability_type'    => 'post',
             'has_archive'        => false,
             'hierarchical'       => false,
@@ -48,56 +48,56 @@ class Bitcoin_Voting_Public_Donors
     public function register_custom_meta_fields()
     {
         register_meta('post', '_coinsnap_bitcoin_voting_donor_name', [
-            'object_subtype' => 'bitcoin-pds',
+            'object_subtype' => 'voting-pds',
             'type' => 'string',
             'single' => true,
             'show_in_rest' => true,
         ]);
 
         register_meta('post', '_coinsnap_bitcoin_voting_amount', [
-            'object_subtype' => 'bitcoin-pds',
+            'object_subtype' => 'voting-pds',
             'type' => 'string',
             'single' => true,
             'show_in_rest' => true,
         ]);
 
         register_meta('post', '_coinsnap_bitcoin_voting_message', [
-            'object_subtype' => 'bitcoin-pds',
+            'object_subtype' => 'voting-pds',
             'type' => 'string',
             'single' => true,
             'show_in_rest' => true,
         ]);
 
         register_meta('post', '_coinsnap_bitcoin_voting_form_type', [
-            'object_subtype' => 'bitcoin-pds',
+            'object_subtype' => 'voting-pds',
             'type' => 'string',
             'single' => true,
             'show_in_rest' => true,
         ]);
 
         register_meta('post', '_coinsnap_bitcoin_voting_email', [
-            'object_subtype' => 'bitcoin-pds',
+            'object_subtype' => 'voting-pds',
             'type' => 'string',
             'single' => true,
             'show_in_rest' => true,
         ]);
 
         register_meta('post', '_coinsnap_bitcoin_voting_address', [
-            'object_subtype' => 'bitcoin-pds',
+            'object_subtype' => 'voting-pds',
             'type' => 'string',
             'single' => true,
             'show_in_rest' => true,
         ]);
 
         register_meta('post', '_coinsnap_bitcoin_voting_payment_id', [
-            'object_subtype' => 'bitcoin-pds',
+            'object_subtype' => 'voting-pds',
             'type' => 'string',
             'single' => true,
             'show_in_rest' => true,
         ]);
 
         register_meta('post', '_coinsnap_bitcoin_voting_custom_field', [
-            'object_subtype' => 'bitcoin-pds',
+            'object_subtype' => 'voting-pds',
             'type' => 'string',
             'single' => true,
             'show_in_rest' => true,
@@ -110,7 +110,7 @@ class Bitcoin_Voting_Public_Donors
             'coinsnap_bitcoin_voting_public_donors_details',
             'Donor Details',
             [$this, 'render_public_donors_metabox'],
-            'bitcoin-pds',
+            'voting-pds',
             'normal',
             'high'
         );
@@ -204,7 +204,7 @@ class Bitcoin_Voting_Public_Donors
 
         if (!current_user_can('edit_post', $post_id)) return;
 
-        if ($post->post_type !== 'bitcoin-pds') return;
+        if ($post->post_type !== 'voting-pds') return;
 
         if (
             !isset($_POST['coinsnap_bitcoin_voting_public_donors_nonce']) ||

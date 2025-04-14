@@ -30,6 +30,34 @@
     }
     restoreTabs()
 
+    const coinsnapStoreIdField = document.getElementById('coinsnap_store_id');
+    const coinsnapApiKeyField = document.getElementById('coinsnap_api_key');
+    const btcpayStoreIdField = document.getElementById('btcpay_store_id');
+    const btcpayApiKeyField = document.getElementById('btcpay_api_key');
+    const btcpayUrlField = document.getElementById('btcpay_url');
+
+    if ($providerSelector.val() === 'coinsnap' && coinsnapStoreIdField && coinsnapApiKeyField) {
+      $checkConnectionCoisnanpButton.prop("disabled", !(coinsnapApiKeyField.value.length > 12 && coinsnapStoreIdField.value.length > 12));
+      coinsnapApiKeyField.addEventListener('input', function () {
+        $checkConnectionCoisnanpButton.prop("disabled", !(coinsnapApiKeyField.value.length > 12 && coinsnapStoreIdField.value.length > 12));
+      });
+      coinsnapStoreIdField.addEventListener('input', function () {
+        $checkConnectionCoisnanpButton.prop("disabled", !(coinsnapApiKeyField.value.length > 12 && coinsnapStoreIdField.value.length > 12));
+      });
+    } else if ($providerSelector.val() === 'btcpay' && btcpayStoreIdField && btcpayApiKeyField && btcpayUrlField) {
+      $checkConnectionBtcPayButton.prop("disabled", !(btcpayApiKeyField.value.length > 4 && btcpayStoreIdField.value.length > 12 && btcpayUrlField.value.length > 12));
+      btcpayApiKeyField.addEventListener('input', function () {
+        $checkConnectionBtcPayButton.prop("disabled", !(btcpayApiKeyField.value.length > 4 && btcpayStoreIdField.value.length > 12 && btcpayUrlField.value.length > 12));
+      });
+      btcpayStoreIdField.addEventListener('input', function () {
+        $checkConnectionBtcPayButton.prop("disabled", !(btcpayApiKeyField.value.length > 4 && btcpayStoreIdField.value.length > 12 && btcpayUrlField.value.length > 12));
+      });
+      btcpayUrlField.addEventListener('input', function () {
+        $checkConnectionBtcPayButton.prop("disabled", !(btcpayApiKeyField.value.length > 4 && btcpayStoreIdField.value.length > 12 && btcpayUrlField.value.length > 12));
+      });
+    }
+
+
     function checkConnection(storeId, apiKey, btcpayUrl) {
       const headers = btcpayUrl ? { 'Authorization': `token ${apiKey}` } : { 'x-api-key': apiKey, };
       const url = btcpayUrl
@@ -92,7 +120,7 @@
       if (!$providerSelector || !$providerSelector.length) {
         return;
       }
-      const selectedProvider = $providerSelector.val();
+      const selectedProvider = $providerSelector?.val();
       $coinsnapWrapper.toggle(selectedProvider === 'coinsnap');
       $btcpayWrapper.toggle(selectedProvider === 'btcpay');
     }
@@ -114,7 +142,7 @@
       document.cookie = name + "=" + value + ";" + expires + ";path=/";
     }
 
-    async function handleCheckConnection() {
+    async function handleCheckConnection(isSubmit = false) {
       event.preventDefault();
       var connection = false
       const origin = adminData.ngrokUrl ? adminData.ngrokUrl : new URL(window.location.href).origin;
@@ -144,8 +172,17 @@
         }
       }
       setCookie('coinsnap_connection_', JSON.stringify({ 'connection': connection }), 20)
-      $('#submit').click();
+      if (!isSubmit) {
+        $('#submit').click();
+
+      }
     }
+
+    $('#submit').click(async function (event) {
+      await handleCheckConnection(true);
+      $('#submit').click();
+    });
+
 
     $checkConnectionCoisnanpButton.on('click', async (event) => { await handleCheckConnection(); })
     $checkConnectionBtcPayButton.on('click', async (event) => { await handleCheckConnection(); });

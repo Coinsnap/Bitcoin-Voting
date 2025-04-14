@@ -12,7 +12,7 @@ class Bitcoin_Voting_Webhooks
 
     public function register_poll_results_endpoint()
     {
-        register_rest_route('my-plugin/v1', '/voting_results/(?P<poll_id>\d+)', [
+        register_rest_route('voting/v1', '/voting_results/(?P<poll_id>\d+)', [
             'methods' => 'GET',
             'callback' => [$this, 'get_results'],
             'permission_callback' => '__return_true', // TODO: Add proper permissions later
@@ -29,7 +29,7 @@ class Bitcoin_Voting_Webhooks
 
     public function register_poll_check_endpoint()
     {
-        register_rest_route('my-plugin/v1', '/payment-status-long-poll/(?P<payment_id>[a-zA-Z0-9]+)/(?P<poll_id>\d+)', [
+        register_rest_route('voting/v1', '/payment-status-long-poll/(?P<payment_id>[a-zA-Z0-9]+)/(?P<poll_id>\d+)', [
             'methods' => 'GET',
             'callback' => [$this, 'get_payment_status_long_poll'],
             'permission_callback' => '__return_true', // TODO: Add proper permissions later
@@ -52,7 +52,7 @@ class Bitcoin_Voting_Webhooks
 
     public function register_check_payment_endpoint()
     {
-        register_rest_route('my-plugin/v1', '/check-payment-status/(?P<payment_id>[a-zA-Z0-9]+)', [
+        register_rest_route('voting/v1', '/check-payment-status/(?P<payment_id>[a-zA-Z0-9]+)', [
             'methods' => 'GET',
             'callback' => [$this, 'get_check_payment_status'],
             'permission_callback' => '__return_true', // TODO: Add proper permissions later
@@ -234,7 +234,7 @@ class Bitcoin_Voting_Webhooks
                     $post_data = array(
                         'post_title'    => $name,
                         'post_status'   => 'publish',
-                        'post_type'     => 'bitcoin-pds',
+                        'post_type'     => 'voting-pds',
                         'post_content'  => $message
                     );
 

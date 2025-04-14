@@ -3,7 +3,7 @@
 Plugin Name: Bitcoin Voting
 Description: Easy Bitcoin voting on a WordPress website
 Version: 0.1
-Author: Coinsnap Dev
+Author: Coinsnap
 */
 
 if (!defined('ABSPATH')) {

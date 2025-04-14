@@ -117,6 +117,6 @@
     </div>
     <div id="<?php echo esc_html($prefix); ?>thank-you-popup<?php echo esc_html($sufix); ?>" class="thank-you-popup">
         <img class="checkmark-img" id="checkmark" alt="Checkmark" src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/checkmark.svg'; ?>">
-        <h3 style="margin: 10px 0 0 0;">Your payment was successful.</h3>
+        <h3 style="margin: 10px 0 0 0;"><?php echo esc_html($thank_you); ?></h3>
     </div>
 </div>

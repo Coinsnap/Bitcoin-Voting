@@ -1,1 +1,1 @@
-# Bitcoin-Voting
+# Bitcoin-Donation

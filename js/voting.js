@@ -22,7 +22,7 @@ jQuery(document).ready(function ($) {
         }
 
         const fetchResultsFromDb = (pollId) => {
-            fetch(`/wp-json/my-plugin/v1/voting_results/${pollId}`)
+            fetch(`/wp-json/voting/v1/voting_results/${pollId}`)
                 .then(response => response.json())
                 .then(data => {
                     const votesDb = data.results

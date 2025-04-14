@@ -176,8 +176,17 @@ class Bitcoin_Voting_Polls_Metabox
         $option_3 = get_post_meta($post->ID, '_coinsnap_bitcoin_voting_polls_option_3', true);
         $option_4 = get_post_meta($post->ID, '_coinsnap_bitcoin_voting_polls_option_4', true);
         $amount = get_post_meta($post->ID, '_coinsnap_bitcoin_voting_polls_amount', true);
+
         $starting_date = get_post_meta($post->ID, '_coinsnap_bitcoin_voting_polls_starting_date', true);
+        if (empty($starting_date)) {
+            $starting_date = date('Y-m-d\TH:i');
+        }
+
         $ending_date = get_post_meta($post->ID, '_coinsnap_bitcoin_voting_polls_ending_date', true);
+        if (empty($ending_date)) {
+            $ending_date = date('Y-m-d\TH:i', strtotime('+1 month'));
+        }
+
         $thank_you_message = get_post_meta($post->ID, '_coinsnap_bitcoin_voting_polls_thank_you_message', true);
         $active = get_post_meta($post->ID, '_coinsnap_bitcoin_voting_polls_active', true);
         if ($active === '') {
@@ -237,8 +246,10 @@ class Bitcoin_Voting_Polls_Metabox
                 function toggleDonorFields() {
                     if ($('input[name="coinsnap_bitcoin_voting_polls_collect_donor_info"]').is(':checked')) {
                         $('#donor-info-fields').show();
+                        $('#coinsnap_bitcoin_voting_polls_custom_field_name').prop('required', true);
                     } else {
                         $('#donor-info-fields').hide();
+                        $('#coinsnap_bitcoin_voting_polls_custom_field_name').prop('required', false);
                     }
                 }
 
@@ -483,7 +494,6 @@ class Bitcoin_Voting_Polls_Metabox
                             id="coinsnap_bitcoin_voting_polls_custom_field_name"
                             name="coinsnap_bitcoin_voting_polls_custom_field_name"
                             class="regular-text"
-                            required
                             value="<?php echo esc_attr($custom_field_name); ?>"
                             min="0"
                             step="1">
@@ -551,6 +561,11 @@ class Bitcoin_Voting_Polls_Metabox
                 'coinsnap_bitcoin_voting_polls_ending_date'
             ];
 
+            // Only require custom field name if donor info collection is enabled
+            if (isset($_POST['coinsnap_bitcoin_voting_polls_collect_donor_info'])) {
+                $required_fields[] = 'coinsnap_bitcoin_voting_polls_custom_field_name';
+            }
+
             foreach ($required_fields as $field) {
                 if (empty($_POST[$field])) {
                     wp_die("Error: $field is required.");
@@ -569,6 +584,14 @@ class Bitcoin_Voting_Polls_Metabox
                     '_coinsnap_bitcoin_voting_polls_starting_date',
                     '_coinsnap_bitcoin_voting_polls_ending_date'
                 ];
+
+                // Only require custom field name if donor info collection is enabled
+                if (
+                    isset($data['meta']['_coinsnap_bitcoin_voting_polls_collect_donor_info']) &&
+                    $data['meta']['_coinsnap_bitcoin_voting_polls_collect_donor_info']
+                ) {
+                    $required_meta_fields[] = '_coinsnap_bitcoin_voting_polls_custom_field_name';
+                }
 
                 foreach ($required_meta_fields as $field) {
                     if (empty($data['meta'][$field])) {

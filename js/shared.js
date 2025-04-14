@@ -16,17 +16,6 @@ function setCookie(name, value, minutes) {
     document.cookie = name + "=" + value + ";" + expires + ";path=/";
 }
 
-const addErrorField = (field) => {
-    field.css('border', '1px solid red');
-    removeBorderOnFocus(field, field)
-}
-
-const removeBorderOnFocus = (field1, field2) => {
-    field1.on('focus', function () {
-        field2.css('border', '');
-    })
-}
-
 async function fetchCoinsnapExchangeRates() {
     const exchangeRates = {}
     try {
@@ -57,7 +46,7 @@ async function fetchCoinsnapExchangeRates() {
     }
 }
 
-const createActualInvoice = async (amount, message, lastInputCurrency, name, coinsnap, type, redirect, metadata) => {
+const createActualVotingInvoice = async (amount, message, lastInputCurrency, name, coinsnap, type, redirect, metadata) => {
     deleteCookie('coinsnap_invoice_');
 
     const requestData = {
@@ -138,7 +127,7 @@ const createActualInvoice = async (amount, message, lastInputCurrency, name, coi
     }
 };
 
-const checkInvoiceStatus = async (invoiceId, amount, message, lastInputCurrency, name, coinsnap, type, redirect, metadata) => {
+const checkVotingInvoiceStatus = async (invoiceId, amount, message, lastInputCurrency, name, coinsnap, type, redirect, metadata) => {
 
     const url = coinsnap
         ? `https://app.coinsnap.io/api/v1/stores/${sharedData.coinsnapStoreId}/invoices/${invoiceId}`
@@ -168,7 +157,7 @@ const checkInvoiceStatus = async (invoiceId, amount, message, lastInputCurrency,
         const responseData = await response.json();
 
         if (responseData?.status === 'Settled') {
-            return await createActualInvoice(amount, message, lastInputCurrency, name, coinsnap, type, redirect, metadata);
+            return await createActualVotingInvoice(amount, message, lastInputCurrency, name, coinsnap, type, redirect, metadata);
         } else if (responseData?.status === 'New') {
             if (redirect) {
                 window.location.href = responseData.checkoutLink;
@@ -182,7 +171,7 @@ const checkInvoiceStatus = async (invoiceId, amount, message, lastInputCurrency,
     }
 };
 
-const createInvoice = async (amount, message, lastInputCurrency, name, type, redirect = true, metadata) => {
+const createVotingInvoice = async (amount, message, lastInputCurrency, name, type, redirect = true, metadata) => {
     existingInvoice = getCookie('coinsnap_invoice_')
     if (existingInvoice) {
         invoiceJson = JSON.parse(existingInvoice)
@@ -194,7 +183,7 @@ const createInvoice = async (amount, message, lastInputCurrency, name, type, red
             invoiceJson.message == message &&
             invoiceJson.name == name
         ) {
-            const cs = await checkInvoiceStatus(
+            const cs = await checkVotingInvoiceStatus(
                 invoiceJson.id,
                 amount,
                 message,
@@ -208,7 +197,7 @@ const createInvoice = async (amount, message, lastInputCurrency, name, type, red
             return cs
         }
         else {
-            return await createActualInvoice(
+            return await createActualVotingInvoice(
                 amount,
                 message,
                 lastInputCurrency,
@@ -220,7 +209,7 @@ const createInvoice = async (amount, message, lastInputCurrency, name, type, red
             )
         }
     } else {
-        return await createActualInvoice(
+        return await createActualVotingInvoice(
             amount,
             message,
             lastInputCurrency,
@@ -233,19 +222,19 @@ const createInvoice = async (amount, message, lastInputCurrency, name, type, red
     }
 }
 
-const hideElementById = (id, prefix = '', sufix = '') => {
+const hideVotingElementById = (id, prefix = '', sufix = '') => {
     document.getElementById(`${prefix}${id}${sufix}`).style.display = 'none'
 }
-const hideElementsById = (ids, prefix = '', sufix = '') => {
+const hideVotingElementsById = (ids, prefix = '', sufix = '') => {
     ids.forEach(id => {
-        hideElementById(id, prefix, sufix)
+        hideVotingElementById(id, prefix, sufix)
     })
 }
-const showElementById = (id, display, prefix = '', sufix = '') => {
+const showVotingElementById = (id, display, prefix = '', sufix = '') => {
     document.getElementById(`${prefix}${id}${sufix}`).style.display = display
 }
-const showElementsById = (ids, display, prefix = '', sufix = '') => {
+const showVotingElementsById = (ids, display, prefix = '', sufix = '') => {
     ids.forEach(id => {
-        showElementById(id, display, prefix, sufix)
+        showVotingElementById(id, display, prefix, sufix)
     })
 }

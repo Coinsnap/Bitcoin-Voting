@@ -44,7 +44,7 @@ class Bitcoin_Voting_Settings
             'Donations',
             'Donations',
             'manage_options',
-            'coinsnap-bitcoin-donation-list',
+            'coinsnap-bitcoin-voting-donation-list',
             [$this->donation_list, 'render_donations_page']
         );
 
@@ -61,7 +61,7 @@ class Bitcoin_Voting_Settings
             'Donor Information',
             'Donor Information',
             'manage_options',
-            'edit.php?post_type=bitcoin-pds'
+            'edit.php?post_type=voting-pds'
         );
     }
 
