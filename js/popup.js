@@ -109,8 +109,8 @@ const popupButtonListener = (exchangeRates, pollId, amount, publicDonor) => {
             document.getElementById(`coinsnap-bitcoin-voting-qr-amount${pollId}`).textContent = `Amount: ${res.amount} sats`;
 
             // Copy address functionallity 
-            const copyLightning = document.querySelector(`#coinsnap-bitcoin-voting-qr-lightning-container .qr-copy-icon`);
-            const copyBtc = document.querySelector(`#coinsnap-bitcoin-voting-qr-btc-container .qr-copy-icon`);
+            const copyLightning = document.querySelector(`#coinsnap-bitcoin-voting-qr-lightning-container${pollId} .qr-copy-icon`);
+            const copyBtc = document.querySelector(`#coinsnap-bitcoin-voting-qr-btc-container${pollId} .qr-copy-icon`);
             copyLightning.addEventListener('click', () => { navigator.clipboard.writeText(qrLightning); });
             copyBtc.addEventListener('click', () => { navigator.clipboard.writeText(qrBitcoin); });
 
