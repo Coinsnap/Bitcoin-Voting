@@ -158,7 +158,7 @@ class Bitcoin_Voting_Shortcode_Voting
                         <?php endif;
                         endfor; ?>
                         <div class="poll-total-votes">
-                            <button id="check-results" data-poll-id="<?php echo $poll_id; ?>" class="check-results">Check results</button>
+                            <button id="check-results<?php echo esc_html($poll_id); ?>" data-poll-id="<?php echo $poll_id; ?>" class="check-results">Check results</button>
                             <div class="end-text">Ends in: <?php echo $time_until_end; ?></div>
                         </div>
 
@@ -191,11 +191,11 @@ class Bitcoin_Voting_Shortcode_Voting
                     </div>
                 </div>
             </div>
-            <div id="coinsnap-bitcoin-voting-blur-overlay" class="blur-overlay"></div>
+            <div id="coinsnap-bitcoin-voting-blur-overlay<?php echo esc_html($poll_id); ?>" class="blur-overlay"></div>
             <?php
             $this->get_template('coinsnap-bitcoin-voting-modal', [
                 'prefix' => 'coinsnap-bitcoin-voting-',
-                'sufix' => '',
+                'sufix' => $poll_id,
                 'first_name' => $collect_donor_info ? $first_name : 0,
                 'last_name' => $collect_donor_info ? $last_name : 0,
                 'email' => $collect_donor_info ? $email : 0,
