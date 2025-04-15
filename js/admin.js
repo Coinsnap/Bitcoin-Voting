@@ -145,7 +145,8 @@
     async function handleCheckConnection(isSubmit = false) {
       event.preventDefault();
       var connection = false
-      const origin = adminData.ngrokUrl ? adminData.ngrokUrl : new URL(window.location.href).origin;
+      const ngrokLiveUrl = document.getElementById('ngrok_url')?.value;
+      const origin = ngrokLiveUrl ? ngrokLiveUrl : new URL(window.location.href).origin;
       const webhookUrl = `${origin}/wp-json/coinsnap-bitcoin-voting/v1/webhook`
       if ($providerSelector?.val() == 'coinsnap') {
         const coinsnapStoreId = $('#coinsnap_store_id').val();
