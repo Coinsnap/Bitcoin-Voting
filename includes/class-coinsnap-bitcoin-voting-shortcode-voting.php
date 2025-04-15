@@ -101,7 +101,7 @@ class Bitcoin_Voting_Shortcode_Voting
                 <div class="coinsnap-bitcoin-voting-form-container">
                     <h3><?php echo esc_html($title ?:  'Voting Poll'); ?></h3>
                     <p><?php echo esc_html($description ?: ''); ?></p>
-                    <div id="poll-results" class="poll-results" data-end-date="<?php echo $end_date; ?>" data-poll-id="<?php echo $poll_id; ?>">
+                    <div id="poll-results<?php echo esc_html($poll_id); ?>" class="poll-results" data-end-date="<?php echo $end_date; ?>" data-poll-id="<?php echo $poll_id; ?>">
                         <?php
                         for ($i = 1; $i <= min(4, $num_options ?: 4); $i++):
                             if (isset($options[$i])):
@@ -123,7 +123,7 @@ class Bitcoin_Voting_Shortcode_Voting
                         <div class="poll-total-votes">
                             <div class="poll-total-wrapper">
                                 Total votes:
-                                <div id="total-votes">
+                                <div id="total-votes<?php echo esc_html($poll_id); ?>">
                                 </div>
                             </div>
                             <div class="end-text"><?php echo '<div>Poll closed</div>'; ?></div>
@@ -144,7 +144,7 @@ class Bitcoin_Voting_Shortcode_Voting
                 <div class="coinsnap-bitcoin-voting-form-container">
                     <div class="title-container">
                         <h3><?php echo esc_html($title ?:  'Bitcoin Voting'); ?></h3>
-                        <button id="return-button" style="display: none;" class="return-button">&#8592;</button>
+                        <button id="return-button<?php echo esc_html($poll_id); ?>" style="display: none;" class="return-button">&#8592;</button>
                     </div>
                     <p><?php echo esc_html($description ?: ''); ?></p>
                     <div class="poll-options">
@@ -183,7 +183,7 @@ class Bitcoin_Voting_Shortcode_Voting
                         <div class="poll-total-votes">
                             <div class="poll-total-wrapper">
                                 Total votes:
-                                <div id="total-votes">
+                                <div id="total-votes<?php echo esc_html($poll_id); ?>">
                                 </div>
                             </div>
                             <div class="end-text">Ends in: <?php echo $time_until_end; ?></div>
