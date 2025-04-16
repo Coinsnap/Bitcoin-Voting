@@ -116,7 +116,7 @@ const popupButtonListener = (exchangeRates, pollId, amount, publicDonor) => {
 
             // Add fiat amount
             if (exchangeRates['EUR']) {
-                document.getElementById(`coinsnap-bitcoin-voting-qr-fiat${pollId}`).textContent = `≈ ${res.amount * exchangeRates['EUR']} EUR`;
+                document.getElementById(`coinsnap-bitcoin-voting-qr-fiat${pollId}`).textContent = `≈ ${(res.amount * exchangeRates['EUR'])?.toFixed(3)} EUR`;
                 // Store the handler function when adding the listener
                 walletHandler = function () {
                     window.location.href = `lightning:${qrLightning}`;

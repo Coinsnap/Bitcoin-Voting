@@ -98,7 +98,7 @@ class Bitcoin_Voting
 
     function coinsnap_bitcoin_voting_enqueue_admin_styles($hook)
     {
-        if ($hook === 'bitcoin-voting_page_bitcoin-donation-list') { // TODO verify that this ALL works
+        if ($hook === 'bitcoin-voting_page_bitcoin-donation-list') {
             wp_enqueue_style('coinsnap-bitcoin-voting-admin-style', plugin_dir_url(__FILE__) . 'styles/admin-style.css', [], '1.0.0');
         } else if ($hook === 'toplevel_page_coinsnap_bitcoin_voting') {
             wp_enqueue_style('coinsnap-bitcoin-voting-admin-style', plugin_dir_url(__FILE__) . 'styles/admin-style.css', [], '1.0.0');

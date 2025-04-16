@@ -1,4 +1,3 @@
-
 function deleteCookie(name) {
     document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/;';
 }
@@ -42,6 +41,21 @@ async function fetchCoinsnapExchangeRates() {
         return exchangeRates;
     } catch (error) {
         console.error('Error fetching exchange rates:', error);
+        return null;
+    }
+}
+
+async function generateQRCodeDataURL(text) {
+    try {
+        const response = await fetch(`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(text)}`);
+        const blob = await response.blob();
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(blob);
+        });
+    } catch (error) {
+        console.error('Error generating QR code:', error);
         return null;
     }
 }
@@ -103,7 +117,7 @@ const createActualVotingInvoice = async (amount, message, lastInputCurrency, nam
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        const responseData = await response.json();
+        var responseData = await response.json();
 
         const invoiceCookieData = {
             id: responseData.id,
@@ -115,7 +129,24 @@ const createActualVotingInvoice = async (amount, message, lastInputCurrency, nam
         };
 
         setCookie('coinsnap_invoice_', JSON.stringify(invoiceCookieData), 15);
+        if (!coinsnap) {
+            const url = `${sharedData?.btcpayUrl}/api/v1/stores/${sharedData?.btcpayStoreId}/invoices/${responseData.id}/payment-methods`;
+            const response2 = await fetch(url, {
+                method: 'GET',
+                headers: headers,
+            });
+            const responseData2 = await response2.json();
+            const paymentLink = responseData2[0].paymentLink
+            console.log('Payment Link:', paymentLink)
+            responseData.lightningInvoice = paymentLink?.replace('lightning:', '')
+            responseData.onchainAddress = ''
 
+            // Generate QR code image from lightning invoice
+            const qrCodeImage = await generateQRCodeDataURL(paymentLink);
+            responseData.qrCodes = {
+                lightningQR: qrCodeImage || paymentLink
+            }
+        }
         if (redirect) {
             window.location.href = responseData.checkoutLink;
         }
@@ -154,7 +185,26 @@ const checkVotingInvoiceStatus = async (invoiceId, amount, message, lastInputCur
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        const responseData = await response.json();
+        var responseData = await response.json();
+
+        if (!coinsnap) {
+            const url = `${sharedData?.btcpayUrl}/api/v1/stores/${sharedData?.btcpayStoreId}/invoices/${responseData.id}/payment-methods`;
+            const response2 = await fetch(url, {
+                method: 'GET',
+                headers: headers,
+            });
+            const responseData2 = await response2.json();
+            const paymentLink = responseData2[0].paymentLink
+            console.log('Payment Link:', paymentLink)
+            responseData.lightningInvoice = paymentLink?.replace('lightning:', '')
+            responseData.onchainAddress = ''
+
+            // Generate QR code image from lightning invoice
+            const qrCodeImage = await generateQRCodeDataURL(paymentLink);
+            responseData.qrCodes = {
+                lightningQR: qrCodeImage || paymentLink
+            }
+        }
 
         if (responseData?.status === 'Settled') {
             return await createActualVotingInvoice(amount, message, lastInputCurrency, name, coinsnap, type, redirect, metadata);
