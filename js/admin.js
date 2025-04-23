@@ -75,11 +75,18 @@
 
     }
 
-    function updateWebhook(storeId, apiKey, webhookUrl, webhookId, btcpayUrl) {
+    const getWebhookSecret = async () => {
+      const response = await fetch('/wp-json/voting/v1/get-wh-secret');
+      const data = await response.json();
+      return data;
+    }
+
+    async function updateWebhook(storeId, apiKey, webhookUrl, webhookId, btcpayUrl) {
+      const webhookSecret = await getWebhookSecret();
       const data = {
         url: webhookUrl,
         events: ['Settled'],
-        secret: adminData.webhookSecret
+        secret: webhookSecret
       }
       const headers = btcpayUrl ? { 'Authorization': `token ${apiKey}` } : { 'x-api-key': apiKey, };
       const url = btcpayUrl
@@ -113,11 +120,12 @@
         .catch(() => []);
     }
 
-    function createWebhook(storeId, apiKey, webhookUrl, btcpayUrl) {
+    async function createWebhook(storeId, apiKey, webhookUrl, btcpayUrl) {
+      const webhookSecret = await getWebhookSecret();
       const data = {
         url: webhookUrl,
         events: ['Settled'],
-        secret: adminData.webhookSecret
+        secret: webhookSecret
       }
 
       const headers = btcpayUrl
