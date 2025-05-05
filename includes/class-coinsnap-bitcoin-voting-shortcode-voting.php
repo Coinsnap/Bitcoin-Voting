@@ -186,6 +186,7 @@ class Bitcoin_Voting_Shortcode_Voting
                                 <div id="total-votes<?php echo esc_html($poll_id); ?>">
                                 </div>
                             </div>
+                            <div class="end-text">Vote price: <?php echo $amount; ?> sats</div>
                             <div class="end-text">Ends in: <?php echo $time_until_end; ?></div>
                         </div>
                     </div>
