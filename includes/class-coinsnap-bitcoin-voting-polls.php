@@ -246,7 +246,7 @@ class Bitcoin_Voting_Polls_Metabox
                 function toggleDonorFields() {
                     if ($('input[name="coinsnap_bitcoin_voting_polls_collect_donor_info"]').is(':checked')) {
                         $('#donor-info-fields').show();
-                        $('#coinsnap_bitcoin_voting_polls_custom_field_name').prop('required', true);
+                        $('#coinsnap_bitcoin_voting_polls_custom_field_name').prop('required', false);
                     } else {
                         $('#donor-info-fields').hide();
                         $('#coinsnap_bitcoin_voting_polls_custom_field_name').prop('required', false);
