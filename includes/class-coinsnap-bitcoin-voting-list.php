@@ -38,7 +38,8 @@ class Bitcoin_Donation_List
 		$filtered_invoices = array_filter($invoices, function ($invoice) {
 			return isset($invoice['metadata']['referralCode'])
 				&& $invoice['metadata']['referralCode'] === "D19833"
-				&& $invoice['status'] === 'Settled';
+				&& $invoice['status'] === 'Settled'
+				&& $invoice['metadata']['type'] == 'Bitcoin Voting';
 		});
 		if ($provider == 'coinsnap') {
 			usort($filtered_invoices, function ($a, $b) {
