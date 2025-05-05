@@ -89,7 +89,7 @@ class Bitcoin_Donation_List
 					<tr>
 						<th>Date</th>
 						<th>Amount</th>
-						<th>Type</th>
+						<th>Name</th>
 						<th>Message</th>
 						<th>Invoice ID</th>
 					</tr>
@@ -139,7 +139,7 @@ class Bitcoin_Donation_List
 			: "https://app.coinsnap.io/td/" . esc_html($invoice_id);
 		$message = isset($donation['metadata']['orderNumber']) ? $donation['metadata']['orderNumber'] : '';
 		$message = strlen($message) > 150 ? substr($message, 0, 150) . ' ...' : $message;
-		$type = isset($donation['metadata']['type']) ? $donation['metadata']['type'] : '';
+		$name = isset($donation['metadata']['voteTitle']) ? $donation['metadata']['voteTitle'] : '';
 	?>
 		<tr>
 			<td>
@@ -153,7 +153,7 @@ class Bitcoin_Donation_List
 				echo esc_html(number_format($amount, $isBtcpay ? 2 : 0) . ' ' . ($isBtcpay ? $currency : 'sats'));
 				?>
 			</td>
-			<td><?php echo esc_html($type); ?></td>
+			<td><?php echo esc_html($name); ?></td>
 			<td><?php echo esc_html($message); ?></td>
 			<td>
 				<a href="<?php echo $href; ?>" class="btn btn-primary" target="_blank" rel="noopener noreferrer">

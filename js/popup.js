@@ -67,6 +67,7 @@ const popupButtonListener = (exchangeRates, pollId, amount, publicDonor) => {
         const customNameField = document.getElementById(`coinsnap-bitcoin-voting-custom-name${pollId}`);
         const customContent = customNameField?.textContent && customField?.value ? `${customNameField.textContent}: ${customField.value}` : ''
         const validForm = !publicDonor || checkRequiredVotingFieds([firstNameField, lastNameField, emailField, streetField, houseNumberField, postalCodeField, cityField, countryField, customField]);
+        const voteTitle = voteButton.dataset.name ?? '';
         const metadata = {
             donorName: `${firstNameField.value} ${lastNameField?.value ?? ''}`,
             donorEmail: emailField?.value,
@@ -78,7 +79,8 @@ const popupButtonListener = (exchangeRates, pollId, amount, publicDonor) => {
             modal: true,
             optionId: option,
             option: optionName,
-            pollId: pollId
+            pollId: pollId,
+            voteTitle: voteTitle,
         }
         if (!validForm) return;
 
