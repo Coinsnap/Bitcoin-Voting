@@ -143,9 +143,9 @@ const popupButtonListener = (exchangeRates, pollId, amount, publicDonor) => {
                                 resetPopup(pollId);
                                 document.getElementById(`check-results${pollId}`).click();
                             }, 2000);
-                            setTimeout(() => {
-                                document.getElementById(`return-button${pollId}`).click();
-                            }, 7000);
+                            // setTimeout(() => {
+                            //     document.getElementById(`return-button${pollId}`).click();
+                            // }, 7000);
 
 
                         } else if (qrContainer.style.display != 'flex') {
