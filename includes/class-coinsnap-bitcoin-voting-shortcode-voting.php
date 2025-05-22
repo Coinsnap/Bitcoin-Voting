@@ -152,7 +152,7 @@ class Bitcoin_Voting_Shortcode_Voting
                         for ($i = 1; $i <= min(4, $num_options ?: 4); $i++):
                             if (isset($options[$i])):
                         ?>
-                                <button class="poll-option" data-option="<?php echo $i; ?>">
+                                <button class="poll-option" data-option="<?php echo $i; ?> " data-name="<?php echo $title; ?> ">
                                     <?php echo esc_html($options[$i]); ?>
                                 </button>
                         <?php endif;
@@ -186,6 +186,7 @@ class Bitcoin_Voting_Shortcode_Voting
                                 <div id="total-votes<?php echo esc_html($poll_id); ?>">
                                 </div>
                             </div>
+                            <div class="end-text">Vote price: <?php echo $amount; ?> sats</div>
                             <div class="end-text">Ends in: <?php echo $time_until_end; ?></div>
                         </div>
                     </div>

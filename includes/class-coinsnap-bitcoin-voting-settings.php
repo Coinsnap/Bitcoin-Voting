@@ -394,7 +394,7 @@ class Bitcoin_Voting_Settings
         $field_type  = $args['type'];
         $field_value = isset($options[$field_id]) ? $options[$field_id] : '';
         $defaults = [
-            'default_message' => 'Thank you for your work',
+            'default_message' => 'Thank you for your support',
             'default_amount'  => '5',
             'button_text'     => 'Donate',
             'title_text'      => 'Donate with Bitcoin',
