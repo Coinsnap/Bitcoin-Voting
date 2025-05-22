@@ -1,77 +1,83 @@
-=== Coinsnap Bitcoin Voting ===
+# Coinsnap Bitcoin Voting
 
 Contributors: coinsnap
 Tags: Lightning, SATS, bitcoin, voting, polling, BTCPay
-Tested up to: 6.7
+Tested up to: 6.8
 Stable tag: 1.0.0
 License: GPL2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Instant Bitcoin/Sats powered voting system on Wordpress website directly to your wallet
-
-== Description ==
-
-[Coinsnap](https://coinsnap.io/en/) Bitcoin Voting plugin allows you to process Bitcoin Lightning powered votes over the Lightning network. 
-With the Coinsnap Bitcoin-Lightning payment plugin you only need a Lightning wallet with a Lightning address to accept Bitcoin Lightning votes on your Wordpress site.
-
-* Coinsnap Bitcoin Voting Demo Site: https://voting.coinsnap.org/
-* Blog Article: https://coinsnap.io/en/
-* WordPress: https://wordpress.org/plugins/bitcoin-voting/
-* GitHub: https://github.com/Coinsnap/Bitcoin-Voting
+Collect small Bitcoin (Satoshi) payments for every vote on your WordPress site. Great for monetized polls, community engagement and SPAM-free surveys
 
 
-== Bitcoin and Lightning payments in Voting Plugin ==
+### Coinsnap Bitcoin Voting – Earn Sats with Every Vote
 
-The Coinsnap Bitcoin Voting plugin allows you to launch Bitcoin-powered voting on your site fast and simply.
+Turn votes into Bitcoin: The Coinsnap Bitcoin Voting plugin lets you collect small Bitcoin (Satoshi) payments for every vote on your WordPress site. Great for monetized polls, community engagement, and SPAM-free surveys.
 
-With the Coinsnap Bitcoin Lightning payment processing plugin you can immediately accept Bitcoin Lightning payments for votes on your site. You don't need your own Lightning node or any other technical requirements if you'd like to provide payments via Coinsnap payment gateway.
+Visitors vote by paying a small amount of sats (you define the amount). This:
 
-Simply register on [Coinsnap](https://app.coinsnap.io/register), enter your own Lightning address and install the Coinsnap payment module in your Wordpress backend. Add your store ID and your API key which you'll find in your Coinsnap account, and your voters can pay with Bitcoin Lightning right away!
+* **Prevents bots** from distorting the result
+* **Creates a small income stream** for your site
+* **Makes each vote count** (literally)
 
-If you want to use another BTCPay server as Payment provider, you need to know your store ID, your API key and gateway URL as required parameters.
-
-
-= Coinsnap features: =
-
-* **All you need is your email and a Lightning Wallet with a Lightning address. [Here you can find an overview of suitable Lightning Wallets](https://coinsnap.io/en/lightning-wallet-with-lightning-address/)**
-
-* **Accept Bitcoin and Lightning payments** in your online store **without running your own technical infrastructure.** You do not need your own server, nor do you need to run your own Lightning Node. You also do not need a shop-system, for you can sell right out of your forms using the Coinsnap for Content Form 7-plugin.
-
-* **Quick and easy registration at Coinsnap**: Just enter your email address and your Lightning address – and you are ready to integrate the payment module and start selling for Bitcoin Lightning. You will find the necessary IDs and Keys in your Coinsnap account, too.
-
-* **100% protected privacy**:
-    * We do not collect personal data.
-    * For the registration you only need an e-mail address, which we will also use to inform you when you have received a payment.
-    * No other personal information is required as long as you request a withdrawal to a Lightning address or Bitcoin address.
-
-* **Only 1 % fees!**:
-    * No basic fee, no transaction fee, only 1% on the invoice amount with referrer code.
-    * Without referrer code the fee is 1.25%.
-    * Get a referrer code from our [partners](https://coinsnap.io/en/partner/) and customers and save 0.25% fee.
-
-* **No KYC needed**:
-    * Direct, P2P payments (instantly to your Lightning wallet)
-    * No intermediaries and paperwork
-    * Transaction information is only shared between you and your customer
-
-* **Sophisticated merchant’s admin dashboard in Coinsnap:**:
-    * See all your transactions at a glance
-    * Follow-up on individual payments
-    * See issues with payments
-    * Export reports
-
-* **A Bitcoin payment via Lightning offers significant advantages**:
-    * Lightning **payments are executed immediately.**
-    * Lightning **payments are credited directly to the recipient.**
-    * Lightning **payments are inexpensive.**
-    * Lightning **payments are guaranteed.** No chargeback risk for the merchant.
-    * Lightning **payments can be used worldwide.**
-    * Lightning **payments are perfect for micropayments.**
-
-* **Multilingual interface and support**: We speak your language
+Coinsnap Bitcoin Voting works with Coinsnap or your own BTCPay Server.
 
 
-= Documentation: =
+### Requirements:
+
+* A WordPress website
+* The Coinsnap Bitcoin Donation plugin
+* A [Coinsnap account](https://app.coinsnap.io/register) or your own BTCPay Server
+
+### Features & functions:
+
+* Easy customization of your polls:
+
+	* Offer up to **4 answer options** per poll
+	* Define the **price per vote** in sats
+	* Choose between **one vote per person** or **multiple votes**
+	* Set **voting duration**
+	* Optionally collect user info: **name, email, address, or custom field**
+	* Turn any poll into a **Bitcoin-powered contest**
+
+* Your voters see **intermediate results** instantly after voting
+* Protect against **spam and bots** through pay-to-vote
+* **Easy integration via shortcodes** - polls can be placed anywhere on your website by pasting the shortcode at the appropriate place.
+* **Receive payments directly into your Bitcoin wallet** - either via Coinsnap or your own BTCPay Server.
+
+
+### Quick setup:
+
+* Install plugin directly via the WordPress plugin directory
+* Configure with just a few clicks
+* And that's it!
+
+
+### Two operating modes:
+
+* Use Coinsnap (no technical know-how required)
+* Or use your own BTCPay server (for advanced users)
+
+
+### Why Coinsnap Bitcoin Voting?
+
+* Open source and free in the WordPress Plugin Directory
+* No programming knowledge required
+* Immediate credit to your Bitcoin wallet
+* GDPR-friendly: no unnecessary data storage
+* Continuous further development
+* Strong support through our support team, accessible in your Coinsnap account
+
+
+### More information
+
+* Live demo: [https://voting.coinsnap.org/](https://voting.coinsnap.org/)
+* Product page: [https://coinsnap.io/coinsnap-bitcoin-voting-plugin/](https://coinsnap.io/coinsnap-bitcoin-voting-plugin/) 
+* Installation Guide: [https://coinsnap.io/coinsnap-bitcoin-voting-installation-guide/](https://coinsnap.io/coinsnap-bitcoin-voting-installation-guide/)
+* Github plugin page: [https://github.com/Coinsnap/bitcoin-voting/](https://github.com/Coinsnap/bitcoin-voting/)
+
+
+### Documentation:
 
 * [Coinsnap API (1.0) documentation](https://docs.coinsnap.io/)
 * [Frequently Asked Questions](https://coinsnap.io/en/faq/) 
@@ -79,9 +85,9 @@ If you want to use another BTCPay server as Payment provider, you need to know y
 * [Privacy Policy](https://coinsnap.io/en/privacy/)
 
 
-== Installation ==
+## Installation
 
-### 1. Install the Coinsnap Bitcoin Voting plug-in from the WordPress directory. ###
+### 1. Install the Coinsnap Bitcoin Voting plug-in from the WordPress directory.
 
 The Coinsnap Bitcoin Voting can be searched and installed in the WordPress plugin directory.
 
