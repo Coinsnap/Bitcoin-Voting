@@ -1,14 +1,13 @@
 <?php
+if (!defined('ABSPATH')){ exit; }
 
-class Bitcoin_Donation_List
-{
+class Bitcoin_Donation_List {
 
-	public function __construct()
-	{
+	public function __construct(){
 		add_action('wp_ajax_refresh_donations', array($this, 'refresh_donations_ajax'));
 	}
-	private function fetch_donations()
-	{
+	
+        private function fetch_donations(){
 		$options = get_option('coinsnap_bitcoin_voting_options');
 		$provider = $options['provider'];
 
@@ -38,8 +37,7 @@ class Bitcoin_Donation_List
 		$filtered_invoices = array_filter($invoices, function ($invoice) {
 			return isset($invoice['metadata']['referralCode'])
 				&& $invoice['metadata']['referralCode'] === "D19833"
-				&& $invoice['status'] === 'Settled'
-				&& $invoice['metadata']['type'] == 'Bitcoin Voting';
+				&& $invoice['status'] === 'Settled';
 		});
 		if ($provider == 'coinsnap') {
 			usort($filtered_invoices, function ($a, $b) {
@@ -67,8 +65,12 @@ class Bitcoin_Donation_List
 		$donations        = $this->fetch_donations();
 
 		$donations_per_page = 20;
-		$current_page = isset($_GET['paged']) ? max(1, intval($_GET['paged'])) : 1;
-		$total_donations = count($donations);
+		$paged = filter_input(INPUT_GET,'paged',FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+		$current_page = ($paged !== null) ? max(1, intval($paged)) : 1;
+                $total_donations = count($donations);
+                
+                
+                
 		$total_pages   = ceil($total_donations / $donations_per_page);
 		$offset = ($current_page - 1) * $donations_per_page;
 		$donations_page = array_slice($donations, $offset, $donations_per_page);
@@ -89,7 +91,7 @@ class Bitcoin_Donation_List
 					<tr>
 						<th>Date</th>
 						<th>Amount</th>
-						<th>Name</th>
+						<th>Type</th>
 						<th>Message</th>
 						<th>Invoice ID</th>
 					</tr>
@@ -115,12 +117,12 @@ class Bitcoin_Donation_List
 					'format'    => '',
 					'current'   => $current_page,
 					'total'     => $total_pages,
-					'prev_text' => __('&laquo; Previous'),
-					'next_text' => __('Next &raquo;'),
+					'prev_text' => esc_html('&laquo; ' . __('Previous','coinsnap-bitcoin-voting')),
+					'next_text' => esc_html(__('Next','coinsnap-bitcoin-voting') . ' &raquo;'),
 				]);
 
 				if ($pagination_links) {
-					echo '<div class="tablenav"><div class="tablenav-pages">' . $pagination_links . '</div></div>';
+					echo '<div class="tablenav"><div class="tablenav-pages">' . wp_kses($pagination_links,['span'=>['aria-current'=>true,'class'=>true],'a'=>['href'  => true,'title' => true],'class'=>true]) . '</div></div>';
 				}
 			}
 			?>
@@ -139,11 +141,11 @@ class Bitcoin_Donation_List
 			: "https://app.coinsnap.io/td/" . esc_html($invoice_id);
 		$message = isset($donation['metadata']['orderNumber']) ? $donation['metadata']['orderNumber'] : '';
 		$message = strlen($message) > 150 ? substr($message, 0, 150) . ' ...' : $message;
-		$name = isset($donation['metadata']['voteTitle']) ? $donation['metadata']['voteTitle'] : '';
+		$type = isset($donation['metadata']['type']) ? $donation['metadata']['type'] : '';
 	?>
 		<tr>
 			<td>
-				<?php echo esc_html(date('Y-m-d H:i:s', (int)$donation[$isBtcpay ? 'createdTime' :  'createdAt'])); ?>
+				<?php echo esc_html(gmdate('Y-m-d H:i:s', (int)$donation[$isBtcpay ? 'createdTime' :  'createdAt'])); ?>
 			</td>
 
 			<td>
@@ -153,10 +155,10 @@ class Bitcoin_Donation_List
 				echo esc_html(number_format($amount, $isBtcpay ? 2 : 0) . ' ' . ($isBtcpay ? $currency : 'sats'));
 				?>
 			</td>
-			<td><?php echo esc_html($name); ?></td>
+			<td><?php echo esc_html($type); ?></td>
 			<td><?php echo esc_html($message); ?></td>
 			<td>
-				<a href="<?php echo $href; ?>" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+				<a href="<?php echo esc_url($href); ?>" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
 					<?php echo esc_html($invoice_id); ?>
 				</a>
 

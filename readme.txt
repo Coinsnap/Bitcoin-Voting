@@ -3,7 +3,7 @@
 Contributors: coinsnap
 Tags: Lightning, bitcoin, voting, polling, BTCPay
 Tested up to: 6.8
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPL2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -159,3 +159,6 @@ Plugin's page on Coinsnap website: [https://coinsnap.io/coinsnap-bitcoin-voting-
 
 = 1.0.0 :: 2025-04-30 =
 * Initial release.
+
+= 1.1.0 :: 2025-06-18 =
+* Update: BTCPay setup wizard is added in BTCPay server settings.

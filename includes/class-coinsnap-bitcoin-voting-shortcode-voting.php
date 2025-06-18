@@ -1,12 +1,9 @@
 <?php
-if (! defined('ABSPATH')) {
-    exit;
-}
+if (!defined('ABSPATH')){ exit; }
 
-class Bitcoin_Voting_Shortcode_Voting
-{
-    public function __construct()
-    {
+class Coinsnap_Bitcoin_Voting_Shortcode_Voting {
+    
+    public function __construct(){
         add_shortcode('coinsnap_bitcoin_voting', [$this, 'coinsnap_bitcoin_voting_render_shortcode_voting']);
     }
 
@@ -31,7 +28,7 @@ class Bitcoin_Voting_Shortcode_Voting
 
         $poll_id = intval($atts['id']);
         // Check if poll_id is valid and post exists
-        if (!$poll_id || get_post_type($poll_id) !== 'bitcoin-polls') {
+        if (!$poll_id || get_post_type($poll_id) !== 'coinsnap-polls') {
             return '<p>Invalid or missing poll ID.</p>';
         }
 
@@ -61,7 +58,7 @@ class Bitcoin_Voting_Shortcode_Voting
 ?>
             <div id="coinsnap-bitcoin-voting-form" class="coinsnap-bitcoin-voting-form  <?php echo esc_attr($theme_class); ?>" data-one-vote="<?php echo esc_attr($one_vote) ?>" data-donor-info="<?php echo esc_attr($collect_donor_info) ?> ">
                 <div class="coinsnap-bitcoin-voting-form-container">
-                    <h3><?php echo esc_html($title ?:  'Bitcoin Voting'); ?></h3>
+                    <h3><?php echo esc_html($title ?:  'Coinsnap Bitcoin Voting'); ?></h3>
                     <p><?php echo esc_html($description ?: 'What would you like to see more of on our blog?'); ?></p>
                     <h4>This poll is not active</h4>
                 </div>
@@ -89,9 +86,9 @@ class Bitcoin_Voting_Shortcode_Voting
         ?>
             <div id="coinsnap-bitcoin-voting-form" class="coinsnap-bitcoin-voting-form  <?php echo esc_attr($theme_class); ?>" data-one-vote="<?php echo esc_attr($one_vote) ?> " data-donor-info="<?php echo esc_attr($collect_donor_info) ?> ">
                 <div class="coinsnap-bitcoin-voting-form-container">
-                    <h3><?php echo esc_html($title ?:  'Bitcoin Voting'); ?></h3>
+                    <h3><?php echo esc_html($title ?:  'Coinsnap Bitcoin Voting'); ?></h3>
                     <p><?php echo esc_html($description ?: 'What would you like to see more of on our blog?'); ?></p>
-                    <h4>Poll starting in: <?php echo $time_until_start; ?></h4>
+                    <h4>Poll starting in: <?php echo esc_html($time_until_start); ?></h4>
                 </div>
             </div>
         <?php
@@ -101,7 +98,7 @@ class Bitcoin_Voting_Shortcode_Voting
                 <div class="coinsnap-bitcoin-voting-form-container">
                     <h3><?php echo esc_html($title ?:  'Voting Poll'); ?></h3>
                     <p><?php echo esc_html($description ?: ''); ?></p>
-                    <div id="poll-results<?php echo esc_html($poll_id); ?>" class="poll-results" data-end-date="<?php echo $end_date; ?>" data-poll-id="<?php echo $poll_id; ?>">
+                    <div id="poll-results<?php echo esc_html($poll_id); ?>" class="poll-results" data-end-date="<?php echo esc_html($end_date); ?>" data-poll-id="<?php echo esc_html($poll_id); ?>">
                         <?php
                         for ($i = 1; $i <= min(4, $num_options ?: 4); $i++):
                             if (isset($options[$i])):
@@ -109,12 +106,12 @@ class Bitcoin_Voting_Shortcode_Voting
                                 <div class="poll-result">
                                     <div class="poll-result-title">
                                         <span>
-                                            <?php echo esc_html($options[$i]); ?> (<span class="vote-count" data-option="<?php echo $i; ?>">0</span> votes)
+                                            <?php echo esc_html($options[$i]); ?> (<span class="vote-count" data-option="<?php echo esc_html($i); ?>">0</span> votes)
                                         </span>
-                                        <span class="voting-progress-percentage" data-option="<?php echo $i; ?>"></span>
+                                        <span class="voting-progress-percentage" data-option="<?php echo esc_html($i); ?>"></span>
                                     </div>
                                     <div class="voting-progress">
-                                        <div class="voting-progress-bar" data-option="<?php echo $i; ?>"></div>
+                                        <div class="voting-progress-bar" data-option="<?php echo esc_html($i); ?>"></div>
                                     </div>
 
                                 </div>
@@ -143,7 +140,7 @@ class Bitcoin_Voting_Shortcode_Voting
 
                 <div class="coinsnap-bitcoin-voting-form-container">
                     <div class="title-container">
-                        <h3><?php echo esc_html($title ?:  'Bitcoin Voting'); ?></h3>
+                        <h3><?php echo esc_html($title ?:  'Coinsnap Bitcoin Voting'); ?></h3>
                         <button id="return-button<?php echo esc_html($poll_id); ?>" style="display: none;" class="return-button">&#8592;</button>
                     </div>
                     <p><?php echo esc_html($description ?: ''); ?></p>
@@ -152,14 +149,14 @@ class Bitcoin_Voting_Shortcode_Voting
                         for ($i = 1; $i <= min(4, $num_options ?: 4); $i++):
                             if (isset($options[$i])):
                         ?>
-                                <button class="poll-option" data-option="<?php echo $i; ?> " data-name="<?php echo $title; ?> ">
+                                <button class="poll-option" data-option="<?php echo esc_html($i); ?>">
                                     <?php echo esc_html($options[$i]); ?>
                                 </button>
                         <?php endif;
                         endfor; ?>
                         <div class="poll-total-votes">
-                            <button id="check-results<?php echo esc_html($poll_id); ?>" data-poll-id="<?php echo $poll_id; ?>" class="check-results">Check results</button>
-                            <div class="end-text">Ends in: <?php echo $time_until_end; ?></div>
+                            <button id="check-results<?php echo esc_html($poll_id); ?>" data-poll-id="<?php echo esc_html($poll_id); ?>" class="check-results">Check results</button>
+                            <div class="end-text">Ends in: <?php echo esc_html($time_until_end); ?></div>
                         </div>
 
                     </div>
@@ -171,12 +168,12 @@ class Bitcoin_Voting_Shortcode_Voting
                                 <div class="poll-result">
                                     <div class="poll-result-title">
                                         <span>
-                                            <?php echo esc_html($options[$i]); ?> (<span class="vote-count" data-option="<?php echo $i; ?>">0</span> votes)
+                                            <?php echo esc_html($options[$i]); ?> (<span class="vote-count" data-option="<?php echo esc_html($i); ?>">0</span> votes)
                                         </span>
-                                        <span class="voting-progress-percentage" data-option="<?php echo $i; ?>"></span>
+                                        <span class="voting-progress-percentage" data-option="<?php echo esc_html($i); ?>"></span>
                                     </div>
                                     <div class="voting-progress">
-                                        <div class="voting-progress-bar" data-option="<?php echo $i; ?>"></div>
+                                        <div class="voting-progress-bar" data-option="<?php echo esc_html($i); ?>"></div>
                                     </div>
                                 </div> <?php endif;
                                 endfor; ?>
@@ -186,8 +183,7 @@ class Bitcoin_Voting_Shortcode_Voting
                                 <div id="total-votes<?php echo esc_html($poll_id); ?>">
                                 </div>
                             </div>
-                            <div class="end-text">Vote price: <?php echo $amount; ?> sats</div>
-                            <div class="end-text">Ends in: <?php echo $time_until_end; ?></div>
+                            <div class="end-text">Ends in: <?php echo esc_html($time_until_end); ?></div>
                         </div>
                     </div>
                 </div>
@@ -216,4 +212,4 @@ class Bitcoin_Voting_Shortcode_Voting
     }
 }
 
-new Bitcoin_Voting_Shortcode_Voting();
+new Coinsnap_Bitcoin_Voting_Shortcode_Voting();

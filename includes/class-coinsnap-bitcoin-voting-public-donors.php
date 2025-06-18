@@ -1,23 +1,19 @@
 <?php
-if (!defined('ABSPATH')) {
-    exit;
-}
+if (!defined('ABSPATH')){ exit; }
 
-class Bitcoin_Voting_Public_Donors
-{
-    public function __construct()
-    {
+class Bitcoin_Voting_Public_Donors {
+    public function __construct(){
         add_action('init', [$this, 'register_public_donors_post_type']);
         add_action('init', [$this, 'register_custom_meta_fields']);
         add_action('add_meta_boxes', [$this, 'add_public_donors_metaboxes']);
         add_action('save_post', [$this, 'save_public_donors_meta'], 10, 2);
-        add_filter('manage_voting-pds_posts_columns', [$this, 'add_custom_columns']);
-        add_action('manage_voting-pds_posts_custom_column', [$this, 'populate_custom_columns'], 10, 2);
+        add_filter('manage_coinsnap-pds_posts_columns', [$this, 'add_custom_columns']);
+        add_action('manage_coinsnap-pds_posts_custom_column', [$this, 'populate_custom_columns'], 10, 2);
     }
 
     public function register_public_donors_post_type()
     {
-        register_post_type('voting-pds', [
+        register_post_type('coinsnap-pds', [
             'labels' => [
                 'name'               => 'Donor Information',
                 'singular_name'      => 'Donor Information',
@@ -36,7 +32,7 @@ class Bitcoin_Voting_Public_Donors
             'show_ui'            => true,
             'show_in_menu'       => false,
             'query_var'          => true,
-            'rewrite'            => ['slug' => 'voting-pds'],
+            'rewrite'            => ['slug' => 'coinsnap-pds'],
             'capability_type'    => 'post',
             'has_archive'        => false,
             'hierarchical'       => false,
@@ -48,56 +44,56 @@ class Bitcoin_Voting_Public_Donors
     public function register_custom_meta_fields()
     {
         register_meta('post', '_coinsnap_bitcoin_voting_donor_name', [
-            'object_subtype' => 'voting-pds',
+            'object_subtype' => 'coinsnap-pds',
             'type' => 'string',
             'single' => true,
             'show_in_rest' => true,
         ]);
 
         register_meta('post', '_coinsnap_bitcoin_voting_amount', [
-            'object_subtype' => 'voting-pds',
+            'object_subtype' => 'coinsnap-pds',
             'type' => 'string',
             'single' => true,
             'show_in_rest' => true,
         ]);
 
         register_meta('post', '_coinsnap_bitcoin_voting_message', [
-            'object_subtype' => 'voting-pds',
+            'object_subtype' => 'coinsnap-pds',
             'type' => 'string',
             'single' => true,
             'show_in_rest' => true,
         ]);
 
         register_meta('post', '_coinsnap_bitcoin_voting_form_type', [
-            'object_subtype' => 'voting-pds',
+            'object_subtype' => 'coinsnap-pds',
             'type' => 'string',
             'single' => true,
             'show_in_rest' => true,
         ]);
 
         register_meta('post', '_coinsnap_bitcoin_voting_email', [
-            'object_subtype' => 'voting-pds',
+            'object_subtype' => 'coinsnap-pds',
             'type' => 'string',
             'single' => true,
             'show_in_rest' => true,
         ]);
 
         register_meta('post', '_coinsnap_bitcoin_voting_address', [
-            'object_subtype' => 'voting-pds',
+            'object_subtype' => 'coinsnap-pds',
             'type' => 'string',
             'single' => true,
             'show_in_rest' => true,
         ]);
 
         register_meta('post', '_coinsnap_bitcoin_voting_payment_id', [
-            'object_subtype' => 'voting-pds',
+            'object_subtype' => 'coinsnap-pds',
             'type' => 'string',
             'single' => true,
             'show_in_rest' => true,
         ]);
 
         register_meta('post', '_coinsnap_bitcoin_voting_custom_field', [
-            'object_subtype' => 'voting-pds',
+            'object_subtype' => 'coinsnap-pds',
             'type' => 'string',
             'single' => true,
             'show_in_rest' => true,
@@ -110,7 +106,7 @@ class Bitcoin_Voting_Public_Donors
             'coinsnap_bitcoin_voting_public_donors_details',
             'Donor Details',
             [$this, 'render_public_donors_metabox'],
-            'voting-pds',
+            'coinsnap-pds',
             'normal',
             'high'
         );
@@ -198,18 +194,16 @@ class Bitcoin_Voting_Public_Donors
 <?php
     }
 
-    public function save_public_donors_meta($post_id, $post)
-    {
-        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    public function save_public_donors_meta($post_id, $post){
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE){ return;}
 
-        if (!current_user_can('edit_post', $post_id)) return;
+        if (!current_user_can('edit_post', $post_id)){ return;}
 
-        if ($post->post_type !== 'voting-pds') return;
+        if ($post->post_type !== 'coinsnap-pds'){ return;}
 
-        if (
-            !isset($_POST['coinsnap_bitcoin_voting_public_donors_nonce']) ||
-            !wp_verify_nonce($_POST['coinsnap_bitcoin_voting_public_donors_nonce'], 'coinsnap_bitcoin_voting_public_donors_nonce')
-        ) {
+        $nonce = (null !== filter_input(INPUT_POST,'coinsnap_bitcoin_voting_public_donors_nonce',FILTER_SANITIZE_FULL_SPECIAL_CHARS))? filter_input(INPUT_POST,'coinsnap_bitcoin_voting_public_donors_nonce',FILTER_SANITIZE_FULL_SPECIAL_CHARS) : '';
+        
+        if (!wp_verify_nonce($nonce, 'coinsnap_bitcoin_voting_public_donors_nonce')){
             return;
         }
 
@@ -223,12 +217,13 @@ class Bitcoin_Voting_Public_Donors
             'coinsnap_bitcoin_voting_payment_id' => 'text',
             'coinsnap_bitcoin_voting_custom_field' => 'text',
         ];
-
+        
         foreach ($fields as $field => $type) {
             if ($type === 'boolean') {
-                $value = isset($_POST[$field]) ? '1' : '';
-            } else {
-                $value = isset($_POST[$field]) ? sanitize_text_field($_POST[$field]) : '';
+                $value = (null !== filter_input(INPUT_POST,$field,FILTER_SANITIZE_FULL_SPECIAL_CHARS))? '1' : '';
+            }
+            else {
+                $value = (null !== filter_input(INPUT_POST,$field,FILTER_SANITIZE_FULL_SPECIAL_CHARS))? sanitize_text_field(filter_input(INPUT_POST,$field,FILTER_SANITIZE_FULL_SPECIAL_CHARS)) : '';
             }
             update_post_meta($post_id, '_' . $field, $value);
         }

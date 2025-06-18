@@ -1,16 +1,12 @@
 <?php
-if (! defined('ABSPATH')) {
-    exit;
-}
+if (!defined('ABSPATH')){ exit; }
 
 require_once plugin_dir_path(__FILE__) . 'class-coinsnap-bitcoin-voting-list.php';
 
-class Bitcoin_Voting_Settings
-{
+class Bitcoin_Voting_Settings{
     private $donation_list;
 
-    public function __construct()
-    {
+    public function __construct(){
         $this->donation_list = new Bitcoin_Donation_List();
 
         // Register menus
@@ -21,26 +17,26 @@ class Bitcoin_Voting_Settings
     function coinsnap_bitcoin_voting_add_admin_menu()
     {
         add_menu_page(
-            'Bitcoin Voting',
-            'Bitcoin Voting',
+            'Coinsnap Bitcoin Voting',
+            'Coinsnap Bitcoin Voting',
             'manage_options',
-            'coinsnap_bitcoin_voting',
+            'coinsnap-bitcoin-voting',
             [$this, 'coinsnap_bitcoin_voting_options_page'],
-            plugin_dir_url(dirname(__FILE__)) . 'assets/bitcoin.svg',
+            plugin_dir_url(dirname(__FILE__)) . 'assets/images/bitcoin.svg',
 
             100
         );
         add_submenu_page(
-            'coinsnap_bitcoin_voting',
+            'coinsnap-bitcoin-voting',
             'Settings',
             'Settings',
             'manage_options',
-            'coinsnap_bitcoin_voting',
+            'coinsnap-bitcoin-voting',
             [$this, 'coinsnap_bitcoin_voting_options_page']
         );
 
         add_submenu_page(
-            'coinsnap_bitcoin_voting',
+            'coinsnap-bitcoin-voting',
             'Donations',
             'Donations',
             'manage_options',
@@ -49,19 +45,19 @@ class Bitcoin_Voting_Settings
         );
 
         add_submenu_page(
-            'coinsnap_bitcoin_voting',
+            'coinsnap-bitcoin-voting',
             'Polls',
             'Polls',
             'manage_options',
-            'edit.php?post_type=bitcoin-polls'
+            'edit.php?post_type=coinsnap-polls'
         );
 
         add_submenu_page(
-            'coinsnap_bitcoin_voting',
+            'coinsnap-bitcoin-voting',
             'Donor Information',
             'Donor Information',
             'manage_options',
-            'edit.php?post_type=voting-pds'
+            'edit.php?post_type=coinsnap-pds'
         );
     }
 
@@ -77,14 +73,14 @@ class Bitcoin_Voting_Settings
             'coinsnap_bitcoin_voting_provider_section',
             'General Settings',
             [$this, 'provider_section_callback'],
-            'coinsnap_bitcoin_voting'
+            'coinsnap-bitcoin-voting'
         );
 
         add_settings_field(
             'provider',
             'Payment Gateway',
             [$this, 'render_field'],
-            'coinsnap_bitcoin_voting',
+            'coinsnap-bitcoin-voting',
             'coinsnap_bitcoin_voting_provider_section',
             [
                 'label_for' => 'provider',
@@ -100,7 +96,7 @@ class Bitcoin_Voting_Settings
             'theme',
             'Theme',
             [$this, 'render_field'],
-            'coinsnap_bitcoin_voting',
+            'coinsnap-bitcoin-voting',
             'coinsnap_bitcoin_voting_provider_section',
             [
                 'label_for' => 'theme',
@@ -118,7 +114,7 @@ class Bitcoin_Voting_Settings
                 'ngrok_url',
                 'Ngrok URL',
                 [$this, 'render_field'],
-                'coinsnap_bitcoin_voting',
+                'coinsnap-bitcoin-voting',
                 'coinsnap_bitcoin_voting_provider_section',
                 [
                     'label_for' => 'ngrok_url',
@@ -133,14 +129,14 @@ class Bitcoin_Voting_Settings
             'coinsnap_bitcoin_voting_coinsnap_section',
             'Coinsnap Settings',
             [$this, 'coinsnap_section_callback'],
-            'coinsnap_bitcoin_voting'
+            'coinsnap-bitcoin-voting'
         );
 
         add_settings_field(
             'coinsnap_store_id',
             'Coinsnap Store ID',
             [$this, 'render_field'],
-            'coinsnap_bitcoin_voting',
+            'coinsnap-bitcoin-voting',
             'coinsnap_bitcoin_voting_coinsnap_section',
             [
                 'label_for' => 'coinsnap_store_id',
@@ -152,7 +148,7 @@ class Bitcoin_Voting_Settings
             'coinsnap_api_key',
             'Coinsnap API Key',
             [$this, 'render_field'],
-            'coinsnap_bitcoin_voting',
+            'coinsnap-bitcoin-voting',
             'coinsnap_bitcoin_voting_coinsnap_section',
             [
                 'label_for' => 'coinsnap_api_key',
@@ -164,7 +160,7 @@ class Bitcoin_Voting_Settings
             'check_connection_coinsnap',
             'Check Connection',
             [$this, 'render_field'],
-            'coinsnap_bitcoin_voting',
+            'coinsnap-bitcoin-voting',
             'coinsnap_bitcoin_voting_coinsnap_section',
             [
                 'label_for' => 'check_connection_coinsnap',
@@ -179,14 +175,27 @@ class Bitcoin_Voting_Settings
             'coinsnap_bitcoin_voting_btcpay_section',
             'BTCPay Settings',
             [$this, 'btcpay_section_callback'],
-            'coinsnap_bitcoin_voting'
+            'coinsnap-bitcoin-voting'
         );
 
+        add_settings_field(
+            'btcpay_url',
+            'BTCPay URL',
+            [$this, 'render_field'],
+            'coinsnap-bitcoin-voting',
+            'coinsnap_bitcoin_voting_btcpay_section',
+            [
+                'label_for' => 'btcpay_url',
+                'type'      => 'text',
+                'description' => '<button class="button btcpay-apikey-link" type="button" id="coinsnap_bitcoin_voting_btcpay_wizard_button" target="_blank">'. esc_html__('Generate API key','coinsnap-bitcoin-voting') .'</button>'
+            ]
+        );
+        
         add_settings_field(
             'btcpay_store_id',
             'BTCPay Store ID',
             [$this, 'render_field'],
-            'coinsnap_bitcoin_voting',
+            'coinsnap-bitcoin-voting',
             'coinsnap_bitcoin_voting_btcpay_section',
             [
                 'label_for' => 'btcpay_store_id',
@@ -198,30 +207,19 @@ class Bitcoin_Voting_Settings
             'btcpay_api_key',
             'BTCPay API Key',
             [$this, 'render_field'],
-            'coinsnap_bitcoin_voting',
+            'coinsnap-bitcoin-voting',
             'coinsnap_bitcoin_voting_btcpay_section',
             [
                 'label_for' => 'btcpay_api_key',
                 'type'      => 'text'
             ]
         );
-
-        add_settings_field(
-            'btcpay_url',
-            'BTCPay URL',
-            [$this, 'render_field'],
-            'coinsnap_bitcoin_voting',
-            'coinsnap_bitcoin_voting_btcpay_section',
-            [
-                'label_for' => 'btcpay_url',
-                'type'      => 'text'
-            ]
-        );
+        
         add_settings_field(
             'check_connection_btcpay',
             'Check Connection',
             [$this, 'render_field'],
-            'coinsnap_bitcoin_voting',
+            'coinsnap-bitcoin-voting',
             'coinsnap_bitcoin_voting_btcpay_section',
             [
                 'label_for' => 'check_connection_btcpay',
@@ -341,22 +339,22 @@ class Bitcoin_Voting_Settings
     // Optional section callbacks for additional descriptions
     public function provider_section_callback()
     {
-        echo esc_html_e('Select your preferred payment provider and configure its settings below.', 'coinsnap_bitcoin_voting');
+        echo esc_html_e('Select your preferred payment provider and configure its settings below.', 'coinsnap-bitcoin-voting');
     }
 
     public function coinsnap_section_callback()
     {
-        echo esc_html_e('Enter your Coinsnap credentials here if you selected Coinsnap as your payment provider.', 'coinsnap_bitcoin_voting');
+        echo esc_html_e('Enter your Coinsnap credentials here if you selected Coinsnap as your payment provider.', 'coinsnap-bitcoin-voting');
     }
 
     public function btcpay_section_callback()
     {
-        echo esc_html_e('Enter your BTCPay credentials here if you selected BTCPay as your payment provider.', 'coinsnap_bitcoin_voting');
+        echo esc_html_e('Enter your BTCPay credentials here if you selected BTCPay as your payment provider.', 'coinsnap-bitcoin-voting');
     }
 
     function coinsnap_bitcoin_voting_section_general_callback()
     {
-        echo __('Configure the plugin settings below.', 'sdb');
+        echo esc_html__('Configure the plugin settings below.', 'coinsnap-bitcoin-voting');
     }
 
     /**
@@ -367,11 +365,11 @@ class Bitcoin_Voting_Settings
     private function render_section($section_id)
     {
         global $wp_settings_sections, $wp_settings_fields;
-        if (! isset($wp_settings_sections['coinsnap_bitcoin_voting'][$section_id])) {
+        if (! isset($wp_settings_sections['coinsnap-bitcoin-voting'][$section_id])) {
             return;
         }
 
-        $section = $wp_settings_sections['coinsnap_bitcoin_voting'][$section_id];
+        $section = $wp_settings_sections['coinsnap-bitcoin-voting'][$section_id];
 
         if ($section['title']) {
             echo '<h3>' . esc_html($section['title']) . '</h3>';
@@ -380,9 +378,9 @@ class Bitcoin_Voting_Settings
             call_user_func($section['callback'], $section);
         }
 
-        if (! empty($wp_settings_fields['coinsnap_bitcoin_voting'][$section_id])) {
+        if (! empty($wp_settings_fields['coinsnap-bitcoin-voting'][$section_id])) {
             echo '<table class="form-table">';
-            do_settings_fields('coinsnap_bitcoin_voting', $section_id);
+            do_settings_fields('coinsnap-bitcoin-voting', $section_id);
             echo '</table>';
         }
     }
@@ -394,7 +392,7 @@ class Bitcoin_Voting_Settings
         $field_type  = $args['type'];
         $field_value = isset($options[$field_id]) ? $options[$field_id] : '';
         $defaults = [
-            'default_message' => 'Thank you for your support',
+            'default_message' => 'Thank you for your work',
             'default_amount'  => '5',
             'button_text'     => 'Donate',
             'title_text'      => 'Donate with Bitcoin',
@@ -442,8 +440,12 @@ class Bitcoin_Voting_Settings
                 break;
         }
 
-        if (isset($args['description'])) {
-            echo '<p class="description">' . esc_html($args['description']) . '</p>';
+        if (isset($args['description']) && !empty($args['description'])) {
+            echo '<p class="description">' . wp_kses($args['description'],[
+                'a' => ['href'  => true,'title' => true,'class' => true], 
+                'b' => [], 
+                'button' => ['class' => true,'type' => true, 'id' => true, 'target' => true]
+                ]) . '</p>';
         }
     }
 

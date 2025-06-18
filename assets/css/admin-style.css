@@ -1,0 +1,119 @@
+/* styles/admin-style.css */
+.wrap h1 {
+  margin-bottom: 20px;
+}
+
+.button.btcpay-apikey-link {margin:10px 0;}
+
+.coinsnap-bitcoin-voting-settings-form input[type="text"],
+.coinsnap-bitcoin-voting-settings-form select {
+  width: 100%;
+  max-width: 500px;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.coinsnap-bitcoin-voting-settings-form label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.provider-settings {
+  display: none;
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background: #f9f9f9;
+}
+
+/* Admin styles for voting list */
+.voting-controls {
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#check_connection_coinsnap_button {
+  margin-right: 40px;
+  background-color: #f6f6f6;
+  border: 1px solid #444444;
+  cursor: pointer;
+  padding: 6px 14px;
+  border-radius: 10%;
+}
+
+#check_connection_coinsnap_button:hover {
+  background-color: #f1f1f1;
+}
+
+#check_connection_btcpay_button {
+  margin-right: 40px;
+  background-color: #f6f6f6;
+  border: 1px solid #444444;
+  cursor: pointer;
+  padding: 6px 14px;
+  border-radius: 8px;
+}
+
+#check_connection_btcpay_button:hover {
+  background-color: #f1f1f1;
+}
+
+.shortcode_text {
+  font-size: 12px;
+  font-weight: bold;
+  background-color: #6393C7;
+  color: white;
+  padding: 4px;
+  border-radius: 2px;
+}
+
+.shortcode_text_wrapper {
+  font-size: 12px;
+  margin-bottom: 16px;
+}
+
+.shortcode_text_wrapper_disabled {
+  display: none;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.voting-list-table th:nth-child(1),
+.voting-list-table td:nth-child(1) {
+  width: 150px;
+  /* Adjust for Date column */
+}
+
+.voting-list-table th:nth-child(2),
+.voting-list-table td:nth-child(2) {
+  width: 100px;
+  /* Adjust for Amount column */
+}
+
+.voting-list-table th:nth-child(3),
+.voting-list-table td:nth-child(3) {
+  width: 140px;
+  /* Adjust for Type column */
+}
+
+.voting-list-table th:nth-child(5),
+.voting-list-table td:nth-child(5) {
+  width: 200px;
+  /* Adjust for InvoiceId column */
+}
+
+.form-table th {
+  width: 240px
+}

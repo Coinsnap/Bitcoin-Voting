@@ -1,9 +1,8 @@
 <?php
-class Bitcoin_Voting_Webhooks
-{
+if (!defined('ABSPATH')){ exit; }
+class Coinsnap_Bitcoin_Voting_Webhooks {
 
-    public function __construct()
-    {
+    public function __construct(){
         add_action('rest_api_init', [$this, 'register_webhook_endpoint']);
         add_action('rest_api_init', [$this, 'register_poll_check_endpoint']);
         add_action('rest_api_init', [$this, 'register_poll_results_endpoint']);
@@ -11,8 +10,7 @@ class Bitcoin_Voting_Webhooks
         add_action('rest_api_init', [$this, 'register_get_wh_secret_endpoint']);
     }
 
-    public function register_poll_results_endpoint()
-    {
+    public function register_poll_results_endpoint(){
         register_rest_route('voting/v1', '/voting_results/(?P<poll_id>\d+)', [
             'methods' => 'GET',
             'callback' => [$this, 'get_results'],
@@ -82,18 +80,10 @@ class Bitcoin_Voting_Webhooks
         ]);
     }
 
-    function get_results($request)
-    {
+    function get_results($request){
         $poll_id = $request['poll_id'];
-
         global $wpdb;
-
-        $query = $wpdb->prepare(
-            "SELECT * FROM {$wpdb->prefix}voting_payments WHERE status = 'completed' AND poll_id = %d",
-            $poll_id
-        );
-        $results = $wpdb->get_results($query);
-
+        $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$wpdb->prefix}voting_payments WHERE status = 'completed' AND poll_id = %d",$poll_id));
         return ['results' => $results];
     }
 
@@ -111,11 +101,7 @@ class Bitcoin_Voting_Webhooks
                 $payment_id
             ));
             if ($status === 'completed') {
-                $query = $wpdb->prepare(
-                    "SELECT * FROM {$wpdb->prefix}voting_payments WHERE status = 'completed' AND poll_id = %d",
-                    $poll_id
-                );
-                $results = $wpdb->get_results($query);
+                $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$wpdb->prefix}voting_payments WHERE status = 'completed' AND poll_id = %d",$poll_id));
 
                 return ['status' => 'completed', 'results' => $results];
             }
@@ -169,25 +155,25 @@ class Bitcoin_Voting_Webhooks
         ]);
     }
 
-    function verify_webhook_request($request)
-    {
-        $secret = $this->get_webhook_secret();
+    function verify_webhook_request($request){
+        
+            $secret = $this->get_webhook_secret();
+            error_log('Webhook signature: ' . $request->get_header('X-Coinsnap-Sig'));
+            $coinsnap_sig = $request->get_header('X-Coinsnap-Sig');
+            $btcpay_sig = $request->get_header('btcpay_sig');
+            $signature_header = !empty($coinsnap_sig) ? $coinsnap_sig : $btcpay_sig;
+            if (empty($signature_header)) {
+                return false;
+            }
 
-        $coinsnap_sig = $request->get_header('X-Coinsnap-Sig');
-        $btcpay_sig = $request->get_header('btcpay_sig');
-        $signature_header = !empty($coinsnap_sig) ? $coinsnap_sig : $btcpay_sig;
-        if (empty($signature_header)) {
-            return false;
-        }
+            $payload = $request->get_body();
 
-        $payload = $request->get_body();
-
-        $computed_signature = hash_hmac('sha256', $payload, $secret);
-        $computed_signature = 'sha256=' . $computed_signature; // Prefix the computed_signature with 'sha256='
-        if (!hash_equals($computed_signature, $signature_header)) {
-            return false;
-        }
-        return true;
+            $computed_signature = hash_hmac('sha256', $payload, $secret);
+            $computed_signature = 'sha256=' . $computed_signature; // Prefix the computed_signature with 'sha256='
+            if (!hash_equals($computed_signature, $signature_header)) {
+                return false;
+            }
+            return true;
     }
 
     public function handle_webhook(WP_REST_Request $request)
@@ -195,9 +181,9 @@ class Bitcoin_Voting_Webhooks
         $payload_data = $request->get_json_params();
 
         if (isset($payload_data['type']) && ($payload_data['type'] === 'Settled' || $payload_data['type'] === 'InvoiceSettled')) {
-            error_log('Webhook received: ' . json_encode($payload_data));
+            //error_log('Webhook received: ' . json_encode($payload_data));
             // Voting
-            if (isset($payload_data['metadata']['type']) && $payload_data['metadata']['type'] == "Bitcoin Voting") {
+            if (isset($payload_data['metadata']['type']) && $payload_data['metadata']['type'] == "Coinsnap Bitcoin Voting") {
                 global $wpdb;
                 $invoiceId = $payload_data['invoiceId'];
                 $optionId = $payload_data['metadata']['optionId'];
@@ -249,7 +235,7 @@ class Bitcoin_Voting_Webhooks
                     $post_data = array(
                         'post_title'    => $name,
                         'post_status'   => 'publish',
-                        'post_type'     => 'voting-pds',
+                        'post_type'     => 'coinsnap-voting-pds',
                         'post_content'  => $message
                     );
 
@@ -273,4 +259,4 @@ class Bitcoin_Voting_Webhooks
         return new WP_REST_Response('Webhook type not handled.', 200);
     }
 }
-new Bitcoin_Voting_Webhooks();
+new Coinsnap_Bitcoin_Voting_Webhooks();

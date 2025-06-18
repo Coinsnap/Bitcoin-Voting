@@ -1,6 +1,5 @@
-<?php if (!defined('ABSPATH')) exit ?>
-<?php
-?>
+<?php if (!defined('ABSPATH')){ exit;} ?>
+
 <div id="<?php echo esc_html($prefix); ?>qr-container<?php echo esc_html($sufix); ?>" class="qr-container" data-public-donors="<?php echo esc_attr($public_donors); ?>">
     <div class="close-popup">×</div>
     <div id="<?php echo esc_html($prefix); ?>public-donor-popup<?php echo esc_html($sufix); ?>" class="public-donor-popup">
@@ -84,7 +83,7 @@
         <p class="qr-fiat" id="<?php echo esc_html($prefix); ?>qr-fiat<?php echo esc_html($sufix); ?>"></p>
         <div style="position: relative;">
             <img class="qr-code" style="display: none;" id="<?php echo esc_html($prefix); ?>qrCode<?php echo esc_html($sufix); ?>" alt="QR Code">
-            <img class="qr-code-btc" id="<?php echo esc_html($prefix); ?>qrCodeBtc<?php echo esc_html($sufix); ?>" alt="QR Code Btc" src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/bitcoinqr.svg'; ?>">
+            <img class="qr-code-btc" id="<?php echo esc_html($prefix); ?>qrCodeBtc<?php echo esc_html($sufix); ?>" alt="QR Code Btc" src="<?php echo esc_url(COINSNAP_BITCOIN_VOTING_PLUGIN_DIR . 'assets/images/bitcoinqr.svg'); ?>">
         </div>
         <details open class="qr-details">
             <summary id="<?php echo esc_html($prefix); ?>qr-summary<?php echo esc_html($sufix); ?>" class="qr-summary">Details <span class="qr-dropdown">&#9660;</span></summary>
@@ -113,10 +112,10 @@
                 </div>
             </div>
         </details>
-        <button id="<?php echo esc_html($prefix); ?>pay-in-wallet<?php echo esc_html($sufix); ?>" class="qr-pay-in-wallet">Pay in wallet</button>
+        <a id="<?php echo esc_html($prefix);?>pay-in-wallet<?php echo esc_html($sufix);?>" class="qr-pay-in-wallet"><?php echo esc_html__('Pay in wallet','coinsnap-bitcoin-voting'); ?></a>
     </div>
     <div id="<?php echo esc_html($prefix); ?>thank-you-popup<?php echo esc_html($sufix); ?>" class="thank-you-popup">
-        <img class="checkmark-img" id="checkmark" alt="Checkmark" src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/checkmark.svg'; ?>">
+        <img class="checkmark-img" id="checkmark" alt="Checkmark" src="<?php echo esc_url(COINSNAP_BITCOIN_VOTING_PLUGIN_DIR . 'assets/images/checkmark.svg'); ?>">
         <h3 style="margin: 10px 0 0 0;"><?php echo esc_html($thank_you); ?></h3>
     </div>
 </div>
