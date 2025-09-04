@@ -3,7 +3,7 @@
 Contributors: coinsnap
 Tags: Lightning, bitcoin, voting, polling, BTCPay
 Tested up to: 6.8
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPL2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -162,3 +162,10 @@ Plugin's page on Coinsnap website: [https://coinsnap.io/coinsnap-bitcoin-voting-
 
 = 1.1.0 :: 2025-06-18 =
 * Update: BTCPay setup wizard is added in BTCPay server settings.
+
+= 1.2.0 :: 2025-09-04 =
+* Update: Added payment gateway client class. 
+* Update: Added support for all the Coinsnap currencies instead of SATS only
+* Update: Prevented redirect to payment gateway if payment amount is less than 1 SAT or currency in not supported by Coinsnap.
+* Update: Prevented redirect to BTCPay server if payment amount is less than 0.000005869 BTC (0.50 EUR) for onchain payments, 0.000001 BTC (1 SAT) for Lightning payment or currency is not supported.
+* Update: Minimum order amount is added to connection status notice.

@@ -76,7 +76,7 @@ const createActualVotingInvoice = async (amount, message, lastInputCurrency, nam
         }
     };
 
-    if (type == 'Bitcoin Voting') {
+    if (type === 'Coinsnap Bitcoin Voting') {
         // requestData.metadata.optionId = metadata.optionId
         // requestData.metadata.option = metadata.option
         // requestData.metadata.pollId = metadata.pollId
@@ -102,7 +102,7 @@ const createActualVotingInvoice = async (amount, message, lastInputCurrency, nam
             'Content-Type': 'application/json'
         }
         : {
-            'Authorization': `token ${sharedData?.btcpayApiKey}`,
+            'Authorization': 'token '+sharedData?.btcpayApiKey,
             'Content-Type': 'application/json'
         };
 
@@ -171,7 +171,7 @@ const checkVotingInvoiceStatus = async (invoiceId, amount, message, lastInputCur
 
         }
         : {
-            'Authorization': `token ${sharedData.btcpayApiKey}`,
+            'Authorization': 'token '+sharedData.btcpayApiKey,
             'Content-Type': 'application/json'
         };
 
@@ -221,17 +221,18 @@ const checkVotingInvoiceStatus = async (invoiceId, amount, message, lastInputCur
     }
 };
 
-const createVotingInvoice = async (amount, message, lastInputCurrency, name, type, redirect = true, metadata) => {
-    existingInvoice = getCookie('coinsnap_invoice_')
+const createVotingInvoice = async (amount, message, amountFiat, lastInputCurrency, name, type, redirect = true, metadata) => {
+    existingInvoice = getCookie('coinsnap_invoice_');
+    lastInputCurrency = 'SATS';
     if (existingInvoice) {
-        invoiceJson = JSON.parse(existingInvoice)
+        invoiceJson = JSON.parse(existingInvoice);
         if (
             invoiceJson.id &&
             invoiceJson.checkoutLink &&
-            invoiceJson.amount == amount &&
-            invoiceJson.currency == lastInputCurrency &&
-            invoiceJson.message == message &&
-            invoiceJson.name == name
+            invoiceJson.amount === amount &&
+            invoiceJson.currency === lastInputCurrency &&
+            invoiceJson.message === message &&
+            invoiceJson.name === name
         ) {
             const cs = await checkVotingInvoiceStatus(
                 invoiceJson.id,
@@ -258,7 +259,8 @@ const createVotingInvoice = async (amount, message, lastInputCurrency, name, typ
                 metadata
             )
         }
-    } else {
+    }
+    else {
         return await createActualVotingInvoice(
             amount,
             message,

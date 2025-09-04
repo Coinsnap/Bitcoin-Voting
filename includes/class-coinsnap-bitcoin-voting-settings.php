@@ -91,7 +91,7 @@ class Bitcoin_Voting_Settings{
                 ]
             ]
         );
-
+        
         add_settings_field(
             'theme',
             'Theme',
@@ -423,9 +423,7 @@ class Bitcoin_Voting_Settings{
             case 'check_connection':
                 $id = isset($args['id']) ? $args['id'] : 'check_connection';
 
-                echo '<div >' . '<button id="' . esc_attr($id) . '_button">Check</button>' . '<span style="" id="' . esc_attr($id) .  '">' . '</span>' . '</div>';
-                break;
-
+                echo '<div ><button id="' . esc_attr($id) . '_button">Check</button><span style="" id="' . esc_attr($id) .  '"></span></div>';
                 break;
 
             case 'text':
@@ -449,12 +447,12 @@ class Bitcoin_Voting_Settings{
         }
     }
 
-    public function coinsnap_bitcoin_voting_options_page()
-    {
+    public function coinsnap_bitcoin_voting_options_page(){
 ?>
         <div class="wrap">
-            <h1>Bitcoin Voting Settings</h1>
+            <h1>Coinsnap Bitcoin Voting Settings</h1>
             <?php settings_errors('coinsnap_bitcoin_voting_settings'); ?>
+            <div class="coinsnapConnectionStatus"></div>
             <form method="post" action="options.php">
                 <?php
                 settings_fields('coinsnap_bitcoin_voting_settings');

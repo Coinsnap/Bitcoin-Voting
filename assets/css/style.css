@@ -650,6 +650,10 @@
   border: 2px solid #ff4444 !important;
 }
 
+.error-message {
+  border: 2px solid #ff4444 !important; color:#ff4444; text-align:center;
+}
+
 .opt-out-wrapper {
   display: flex;
   gap: 12px;

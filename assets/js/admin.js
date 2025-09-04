@@ -28,7 +28,7 @@
         activeTab.click()
       }
     }
-    restoreTabs()
+    restoreTabs();
 
     const coinsnapStoreIdField = document.getElementById('coinsnap_store_id');
     const coinsnapApiKeyField = document.getElementById('coinsnap_api_key');
@@ -272,9 +272,49 @@
         }
     });
     
+    if($('#coinsnap_bitcoin_voting_polls_currency').length){
+        
+        setStep();
+        $('#coinsnap_bitcoin_voting_polls_currency').change(
+            function(){
+                setStep();
+            }    
+        );
+        
+    }
+    
+    if($('.coinsnapConnectionStatus').length){
+        
+        console.log('Connection check is activated');
+        
+        let ajaxurl = coinsnap_bitcoin_voting_ajax.ajax_url;
+        let data = {
+            action: 'coinsnap_bitcoin_voting_connection_handler',
+            apiNonce: coinsnap_bitcoin_voting_ajax.nonce,
+            apiPost: coinsnap_bitcoin_voting_ajax.post
+        };
+
+        jQuery.post( ajaxurl, data, function( response ){
+
+            connectionCheckResponse = $.parseJSON(response);
+            let resultClass = (connectionCheckResponse.result === true)? 'success' : 'error';
+            $('.coinsnapConnectionStatus').html('<span class="'+resultClass+'">'+ connectionCheckResponse.message +'</span>');
+            
+        });
+    }
+    
   });
   
-  function isVotingValidUrl(serverUrl) {
+    function setStep(){
+        let step = 0.01;
+        let currency = $('#coinsnap_bitcoin_voting_polls_currency').val();
+        if(currency === 'RUB' || currency === 'JPY' || currency === 'SATS'){
+            step = 1;
+        }
+        $('#coinsnap_bitcoin_voting_polls_amount').attr('step', step);
+    }
+  
+    function isVotingValidUrl(serverUrl) {
         if(serverUrl.indexOf('http') > -1){
             try {
                 const url = new URL(serverUrl);
