@@ -158,7 +158,7 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
     function verify_webhook_request($request){
         
             $secret = $this->get_webhook_secret();
-            error_log('Webhook signature: ' . $request->get_header('X-Coinsnap-Sig'));
+            //error_log('Webhook signature: ' . $request->get_header('X-Coinsnap-Sig'));
             $coinsnap_sig = $request->get_header('X-Coinsnap-Sig');
             $btcpay_sig = $request->get_header('btcpay_sig');
             $signature_header = !empty($coinsnap_sig) ? $coinsnap_sig : $btcpay_sig;

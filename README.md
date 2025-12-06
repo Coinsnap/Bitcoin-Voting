@@ -2,8 +2,8 @@
 
 Contributors: coinsnap
 Tags: Lightning, SATS, bitcoin, voting, polling, BTCPay
-Tested up to: 6.8
-Stable tag: 1.1.0
+Tested up to: 6.1
+Stable tag: 1.2.1
 License: GPL2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -31,7 +31,7 @@ Coinsnap Bitcoin Voting works with Coinsnap or your own BTCPay Server.
 * The Coinsnap Bitcoin Donation plugin
 * A [Coinsnap account](https://app.coinsnap.io/register) or your own BTCPay Server
 
-### Features \& functions:
+### Features & functions:
 
 * Easy customization of your polls:
 
@@ -78,8 +78,8 @@ Coinsnap Bitcoin Voting works with Coinsnap or your own BTCPay Server.
 ### More information
 
 * Live demo: [https://voting.coinsnap.org/](https://voting.coinsnap.org/)
-* Product page: [https://coinsnap.io/coinsnap-bitcoin-voting-plugin/](https://coinsnap.io/coinsnap-bitcoin-voting-plugin/)
-* Installation Guide: [https://coinsnap.io/coinsnap-bitcoin-voting-installation-guide/](https://coinsnap.io/coinsnap-bitcoin-voting-installation-guide/)
+* Product page: [https://coinsnap.io/modules/bitcoin-voting/](https://coinsnap.io/modules/bitcoin-voting/) 
+* Installation Guide: [https://coinsnap.io/modules/bitcoin-voting/bitcoin-voting-plugin-installation-guide/](https://coinsnap.io/modules/bitcoin-voting/bitcoin-voting-plugin-installation-guide/)
 * Github plugin page: [https://github.com/Coinsnap/bitcoin-voting/](https://github.com/Coinsnap/bitcoin-voting/)
 
 
@@ -87,15 +87,15 @@ Coinsnap Bitcoin Voting works with Coinsnap or your own BTCPay Server.
 ### Documentation:
 
 * [Coinsnap API (1.0) documentation](https://docs.coinsnap.io/)
-* [Frequently Asked Questions](https://coinsnap.io/en/faq/)
-* [Terms and Conditions](https://coinsnap.io/en/general-terms-and-conditions/)
-* [Privacy Policy](https://coinsnap.io/en/privacy/)
+* [Frequently Asked Questions](https://coinsnap.io/help/coinsnap-faq/) 
+* [Terms and Conditions](https://coinsnap.io/info/general-terms-and-conditions/)
+* [Privacy Policy](https://coinsnap.io/info/privacy-policy/)
 
 
 
 ## Installation
 
-### 1\. Install the Coinsnap Bitcoin Voting plug-in from the WordPress directory.
+### 1. Install the Coinsnap Bitcoin Voting plug-in from the WordPress directory.
 
 The Coinsnap Bitcoin Voting can be searched and installed in the WordPress plugin directory.
 
@@ -108,7 +108,7 @@ After successful installation, click Activate and then you can start setting up 
 
 
 
-### 2\. Connect Coinsnap account with Coinsnap Bitcoin Voting plugin
+### 2. Connect Coinsnap account with Coinsnap Bitcoin Voting plugin
 
 After you have installed and activated the Coinsnap Bitcoin Voting plugin, you need to set Coinsnap or BTCPay server up. You can find Coinsnap Bitcoin Voting settings in the sidebar on the left under “Bitcoin Voting”.
 
@@ -118,7 +118,7 @@ If you don’t have a Coinsnap account yet, you can do so via the link shown: [C
 
 
 
-### 3\. Create Coinsnap account
+### 3. Create Coinsnap account
 
 ### 3.1. Create a Coinsnap Account
 
@@ -142,18 +142,17 @@ In the Lightning Address field, enter the Lightning address to which the Bitcoin
 
 A Lightning address is similar to an e-mail address. Lightning payments are forwarded to this Lightning address and paid out. If you don’t have a Lightning address yet, set up a Lightning wallet that will provide you with a Lightning address.
 
-For more information on Lightning addresses and the corresponding Lightning wallet providers, click here:
-https://coinsnap.io/lightning-wallet-mit-lightning-adresse/
+For more information on Lightning addresses and the corresponding Lightning wallet providers, click [here](https://coinsnap.io/blog/how-do-i-get-a-lightning-wallet/).
 
 After saving settings you can use Store ID and Api Key on the step 2.
 
 
 
-### 4\. Configure Coinsnap Bitcoin Voting plugin
+### 4. Configure Coinsnap Bitcoin Voting plugin
 
 ### 4.1. Voting shortcode
 
-Go to "Bitcoin Voting" in the sideboard on the left in your WordPress and click on "Bitcoin Voting". At the top of the page you will find shortcode \[bitcoin\_voting] that you can use it in your content.
+Go to "Bitcoin Voting" in the sideboard on the left in your WordPress and click on "Bitcoin Voting". At the top of the page you will find shortcode [bitcoin_voting] that you can use it in your content.
 
 ### 4.2. Configure your settings
 
@@ -171,16 +170,14 @@ Scroll down a little bit, and you'll find Coinsnap Bitcoin Voting plugin setting
 After you will fill all the necessary data you can use shortcode in your content and get Bitcoin Lightning votes.
 
 
-
 ## Upgrade Notice
 
-Follow updates on plugin's GitHub page:
-
-https://github.com/Coinsnap/Bitcoin-Voting
+Follow updates on plugin's GitHub page: [https://github.com/Coinsnap/bitcoin-voting/](https://github.com/Coinsnap/bitcoin-voting/)
 
 ## Frequently Asked Questions
 
-Plugin's page on Coinsnap website: https://coinsnap.io/en/
+Plugin's page on Coinsnap website: [https://coinsnap.io/modules/bitcoin-voting/](https://coinsnap.io/modules/bitcoin-voting/)
+
 
 ## Changelog
 
@@ -194,8 +191,13 @@ Plugin's page on Coinsnap website: https://coinsnap.io/en/
 
 #### 1.2.0 :: 2025-09-04
 
-* \* Update: Added payment gateway client class. 
-* \* Update: Added support for all the Coinsnap currencies instead of SATS only
-* \* Update: Prevented redirect to payment gateway if payment amount is less than 1 SAT or currency in not supported by Coinsnap.
-* \* Update: Prevented redirect to BTCPay server if payment amount is less than 0.000005869 BTC (0.50 EUR) for onchain payments, 0.000001 BTC (1 SAT) for Lightning payment or currency is not supported.
-* \* Update: Minimum order amount is added to connection status notice.
+* Update: Added payment gateway client class.
+* Update: Added support for all the Coinsnap currencies instead of SATS only
+* Update: Prevented redirect to payment gateway if payment amount is less than 1 SAT or currency in not supported by Coinsnap.
+* Update: Prevented redirect to BTCPay server if payment amount is less than 0.000005869 BTC (0.50 EUR) for onchain payments, 0.000001 BTC (1 SAT) for Lightning payment or currency is not supported.
+* Update: Minimum order amount is added to connection status notice.
+
+#### 1.2.1 :: 2025-12-06
+
+* Fixed Wordpress Plugin Check warnings.
+* Compatibility with Wordpress 6.9 is tested.

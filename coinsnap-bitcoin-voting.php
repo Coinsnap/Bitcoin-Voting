@@ -3,12 +3,12 @@
  * Plugin Name:        Coinsnap Bitcoin Voting
  * Plugin URI:         https://coinsnap.io/coinsnap-bitcoin-voting-plugin/
  * Description:        Easy Bitcoin voting on a WordPress website
- * Version:            1.2.0
+ * Version:            1.2.1
  * Author:             Coinsnap
  * Author URI:         https://coinsnap.io/
  * Text Domain:        coinsnap-bitcoin-voting
  * Domain Path:         /languages
- * Tested up to:        6.8
+ * Tested up to:        6.9
  * License:             GPL2
  * License URI:         https://www.gnu.org/licenses/gpl-2.0.html
  *
@@ -18,7 +18,7 @@
 defined( 'ABSPATH' ) || exit;
 
 if(!defined( 'COINSNAP_BITCOIN_VOTING_REFERRAL_CODE' ) ) { define( 'COINSNAP_BITCOIN_VOTING_REFERRAL_CODE', 'D46835' );}
-if(!defined( 'COINSNAP_BITCOIN_VOTING_VERSION' ) ) { define( 'COINSNAP_BITCOIN_VOTING_VERSION', '1.2.0' );}
+if(!defined( 'COINSNAP_BITCOIN_VOTING_VERSION' ) ) { define( 'COINSNAP_BITCOIN_VOTING_VERSION', '1.2.1' );}
 if(!defined( 'COINSNAP_BITCOIN_VOTING_PHP_VERSION' ) ) { define( 'COINSNAP_BITCOIN_VOTING_PHP_VERSION', '8.0' );}
 if(!defined( 'COINSNAP_BITCOIN_VOTING_PLUGIN_DIR' ) ){ define('COINSNAP_BITCOIN_VOTING_PLUGIN_DIR',plugin_dir_url(__FILE__));}
 if(!defined('COINSNAP_CURRENCIES')){define( 'COINSNAP_CURRENCIES', array("EUR","USD","SATS","BTC","CAD","JPY","GBP","CHF","RUB") );}
@@ -80,7 +80,6 @@ class Coinsnap_Bitcoin_Voting
             'result' => false,
             'message' => __('Empty gateway URL or API Key', 'coinsnap-bitcoin-voting')
         ];
-        
         
         $coinsnap_bitcoin_voting_data = get_option('coinsnap_bitcoin_voting_options', []);
         

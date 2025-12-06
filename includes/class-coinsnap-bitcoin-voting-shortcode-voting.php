@@ -155,7 +155,7 @@ class Coinsnap_Bitcoin_Voting_Shortcode_Voting {
                 catch (\Exception $e) {
                     $response = [
                             'result' => false,
-                            'message' => __('Coinsnap Bitcoin Donation: API connection is not established', 'coinsnap-bitcoin-donation')
+                            'message' => __('Coinsnap Bitcoin Donation: API connection is not established', 'coinsnap-bitcoin-voting')
                     ];
                     $this->sendJsonResponse($response);
                 }

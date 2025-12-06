@@ -2,8 +2,8 @@
 
 Contributors: coinsnap
 Tags: Lightning, bitcoin, voting, polling, BTCPay
-Tested up to: 6.8
-Stable tag: 1.2.0
+Tested up to: 6.9
+Stable tag: 1.2.1
 License: GPL2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -72,17 +72,17 @@ Coinsnap Bitcoin Voting works with Coinsnap or your own BTCPay Server.
 == More information ==
 
 * Live demo: [https://voting.coinsnap.org/](https://voting.coinsnap.org/)
-* Product page: [https://coinsnap.io/coinsnap-bitcoin-voting-plugin/](https://coinsnap.io/coinsnap-bitcoin-voting-plugin/) 
-* Installation Guide: [https://coinsnap.io/coinsnap-bitcoin-voting-installation-guide/](https://coinsnap.io/coinsnap-bitcoin-voting-installation-guide/)
+* Product page: [https://coinsnap.io/modules/bitcoin-voting/](https://coinsnap.io/modules/bitcoin-voting/) 
+* Installation Guide: [https://coinsnap.io/modules/bitcoin-voting/bitcoin-voting-plugin-installation-guide/](https://coinsnap.io/modules/bitcoin-voting/bitcoin-voting-plugin-installation-guide/)
 * Github plugin page: [https://github.com/Coinsnap/bitcoin-voting/](https://github.com/Coinsnap/bitcoin-voting/)
 
 
 == Documentation: ==
 
 * [Coinsnap API (1.0) documentation](https://docs.coinsnap.io/)
-* [Frequently Asked Questions](https://coinsnap.io/faq/) 
-* [Terms and Conditions](https://coinsnap.io/general-terms-and-conditions/)
-* [Privacy Policy](https://coinsnap.io/privacy/)
+* [Frequently Asked Questions](https://coinsnap.io/help/coinsnap-faq/) 
+* [Terms and Conditions](https://coinsnap.io/info/general-terms-and-conditions/)
+* [Privacy Policy](https://coinsnap.io/info/privacy-policy/)
 
 
 == Installation ==
@@ -138,7 +138,7 @@ If you don’t want to install the Coinsnap Bitcoin Voting plugin directly from 
 
 Find the green button labeled **Code** on the top right. When you click on it, the menu opens and **Download ZIP** appears in the dropdown menu. By clicking on it you will download the latest version of the Coinsnap plugin to your computer.
 
-Then use the “**Upload plugin**” function in WordPress to install it. Click on “**Install now**” and the Coinsnap Bitcoin Votingplugin will be added to your WordPress website. It can then be connected to the Coinsnap payment gateway (as explained above).
+Then use the “**Upload plugin**” function in WordPress to install it. Click on “**Install now**” and the Coinsnap Bitcoin Voting plugin will be added to your WordPress website. It can then be connected to the Coinsnap payment gateway (as explained above).
 
 
 From here on you can follow 1.1 to 1.3 and you will be set to sell for Bitcoin in no time at all!
@@ -150,7 +150,7 @@ Follow updates on plugin's GitHub page: [https://github.com/Coinsnap/bitcoin-vot
 
 === Frequently Asked Questions ===
 
-Plugin's page on Coinsnap website: [https://coinsnap.io/coinsnap-bitcoin-voting-plugin/](https://coinsnap.io/coinsnap-bitcoin-voting-plugin/)
+Plugin's page on Coinsnap website: [https://coinsnap.io/modules/bitcoin-voting/](https://coinsnap.io/modules/bitcoin-voting/)
 
 === Screenshots ===
 
@@ -169,3 +169,7 @@ Plugin's page on Coinsnap website: [https://coinsnap.io/coinsnap-bitcoin-voting-
 * Update: Prevented redirect to payment gateway if payment amount is less than 1 SAT or currency in not supported by Coinsnap.
 * Update: Prevented redirect to BTCPay server if payment amount is less than 0.000005869 BTC (0.50 EUR) for onchain payments, 0.000001 BTC (1 SAT) for Lightning payment or currency is not supported.
 * Update: Minimum order amount is added to connection status notice.
+
+= 1.2.1 :: 2025-12-06 =
+* Fixed Wordpress Plugin Check warnings.
+* Compatibility with Wordpress 6.9 is tested.
