@@ -154,6 +154,20 @@ Plugin's page on Coinsnap website: [https://coinsnap.io/modules/bitcoin-voting/]
 
 === Screenshots ===
 
+1. Coinsnap Bitcoin Voting plugin with plugin search installation
+2. Plugin settings for payment with Coinsnap payment gateway
+3. Plugin settings for payment with BTCPay payment gateway
+4. API key generation with Setup Wizard: store selection
+5. API key generation with Setup Wizard: label setting
+6. Polls list
+7. Poll settings form
+8. Donations list
+9. Voting form
+10. QR code
+11. Registration in Cooinsnap
+12. Email address confirmation
+13. Setting up website at Coinsnap
+
  
 === Changelog ===
 
