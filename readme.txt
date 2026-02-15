@@ -3,7 +3,7 @@
 Contributors: coinsnap
 Tags: Lightning, bitcoin, voting, polling, BTCPay
 Tested up to: 6.9
-Stable tag: 1.2.1
+Stable tag: 1.2.3
 License: GPL2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -187,3 +187,13 @@ Plugin's page on Coinsnap website: [https://coinsnap.io/modules/bitcoin-voting/]
 = 1.2.1 :: 2025-12-06 =
 * Fixed Wordpress Plugin Check warnings.
 * Compatibility with Wordpress 6.9 is tested.
+
+= 1.2.2 :: 2025-02-04 =
+* Updated interface of donor information form.
+* Compatibility with Wordpress 6.9.1 is tested.
+
+= 1.2.3 :: 2025-02-15 =
+* Update: Added order ID and all the standard fields for invoice request.
+* Update: Added plugin isolation from other Coinsnap plugins in backend.
+* Update: Deleted currency exchange check on frontend.
+* Update: Added plugin isolation from other plugins in backend.

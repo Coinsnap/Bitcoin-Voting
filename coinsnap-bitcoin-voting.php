@@ -3,7 +3,7 @@
  * Plugin Name:        Coinsnap Bitcoin Voting
  * Plugin URI:         https://coinsnap.io/coinsnap-bitcoin-voting-plugin/
  * Description:        Easy Bitcoin voting on a WordPress website
- * Version:            1.2.1
+ * Version:            1.2.3
  * Author:             Coinsnap
  * Author URI:         https://coinsnap.io/
  * Text Domain:        coinsnap-bitcoin-voting
@@ -18,7 +18,7 @@
 defined( 'ABSPATH' ) || exit;
 
 if(!defined( 'COINSNAP_BITCOIN_VOTING_REFERRAL_CODE' ) ) { define( 'COINSNAP_BITCOIN_VOTING_REFERRAL_CODE', 'D46835' );}
-if(!defined( 'COINSNAP_BITCOIN_VOTING_VERSION' ) ) { define( 'COINSNAP_BITCOIN_VOTING_VERSION', '1.2.1' );}
+if(!defined( 'COINSNAP_BITCOIN_VOTING_VERSION' ) ) { define( 'COINSNAP_BITCOIN_VOTING_VERSION', '1.2.3' );}
 if(!defined( 'COINSNAP_BITCOIN_VOTING_PHP_VERSION' ) ) { define( 'COINSNAP_BITCOIN_VOTING_PHP_VERSION', '8.0' );}
 if(!defined( 'COINSNAP_BITCOIN_VOTING_PLUGIN_DIR' ) ){ define('COINSNAP_BITCOIN_VOTING_PLUGIN_DIR',plugin_dir_url(__FILE__));}
 if(!defined('COINSNAP_CURRENCIES')){define( 'COINSNAP_CURRENCIES', array("EUR","USD","SATS","BTC","CAD","JPY","GBP","CHF","RUB") );}
@@ -212,7 +212,7 @@ class Coinsnap_Bitcoin_Voting
                     );
 
                     // Store the host to options before we leave the site.
-                    coinsnap_settings_update(['btcpay_url' => $host]);
+                    coinsnap_settings_update('coinsnap_bitcoin_voting_options',['btcpay_url' => $host]);
 
                     // Return the redirect url.
                     wp_send_json_success(['url' => $url]);
@@ -225,45 +225,64 @@ class Coinsnap_Bitcoin_Voting
             wp_send_json_error("Error processing Ajax request.");
     }
 
-    function coinsnap_bitcoin_voting_enqueue_scripts()
-    {
+    function coinsnap_bitcoin_voting_enqueue_scripts(){
         
-        wp_enqueue_style('coinsnap-bitcoin-voting-style', plugin_dir_url(__FILE__) . 'assets/css/style.css', [], COINSNAP_BITCOIN_VOTING_VERSION);
-        wp_enqueue_script('coinsnap-bitcoin-voting-script', plugin_dir_url(__FILE__) . 'assets/js/voting.js', ['jquery'], COINSNAP_BITCOIN_VOTING_VERSION, true);
+        global $post;
+    
+        if ( is_a($post, 'WP_Post') && has_shortcode($post->post_content, 'coinsnap_bitcoin_voting') ) {
+            wp_enqueue_style('coinsnap-bitcoin-voting-style', plugin_dir_url(__FILE__) . 'assets/css/style.css', [], COINSNAP_BITCOIN_VOTING_VERSION);
+            wp_enqueue_script('coinsnap-bitcoin-voting-script', plugin_dir_url(__FILE__) . 'assets/js/voting.js', ['jquery'], COINSNAP_BITCOIN_VOTING_VERSION, true);
 
-        $provider_defaults = [
-            'provider' => 'coinsnap',
-            'coinsnap_store_id' => '',
-            'coinsnap_api_key' => '',
-            'btcpay_store_id' => '',
-            'btcpay_api_key' => '',
-            'btcpay_url' => ''
-        ];
-        $provider_options = array_merge($provider_defaults, (array) get_option('coinsnap_bitcoin_voting_options', []));
-        wp_enqueue_script('coinsnap-bitcoin-voting-popup-script', plugin_dir_url(__FILE__) . 'assets/js/popup.js', ['jquery'], COINSNAP_BITCOIN_VOTING_VERSION, true);
+            $provider_defaults = [
+                'provider' => 'coinsnap',
+                'coinsnap_store_id' => '',
+                'coinsnap_api_key' => '',
+                'btcpay_store_id' => '',
+                'btcpay_api_key' => '',
+                'btcpay_url' => ''
+            ];
+            $provider_options = array_merge($provider_defaults, (array) get_option('coinsnap_bitcoin_voting_options', []));
+            wp_enqueue_script('coinsnap-bitcoin-voting-popup-script', plugin_dir_url(__FILE__) . 'assets/js/popup.js', ['jquery'], COINSNAP_BITCOIN_VOTING_VERSION, true);
+            
+            $sharedDataArray = [
+                'provider' => $provider_options['provider'],
+                'nonce' => wp_create_nonce('wp_rest')
+            ];
+            
+            if($provider_options['provider'] === 'btcpay'){
+                $sharedDataArray['btcpayStoreId'] = $provider_options['btcpay_store_id'];
+                $sharedDataArray['btcpayApiKey'] = $provider_options['btcpay_api_key'];
+                $sharedDataArray['btcpayUrl'] = $provider_options['btcpay_url'];
+            }
+            else {
+                $sharedDataArray['coinsnapStoreId'] = $provider_options['coinsnap_store_id'];
+                $sharedDataArray['coinsnapApiKey'] = $provider_options['coinsnap_api_key'];
+            }
 
-        // Localize script for sharedData
-        wp_enqueue_script('coinsnap-bitcoin-voting-shared-script', plugin_dir_url(__FILE__) . 'assets/js/shared.js', ['jquery'], COINSNAP_BITCOIN_VOTING_VERSION, true);
-        wp_localize_script('coinsnap-bitcoin-voting-shared-script', 'sharedData', [
-            'provider' => $provider_options['provider'],
-            'coinsnapStoreId' => $provider_options['coinsnap_store_id'],
-            'coinsnapApiKey' => $provider_options['coinsnap_api_key'],
-            'btcpayStoreId' => $provider_options['btcpay_store_id'],
-            'btcpayApiKey' => $provider_options['btcpay_api_key'],
-            'btcpayUrl' => $provider_options['btcpay_url'],
-            'nonce' => wp_create_nonce('wp_rest')
-        ]);
+            // Localize script for sharedData
+            wp_enqueue_script('coinsnap-bitcoin-voting-shared-script', plugin_dir_url(__FILE__) . 'assets/js/shared.js', ['jquery'], COINSNAP_BITCOIN_VOTING_VERSION, true);
+            wp_localize_script('coinsnap-bitcoin-voting-shared-script', 'Coinsnap_Bitcoin_Voting_sharedData', $sharedDataArray);
+        }
+        
+        
+        
         
     }
 
     function coinsnap_bitcoin_voting_enqueue_admin_styles($hook){
         $post_id = (filter_input(INPUT_GET,'post',FILTER_SANITIZE_FULL_SPECIAL_CHARS ))? filter_input(INPUT_GET,'post',FILTER_SANITIZE_FULL_SPECIAL_CHARS ) : '';
-        wp_enqueue_script('coinsnap-bitcoin-voting-admin-script', plugin_dir_url(__FILE__) . 'assets/js/admin.js', ['jquery'], COINSNAP_BITCOIN_VOTING_VERSION, true);
-        wp_localize_script('coinsnap-bitcoin-voting-admin-script', 'coinsnap_bitcoin_voting_ajax', array(
-            'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce'  => wp_create_nonce( 'coinsnap-ajax-nonce' ),
-            'post' => $post_id
-        ));
+        $post_type = (filter_input(INPUT_GET,'post_type',FILTER_SANITIZE_FULL_SPECIAL_CHARS ))? filter_input(INPUT_GET,'post_type',FILTER_SANITIZE_FULL_SPECIAL_CHARS ) : 
+            ((!empty($post_id))? get_post_type($post_id) : '');
+        $page = (filter_input(INPUT_GET,'page',FILTER_SANITIZE_FULL_SPECIAL_CHARS ))? filter_input(INPUT_GET,'page',FILTER_SANITIZE_FULL_SPECIAL_CHARS ) : '';
+        
+        if($page === 'coinsnap-bitcoin-voting' || $post_type === 'coinsnap-polls'){
+            wp_enqueue_script('coinsnap-bitcoin-voting-admin-script', plugin_dir_url(__FILE__) . 'assets/js/admin.js', ['jquery'], COINSNAP_BITCOIN_VOTING_VERSION, true);
+            wp_localize_script('coinsnap-bitcoin-voting-admin-script', 'coinsnap_bitcoin_voting_ajax', array(
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce'  => wp_create_nonce( 'coinsnap-ajax-nonce' ),
+                'post' => $post_id
+            ));
+        }
         
         wp_enqueue_style('coinsnap-bitcoin-voting-admin-style', plugin_dir_url(__FILE__) . 'assets/css/admin-style.css', [], COINSNAP_BITCOIN_VOTING_VERSION);
     }
@@ -337,16 +356,18 @@ add_filter('request', function($vars) {
     return $vars;
 });
 
-function coinsnap_settings_update($data){
+if(!function_exists('coinsnap_settings_update')){
+    function coinsnap_settings_update($option,$data){
         
-        $form_data = get_option('coinsnap_bitcoin_voting_options', []);
+        $form_data = get_option($option, []);
         
         foreach($data as $key => $value){
             $form_data[$key] = $value;
         }
         
-        update_option('coinsnap_bitcoin_voting_options',$form_data);
-    } 
+        update_option($option,$form_data);
+    }
+}
 
 // Adding template redirect handling for voting-btcpay-settings-callback.
 add_action( 'template_redirect', function(){
@@ -432,7 +453,7 @@ add_action( 'template_redirect', function(){
                 
                 if ($hasSingleStore && $hasRequiredPermissions) {
 
-                    coinsnap_settings_update([
+                    coinsnap_settings_update('coinsnap_bitcoin_voting_options',[
                         'btcpay_api_key' => $data['apiKey'],
                         'btcpay_store_id' => explode(':', $btcpay_server_permissions[0])[1],
                         'provider' => 'btcpay'

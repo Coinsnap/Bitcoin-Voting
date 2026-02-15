@@ -2,13 +2,12 @@
 
 Contributors: coinsnap
 Tags: Lightning, SATS, bitcoin, voting, polling, BTCPay
-Tested up to: 6.1
-Stable tag: 1.2.1
+Tested up to: 6.9
+Stable tag: 1.2.3
 License: GPL2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Collect small Bitcoin (Satoshi) payments for every vote on your WordPress site. Great for monetized polls, community engagement and SPAM-free surveys
-
 
 
 ### Coinsnap Bitcoin Voting – Earn Sats with Every Vote
@@ -201,3 +200,14 @@ Plugin's page on Coinsnap website: [https://coinsnap.io/modules/bitcoin-voting/]
 
 * Fixed Wordpress Plugin Check warnings.
 * Compatibility with Wordpress 6.9 is tested.
+
+#### 1.2.2 :: 2025-02-04
+* Updated interface of donor information form.
+* Compatibility with Wordpress 6.9.1 is tested.
+
+#### 1.2.3 :: 2025-02-15
+* Update: Added order ID and all the standard fields for invoice request.
+* Update: Added plugin isolation from other Coinsnap plugins in backend.
+* Update: Deleted currency exchange check on frontend.
+* Update: Added plugin isolation from other plugins in backend.
+

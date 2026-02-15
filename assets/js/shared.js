@@ -15,36 +15,6 @@ function setCookie(name, value, minutes) {
     document.cookie = name + "=" + value + ";" + expires + ";path=/";
 }
 
-async function fetchCoinsnapExchangeRates() {
-    const exchangeRates = {}
-    try {
-        const response = await fetch(`https://app.coinsnap.io/api/v1/stores/${sharedData.coinsnapStoreId}/rates`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': sharedData.coinsnapApiKey
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        data
-            .filter(item => item.currencyPair.includes("SATS")) // Filter only SATS rates
-            .forEach(item => {
-                const currency = item.currencyPair.replace("SATS_", ""); // Remove "SATS_" prefix
-                exchangeRates[currency] = parseFloat(item.rate); // Update exchangeRates
-            });
-
-        return exchangeRates;
-    } catch (error) {
-        console.error('Error fetching exchange rates:', error);
-        return null;
-    }
-}
-
 async function generateQRCodeDataURL(text) {
     try {
         const response = await fetch(`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(text)}`);
@@ -61,48 +31,61 @@ async function generateQRCodeDataURL(text) {
 }
 
 const createActualVotingInvoice = async (amount, message, lastInputCurrency, name, coinsnap, type, redirect, metadata) => {
-    deleteCookie('coinsnap_invoice_');
+    deleteCookie('coinsnap_invoice_voting');
+
+    var orderId = 'VTNG_' + (Date.now()).toString(36);
+    
+    var provider = (coinsnap === true)? 'coinsnap' : 'btcpay';
+    
+    if(provider === 'btcpay'){
+        metadata.orderId = orderId;
+    }
 
     const requestData = {
         amount: amount,
         currency: lastInputCurrency,
+        buyerEmail: metadata.donorEmail,
         redirectAutomatically: true,
+        checkout: {
+            redirectAutomatically: true
+        },
+        orderId: orderId,
+        walletMessage: message,
         metadata: {
             orderNumber: message,
             referralCode: 'D19833',
             type: type,
             name: name,
-            ...metadata //TEST with voting
+            ...metadata
         }
     };
-
+    
+    requestData.provider = (provider === 'coinsnap')? 'coinsnap' : 'btcpay';
+    
     if (type === 'Coinsnap Bitcoin Voting') {
-        // requestData.metadata.optionId = metadata.optionId
-        // requestData.metadata.option = metadata.option
-        // requestData.metadata.pollId = metadata.pollId
-        requestData.metadata.orderNumber = `Voted for ${metadata.option}`
-        redirectAutomatically = false //TODO test
+        requestData.redirectUrl = requestData.checkout.redirectUrl = Coinsnap_Bitcoin_Voting_sharedData?.redirectUrl || window.location.href;
+        requestData.metadata.orderNumber = `Voted for ${metadata.option}`;
     }
-
+    
     if (window.location.href.includes("localhost")) {
-        requestData.redirectUrl = "https://coinsnap.io";
+        requestData.redirectUrl = requestData.checkout.redirectUrl = "https://coinsnap.io";
     }
 
-    if (coinsnap) {
+    if (provider === 'coinsnap') {
         requestData.referralCode = 'D19833';
     }
 
-    const url = coinsnap
-        ? `https://app.coinsnap.io/api/v1/stores/${sharedData?.coinsnapStoreId}/invoices`
-        : `${sharedData?.btcpayUrl}/api/v1/stores/${sharedData?.btcpayStoreId}/invoices`;
+    const url = (provider === 'coinsnap')
+        ? `https://app.coinsnap.io/api/v1/stores/${Coinsnap_Bitcoin_Voting_sharedData?.coinsnapStoreId}/invoices`
+        : `${Coinsnap_Bitcoin_Voting_sharedData?.btcpayUrl}/api/v1/stores/${Coinsnap_Bitcoin_Voting_sharedData?.btcpayStoreId}/invoices`;
 
-    const headers = coinsnap
+    const headers = (provider === 'coinsnap')
         ? {
-            'x-api-key': sharedData?.coinsnapApiKey,
+            'x-api-key': Coinsnap_Bitcoin_Voting_sharedData?.coinsnapApiKey,
             'Content-Type': 'application/json'
         }
         : {
-            'Authorization': 'token '+sharedData?.btcpayApiKey,
+            'Authorization': 'token '+Coinsnap_Bitcoin_Voting_sharedData?.btcpayApiKey,
             'Content-Type': 'application/json'
         };
 
@@ -128,24 +111,23 @@ const createActualVotingInvoice = async (amount, message, lastInputCurrency, nam
             name: name
         };
 
-        setCookie('coinsnap_invoice_', JSON.stringify(invoiceCookieData), 15);
-        if (!coinsnap) {
-            const url = `${sharedData?.btcpayUrl}/api/v1/stores/${sharedData?.btcpayStoreId}/invoices/${responseData.id}/payment-methods`;
+        setCookie('coinsnap_invoice_voting', JSON.stringify(invoiceCookieData), 15);
+        if (provider === 'btcpay') {
+            const url = `${Coinsnap_Bitcoin_Voting_sharedData?.btcpayUrl}/api/v1/stores/${Coinsnap_Bitcoin_Voting_sharedData?.btcpayStoreId}/invoices/${responseData.id}/payment-methods`;
             const response2 = await fetch(url, {
                 method: 'GET',
-                headers: headers,
+                headers: headers
             });
             const responseData2 = await response2.json();
-            const paymentLink = responseData2[0].paymentLink
-            console.log('Payment Link:', paymentLink)
-            responseData.lightningInvoice = paymentLink?.replace('lightning:', '')
-            responseData.onchainAddress = ''
+            const paymentLink = responseData2[0].paymentLink;
+            responseData.lightningInvoice = paymentLink?.replace('lightning:', '');
+            responseData.onchainAddress = '';
 
             // Generate QR code image from lightning invoice
             const qrCodeImage = await generateQRCodeDataURL(paymentLink);
             responseData.qrCodes = {
                 lightningQR: qrCodeImage || paymentLink
-            }
+            };
         }
         if (redirect) {
             window.location.href = responseData.checkoutLink;
@@ -160,18 +142,20 @@ const createActualVotingInvoice = async (amount, message, lastInputCurrency, nam
 
 const checkVotingInvoiceStatus = async (invoiceId, amount, message, lastInputCurrency, name, coinsnap, type, redirect, metadata) => {
 
-    const url = coinsnap
-        ? `https://app.coinsnap.io/api/v1/stores/${sharedData.coinsnapStoreId}/invoices/${invoiceId}`
-        : `${sharedData.btcpayUrl}/api/v1/stores/${sharedData.btcpayStoreId}/invoices/${invoiceId}`;
+    var provider = (coinsnap === true)? 'coinsnap' : 'btcpay';
+    
+    const url = (provider === 'coinsnap')
+        ? `https://app.coinsnap.io/api/v1/stores/${Coinsnap_Bitcoin_Voting_sharedData.coinsnapStoreId}/invoices/${invoiceId}`
+        : `${Coinsnap_Bitcoin_Voting_sharedData.btcpayUrl}/api/v1/stores/${Coinsnap_Bitcoin_Voting_sharedData.btcpayStoreId}/invoices/${invoiceId}`;
 
-    const headers = coinsnap
+    const headers = (provider === 'coinsnap')
         ? {
-            'x-api-key': sharedData.coinsnapApiKey,
+            'x-api-key': Coinsnap_Bitcoin_Voting_sharedData.coinsnapApiKey,
             'Content-Type': 'application/json'
 
         }
         : {
-            'Authorization': 'token '+sharedData.btcpayApiKey,
+            'Authorization': 'token '+Coinsnap_Bitcoin_Voting_sharedData.btcpayApiKey,
             'Content-Type': 'application/json'
         };
 
@@ -187,17 +171,16 @@ const checkVotingInvoiceStatus = async (invoiceId, amount, message, lastInputCur
 
         var responseData = await response.json();
 
-        if (!coinsnap) {
-            const url = `${sharedData?.btcpayUrl}/api/v1/stores/${sharedData?.btcpayStoreId}/invoices/${responseData.id}/payment-methods`;
+        if (provider === 'btcpay') {
+            const url = `${Coinsnap_Bitcoin_Voting_sharedData?.btcpayUrl}/api/v1/stores/${Coinsnap_Bitcoin_Voting_sharedData?.btcpayStoreId}/invoices/${responseData.id}/payment-methods`;
             const response2 = await fetch(url, {
                 method: 'GET',
-                headers: headers,
+                headers: headers
             });
             const responseData2 = await response2.json();
-            const paymentLink = responseData2[0].paymentLink
-            console.log('Payment Link:', paymentLink)
-            responseData.lightningInvoice = paymentLink?.replace('lightning:', '')
-            responseData.onchainAddress = ''
+            const paymentLink = responseData2[0].paymentLink;
+            responseData.lightningInvoice = paymentLink?.replace('lightning:', '');
+            responseData.onchainAddress = '';
 
             // Generate QR code image from lightning invoice
             const qrCodeImage = await generateQRCodeDataURL(paymentLink);
@@ -212,7 +195,7 @@ const checkVotingInvoiceStatus = async (invoiceId, amount, message, lastInputCur
             if (redirect) {
                 window.location.href = responseData.checkoutLink;
             }
-            return responseData
+            return responseData;
         }
 
     } catch (error) {
@@ -221,8 +204,9 @@ const checkVotingInvoiceStatus = async (invoiceId, amount, message, lastInputCur
     }
 };
 
+//  Invoice creation
 const createVotingInvoice = async (amount, message, amountFiat, lastInputCurrency, name, type, redirect = true, metadata) => {
-    existingInvoice = getCookie('coinsnap_invoice_');
+    existingInvoice = getCookie('coinsnap_invoice_voting');
     lastInputCurrency = 'SATS';
     if (existingInvoice) {
         invoiceJson = JSON.parse(existingInvoice);
@@ -240,12 +224,12 @@ const createVotingInvoice = async (amount, message, amountFiat, lastInputCurrenc
                 message,
                 lastInputCurrency,
                 name,
-                sharedData.provider == 'coinsnap',
+                Coinsnap_Bitcoin_Voting_sharedData.provider === 'coinsnap',
                 type,
                 redirect,
                 metadata
-            )
-            return cs
+            );
+            return cs;
         }
         else {
             return await createActualVotingInvoice(
@@ -253,11 +237,11 @@ const createVotingInvoice = async (amount, message, amountFiat, lastInputCurrenc
                 message,
                 lastInputCurrency,
                 name,
-                sharedData.provider == 'coinsnap',
+                Coinsnap_Bitcoin_Voting_sharedData.provider === 'coinsnap',
                 type,
                 redirect,
                 metadata
-            )
+            );
         }
     }
     else {
@@ -266,13 +250,13 @@ const createVotingInvoice = async (amount, message, amountFiat, lastInputCurrenc
             message,
             lastInputCurrency,
             name,
-            sharedData.provider == 'coinsnap',
+            Coinsnap_Bitcoin_Voting_sharedData.provider === 'coinsnap',
             type,
             redirect,
             metadata
-        )
+        );
     }
-}
+};
 
 const hideVotingElementById = (id, prefix = '', sufix = '') => {
     document.getElementById(`${prefix}${id}${sufix}`).style.display = 'none'
@@ -281,12 +265,12 @@ const hideVotingElementsById = (ids, prefix = '', sufix = '') => {
     ids.forEach(id => {
         hideVotingElementById(id, prefix, sufix)
     })
-}
+};
 const showVotingElementById = (id, display, prefix = '', sufix = '') => {
-    document.getElementById(`${prefix}${id}${sufix}`).style.display = display
-}
+    document.getElementById(`${prefix}${id}${sufix}`).style.display = display;
+};
 const showVotingElementsById = (ids, display, prefix = '', sufix = '') => {
     ids.forEach(id => {
-        showVotingElementById(id, display, prefix, sufix)
+        showVotingElementById(id, display, prefix, sufix);
     })
-}
+};
