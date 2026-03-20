@@ -238,7 +238,8 @@ class Coinsnap_Bitcoin_Voting_Shortcode_Voting {
                     </div>
                 </div>
             </div>
-            <div id="coinsnap-bitcoin-voting-blur-overlay<?php echo esc_html($poll_id); ?>" class="blur-overlay"></div>
+<?php ?>
+            <div id="coinsnap-bitcoin-voting-blur-overlay<?php echo esc_html($poll_id); ?>" class="blur-overlay coinsnap-bitcoin-voting"></div>
             <?php
             $this->get_template('coinsnap-bitcoin-voting-modal', [
                 'prefix' => 'coinsnap-bitcoin-voting-',

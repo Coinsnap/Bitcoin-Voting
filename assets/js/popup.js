@@ -46,7 +46,7 @@ const addWindowListeners = () => {
 
 }
 
-const popupButtonListener = (exchangeRates, pollId, amount, amountFiat, currency, publicDonor) => {
+const popupButtonListener = (pollId, amount, amountFiat, currency, publicDonor) => {
 
     document.getElementById(`coinsnap-bitcoin-voting-public-donors-pay${pollId}`)?.addEventListener('click', async () => {
         event.preventDefault();
@@ -70,7 +70,7 @@ const popupButtonListener = (exchangeRates, pollId, amount, amountFiat, currency
         const metadata = {
             donorName: `${firstNameField.value} ${lastNameField?.value ?? ''}`,
             donorEmail: emailField?.value,
-            donorAddress: address != ' ,  , ' ? address : '',
+            donorAddress: (address !== ' ,  , ')? address : '',
             donorCustom: customContent,
             formType: 'Coinsnap Bitcoin Voting',
             amount: `${amount} SATS`,
@@ -118,10 +118,9 @@ const popupButtonListener = (exchangeRates, pollId, amount, amountFiat, currency
             copyBtc.addEventListener('click', () => { navigator.clipboard.writeText(qrBitcoin); });
 
             // Add fiat amount
-            //if (exchangeRates['EUR']) {
-                document.getElementById(`coinsnap-bitcoin-voting-qr-fiat${pollId}`).textContent = `≈ ${(res.amount * exchangeRates['EUR'])?.toFixed(3)} EUR`;
+                document.getElementById(`coinsnap-bitcoin-voting-qr-fiat${pollId}`).textContent = `≈ ${amountFiat} ${currency}`;
                 document.getElementById(`coinsnap-bitcoin-voting-pay-in-wallet${pollId}`).setAttribute('href', `lightning:${qrLightning}`);
-            //}
+            
 
             // Reset retry counter
             var retryNum = 0;
@@ -145,10 +144,10 @@ const popupButtonListener = (exchangeRates, pollId, amount, amountFiat, currency
                             }, 7000);
 
 
-                        } else if (qrContainer.style.display != 'flex') {
+                        } else if (qrContainer.style.display !== 'flex') {
                             retryId = '';
                         }
-                        else if (retryNum < 180 && retryId == res.id) {
+                        else if (retryNum < 180 && retryId === res.id) {
                             retryNum++;
                             checkPaymentStatus();
                         } else {
@@ -158,16 +157,16 @@ const popupButtonListener = (exchangeRates, pollId, amount, amountFiat, currency
                     .catch(error => {
                         console.error('Error checking payment status:', error);
                         retryNum++;
-                        if (retryId == res.id) {
+                        if (retryId === res.id) {
                             setTimeout(checkPaymentStatus, 5000);
                         }
                     });
             }
-            checkPaymentStatus()
+            checkPaymentStatus();
 
         }
         else {
-            console.error('Error creating invoice')
+            console.error('Error creating invoice');
         }
 
     });

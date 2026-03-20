@@ -1,8 +1,17 @@
-jQuery(document).ready(function ($) {
+jQuery(document).ready(function($) {
 
+    if(!$('#blur-overlay-outer').length){
+        $('body').append('<div id="blur-overlay-outer"></div><div id="coinsnap-popup-outer"></div>');        
+    }
+    
     if (document.getElementsByClassName('coinsnap-bitcoin-voting-form')?.length > 0) {
+        
+        var overlayContainer = $('.blur-overlay.coinsnap-bitcoin-voting').detach();
+        $('#blur-overlay-outer').append(overlayContainer);  
+        var qrContainer = $('.qr-container.coinsnap-bitcoin-voting').detach();
+        $('#coinsnap-popup-outer').append(qrContainer);
 
-        fetchCoinsnapExchangeRates().then(rates => {
+        //fetchCoinsnapExchangeRates().then(rates => {
             addWindowListeners();
             const votingForms = document.getElementsByClassName('coinsnap-bitcoin-voting-form');
             for (let i = 0; i < votingForms.length; i++) {
@@ -12,9 +21,9 @@ jQuery(document).ready(function ($) {
                 const amountFiat = votingForm.dataset.pollAmountfiat;
                 const currency = votingForm.dataset.pollCurrency;
                 const donorInfo = votingForm.dataset.donorInfo;
-                popupButtonListener(rates, pollId, amount, amountFiat, currency, donorInfo);
+                popupButtonListener(pollId, amount, amountFiat, currency, donorInfo);
             }
-        });
+        //});
         
 
         const fetchResultsFromDb = (pollId, votingForm) => {
@@ -60,8 +69,6 @@ jQuery(document).ready(function ($) {
             }
             fetchResultsFromDb(pollId, votingForm);
         };
-
-        const votingForms = document.getElementsByClassName('coinsnap-bitcoin-voting-form');
 
         for (let i = 0; i < votingForms.length; i++) {
             const votingForm = votingForms[i];
