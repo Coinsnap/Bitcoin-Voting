@@ -83,6 +83,7 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
     function get_results($request){
         $poll_id = $request['poll_id'];
         global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$wpdb->prefix}voting_payments WHERE status = 'completed' AND poll_id = %d",$poll_id));
         return ['results' => $results];
     }
@@ -96,11 +97,13 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
 
         while (time() - $start_time < $timeout) {
             global $wpdb;
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $status = $wpdb->get_var($wpdb->prepare(
                 "SELECT status FROM {$wpdb->prefix}voting_payments WHERE payment_id = %s",
                 $payment_id
             ));
             if ($status === 'completed') {
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                 $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$wpdb->prefix}voting_payments WHERE status = 'completed' AND poll_id = %d",$poll_id));
 
                 return ['status' => 'completed', 'results' => $results];
@@ -119,6 +122,7 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
 
         while (time() - $start_time < $timeout) {
             global $wpdb;
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $status = $wpdb->get_var($wpdb->prepare(
                 "SELECT status FROM {$wpdb->prefix}voting_payments WHERE payment_id = %s",
                 $payment_id
@@ -190,6 +194,7 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
                 $optionTitle = $payload_data['metadata']['option'];
                 $pollId = $payload_data['metadata']['pollId'];
 
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
                 $wpdb->insert(
                     "{$wpdb->prefix}voting_payments",
                     [
@@ -212,6 +217,7 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
             if (isset($payload_data['metadata']['modal'])) {
                 global $wpdb;
                 $invoiceId = $payload_data['invoiceId'];
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
                 $wpdb->insert(
                     "{$wpdb->prefix}voting_payments",
                     [

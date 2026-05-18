@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 if (!defined('ABSPATH')){ exit; }
 
 class Coinsnap_Bitcoin_Voting_Polls_Metabox {
@@ -14,17 +14,17 @@ class Coinsnap_Bitcoin_Voting_Polls_Metabox {
     public function register_polls_post_type(){
         register_post_type('coinsnap-polls', [
             'labels' => [
-                'name'               => __('Polls', 'coinsnap-bitcoin-voting'),
-                'singular_name'      => __('Poll', 'coinsnap-bitcoin-voting'),
-                'menu_name'          => __('Polls', 'coinsnap-bitcoin-voting'),
-                'add_new'            => __('Add New', 'coinsnap-bitcoin-voting'),
-                'add_new_item'       => __('Add New Poll', 'coinsnap-bitcoin-voting'),
-                'edit_item'          => __('Edit Poll', 'coinsnap-bitcoin-voting'),
-                'new_item'           => __('New Poll', 'coinsnap-bitcoin-voting'),
-                'view_item'          => __('View Poll', 'coinsnap-bitcoin-voting'),
-                'search_items'       => __('Search Polls', 'coinsnap-bitcoin-voting'),
-                'not_found'          => __('No polls found', 'coinsnap-bitcoin-voting'),
-                'not_found_in_trash' => __('No polls found in Trash', 'coinsnap-bitcoin-voting'),
+                'name'               => __('Polls', 'Bitcoin-Voting'),
+                'singular_name'      => __('Poll', 'Bitcoin-Voting'),
+                'menu_name'          => __('Polls', 'Bitcoin-Voting'),
+                'add_new'            => __('Add New', 'Bitcoin-Voting'),
+                'add_new_item'       => __('Add New Poll', 'Bitcoin-Voting'),
+                'edit_item'          => __('Edit Poll', 'Bitcoin-Voting'),
+                'new_item'           => __('New Poll', 'Bitcoin-Voting'),
+                'view_item'          => __('View Poll', 'Bitcoin-Voting'),
+                'search_items'       => __('Search Polls', 'Bitcoin-Voting'),
+                'not_found'          => __('No polls found', 'Bitcoin-Voting'),
+                'not_found_in_trash' => __('No polls found in Trash', 'Bitcoin-Voting'),
             ],
             'public'             => false,
             'publicly_queryable' => false,
@@ -203,11 +203,11 @@ class Coinsnap_Bitcoin_Voting_Polls_Metabox {
         $collect_donor_info = get_post_meta($post->ID, '_coinsnap_bitcoin_voting_polls_collect_donor_info', true);
         $custom_field_name = get_post_meta($post->ID, '_coinsnap_bitcoin_voting_polls_custom_field_name', true);
         $donor_fields = [
-            'first_name' => __('First Name','coinsnap-bitcoin-voting'),
-            'last_name' => __('Last Name','coinsnap-bitcoin-voting'),
-            'email' => __('Email','coinsnap-bitcoin-voting'),
-            'address' => __('Address','coinsnap-bitcoin-voting'),
-            'custom_field' => __('Custom Field','coinsnap-bitcoin-voting'),
+            'first_name' => __('First Name','Bitcoin-Voting'),
+            'last_name' => __('Last Name','Bitcoin-Voting'),
+            'email' => __('Email','Bitcoin-Voting'),
+            'address' => __('Address','Bitcoin-Voting'),
+            'custom_field' => __('Custom Field','Bitcoin-Voting'),
         ];
 
         $field_values = [];
@@ -216,7 +216,13 @@ class Coinsnap_Bitcoin_Voting_Polls_Metabox {
         }
 
         global $wpdb;
-        $results = $wpdb->get_results($wpdb->prepare( "SELECT * FROM {$wpdb->prefix}voting_payments WHERE status = 'completed' AND poll_id = %d", $post->ID));
+        $cache_key = 'cbv_poll_votes_' . $post->ID;
+        $results   = wp_cache_get( $cache_key, 'coinsnap_bitcoin_voting' );
+        if ( false === $results ) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $results = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}voting_payments WHERE status = 'completed' AND poll_id = %d", $post->ID ) );
+            wp_cache_set( $cache_key, $results, 'coinsnap_bitcoin_voting', 300 );
+        }
         $votes = [
             'option_1' => 0,
             'option_2' => 0,
@@ -245,31 +251,31 @@ class Coinsnap_Bitcoin_Voting_Polls_Metabox {
         <div class="coinsnapConnectionStatus"></div>
         <table class="form-table">
             <tr>
-                <th scope="row"><?php echo esc_html__('Active', 'coinsnap-bitcoin-voting');?></th>
+                <th scope="row"><?php echo esc_html__('Active', 'Bitcoin-Voting');?></th>
                 <td>
                     <label>
                         <input type="checkbox" name="coinsnap_bitcoin_voting_polls_active" value="1" <?php checked($active, '1'); ?>>
-                         <?php echo esc_html__('Enable', 'coinsnap-bitcoin-voting');?>
+                         <?php echo esc_html__('Enable', 'Bitcoin-Voting');?>
                     </label>
                     <br>
                 </td>
             </tr>
             <tr>
-                <th scope="row"><?php echo esc_html__('One Vote Per User', 'coinsnap-bitcoin-voting');?></th>
+                <th scope="row"><?php echo esc_html__('One Vote Per User', 'Bitcoin-Voting');?></th>
                 <td>
                     <label>
                         <input
                             type="checkbox"
                             name="coinsnap_bitcoin_voting_polls_one_vote"
                             value="1" <?php checked($one_vote, '1'); ?>>
-                         <?php echo esc_html__('Enable', 'coinsnap-bitcoin-voting');?>
+                         <?php echo esc_html__('Enable', 'Bitcoin-Voting');?>
                     </label>
                     <br>
                 </td>
             </tr>
             <tr>
                 <th scope="row">
-                    <label for="coinsnap_bitcoin_voting_polls_description"><?php echo esc_html__('Description', 'coinsnap-bitcoin-voting') ?></label>
+                    <label for="coinsnap_bitcoin_voting_polls_description"><?php echo esc_html__('Description', 'Bitcoin-Voting') ?></label>
                 </th>
                 <td>
                     <textarea
@@ -283,10 +289,10 @@ class Coinsnap_Bitcoin_Voting_Polls_Metabox {
             </tr>
             <tr>
                 <th scope="row">
-                    <label for="coinsnap_bitcoin_voting_polls_option_1"><?php echo esc_html__('Option 1', 'coinsnap-bitcoin-voting') ?></label>
+                    <label for="coinsnap_bitcoin_voting_polls_option_1"><?php echo esc_html__('Option 1', 'Bitcoin-Voting') ?></label>
                     <span style="font-weight: normal;">
                         (
-                        <?php echo esc_attr($votes['option_1']); ?> <?php echo esc_html__('votes', 'coinsnap-bitcoin-voting');?>
+                        <?php echo esc_attr($votes['option_1']); ?> <?php echo esc_html__('votes', 'Bitcoin-Voting');?>
                         )
                     </span>
                 </th>
@@ -303,10 +309,10 @@ class Coinsnap_Bitcoin_Voting_Polls_Metabox {
             </tr>
             <tr>
                 <th scope="row">
-                    <label for="coinsnap_bitcoin_voting_polls_option_2"><?php echo esc_html_e('Option 2', 'coinsnap-bitcoin-voting') ?></label>
+                    <label for="coinsnap_bitcoin_voting_polls_option_2"><?php echo esc_html_e('Option 2', 'Bitcoin-Voting') ?></label>
                     <span style="font-weight: normal;">
                         (
-                        <?php echo esc_attr($votes['option_2']); ?> <?php echo esc_html__('votes', 'coinsnap-bitcoin-voting');?>
+                        <?php echo esc_attr($votes['option_2']); ?> <?php echo esc_html__('votes', 'Bitcoin-Voting');?>
                         )
                     </span>
                 </th>
@@ -323,10 +329,10 @@ class Coinsnap_Bitcoin_Voting_Polls_Metabox {
             </tr>
             <tr>
                 <th scope="row">
-                    <label for="coinsnap_bitcoin_voting_polls_option_3"><?php echo esc_html_e('Option 3', 'coinsnap-bitcoin-voting') ?></label>
+                    <label for="coinsnap_bitcoin_voting_polls_option_3"><?php echo esc_html_e('Option 3', 'Bitcoin-Voting') ?></label>
                     <span style="font-weight: normal;">
                         (
-                        <?php echo esc_attr($votes['option_3']); ?> <?php echo esc_html__('votes', 'coinsnap-bitcoin-voting');?>
+                        <?php echo esc_attr($votes['option_3']); ?> <?php echo esc_html__('votes', 'Bitcoin-Voting');?>
                         )
                     </span>
                 </th>
@@ -342,10 +348,10 @@ class Coinsnap_Bitcoin_Voting_Polls_Metabox {
             </tr>
             <tr>
                 <th scope="row">
-                    <label for="coinsnap_bitcoin_voting_polls_option_4"><?php echo esc_html_e('Option 4', 'coinsnap-bitcoin-voting') ?></label>
+                    <label for="coinsnap_bitcoin_voting_polls_option_4"><?php echo esc_html_e('Option 4', 'Bitcoin-Voting') ?></label>
                     <span style="font-weight: normal;">
                         (
-                        <?php echo esc_attr($votes['option_4']); ?> <?php echo esc_html__('votes', 'coinsnap-bitcoin-voting');?>
+                        <?php echo esc_attr($votes['option_4']); ?> <?php echo esc_html__('votes', 'Bitcoin-Voting');?>
                         )
                     </span>
                 </th>
@@ -360,7 +366,7 @@ class Coinsnap_Bitcoin_Voting_Polls_Metabox {
             </tr>
             <tr>
                 <th scope="row">
-                    <label for="coinsnap_bitcoin_voting_polls_amount"><?php echo esc_html_e('Amount', 'coinsnap-bitcoin-voting') ?></label>
+                    <label for="coinsnap_bitcoin_voting_polls_amount"><?php echo esc_html_e('Amount', 'Bitcoin-Voting') ?></label>
                 </th>
                 <td>
                     <input
@@ -376,7 +382,7 @@ class Coinsnap_Bitcoin_Voting_Polls_Metabox {
             </tr>
             <tr>
                 <th scope="row">
-                    <label for="coinsnap_bitcoin_voting_polls_currency"><?php echo esc_html_e('Currency', 'coinsnap-bitcoin-voting') ?></label>
+                    <label for="coinsnap_bitcoin_voting_polls_currency"><?php echo esc_html_e('Currency', 'Bitcoin-Voting') ?></label>
                 </th>
                 <td><select id="coinsnap_bitcoin_voting_polls_currency" name="coinsnap_bitcoin_voting_polls_currency" class="select">
                     <?php
@@ -390,14 +396,14 @@ class Coinsnap_Bitcoin_Voting_Polls_Metabox {
             </tr>
             <tr>
                 <th scope="row">
-                    <label for="coinsnap_bitcoin_voting_polls_starting_date"><?php echo esc_html_e('Starting Date', 'coinsnap-bitcoin-voting') ?></label>
+                    <label for="coinsnap_bitcoin_voting_polls_starting_date"><?php echo esc_html_e('Starting Date', 'Bitcoin-Voting') ?></label>
                 </th>
                 <td><input type="datetime-local" id="coinsnap_bitcoin_voting_polls_starting_date" name="coinsnap_bitcoin_voting_polls_starting_date" class="regular-text" required value="<?php echo esc_attr($starting_date); ?>"/>
                 </td>
             </tr>
             <tr>
                 <th scope="row">
-                    <label for="coinsnap_bitcoin_voting_polls_ending_date"><?php echo esc_html_e('Ending Date', 'coinsnap-bitcoin-voting') ?></label>
+                    <label for="coinsnap_bitcoin_voting_polls_ending_date"><?php echo esc_html_e('Ending Date', 'Bitcoin-Voting') ?></label>
                 </th>
                 <td>
                     <input
@@ -411,7 +417,7 @@ class Coinsnap_Bitcoin_Voting_Polls_Metabox {
             </tr>
             <tr>
                 <th scope="row">
-                    <label for="coinsnap_bitcoin_voting_polls_thank_you_message"><?php echo esc_html_e('Thank You Message', 'coinsnap-bitcoin-voting') ?></label>
+                    <label for="coinsnap_bitcoin_voting_polls_thank_you_message"><?php echo esc_html_e('Thank You Message', 'Bitcoin-Voting') ?></label>
                 </th>
                 <td>
                     <textarea
@@ -425,7 +431,7 @@ class Coinsnap_Bitcoin_Voting_Polls_Metabox {
                 </td>
             </tr>
             <th scope="row">
-                <label for="shortcode"><?php echo esc_html_e('Shortcode', 'coinsnap-bitcoin-voting') ?></label>
+                <label for="shortcode"><?php echo esc_html_e('Shortcode', 'Bitcoin-Voting') ?></label>
             </th>
             <td>
                 <input
@@ -438,7 +444,7 @@ class Coinsnap_Bitcoin_Voting_Polls_Metabox {
             </td>
             </tr>
             <tr>
-                <th scope="row"><?php echo esc_html__('Collect Donor Information', 'coinsnap-bitcoin-voting');?></th>
+                <th scope="row"><?php echo esc_html__('Collect Donor Information', 'Bitcoin-Voting');?></th>
                 <td>
                     <label>
                         <input
@@ -446,7 +452,7 @@ class Coinsnap_Bitcoin_Voting_Polls_Metabox {
                             name="coinsnap_bitcoin_voting_polls_collect_donor_info"
                             value="1"
                             <?php checked($collect_donor_info, '1'); ?>>
-                        <?php echo esc_html__('Enable', 'coinsnap-bitcoin-voting');?>
+                        <?php echo esc_html__('Enable', 'Bitcoin-Voting');?>
                     </label>
                     <br>
                 </td>
@@ -454,7 +460,7 @@ class Coinsnap_Bitcoin_Voting_Polls_Metabox {
         </table>
 
         <div id="donor-info-fields" style="margin-top: 20px;">
-            <h3><?php echo esc_html__('Donor Information Fields', 'coinsnap-bitcoin-voting');?></h3>
+            <h3><?php echo esc_html__('Donor Information Fields', 'Bitcoin-Voting');?></h3>
             <table class="form-table">
                 <?php
                 foreach ($donor_fields as $field => $label) {
@@ -464,16 +470,16 @@ class Coinsnap_Bitcoin_Voting_Polls_Metabox {
                         <th scope="row"><?php echo esc_html($label); ?></th>
                         <td>
                             <select name="coinsnap_bitcoin_voting_polls_<?php echo esc_attr($field); ?>_visibility">
-                                <option value="mandatory" <?php selected($visibility_value, 'mandatory'); ?>><?php echo esc_html__('Mandatory', 'coinsnap-bitcoin-voting');?></option>
-                                <option value="optional" <?php selected($visibility_value, 'optional'); ?>><?php echo esc_html__('Optional', 'coinsnap-bitcoin-voting');?></option>
-                                <option value="hidden" <?php selected($visibility_value, 'hidden'); ?>><?php echo esc_html__('Hidden', 'coinsnap-bitcoin-voting');?></option>
+                                <option value="mandatory" <?php selected($visibility_value, 'mandatory'); ?>><?php echo esc_html__('Mandatory', 'Bitcoin-Voting');?></option>
+                                <option value="optional" <?php selected($visibility_value, 'optional'); ?>><?php echo esc_html__('Optional', 'Bitcoin-Voting');?></option>
+                                <option value="hidden" <?php selected($visibility_value, 'hidden'); ?>><?php echo esc_html__('Hidden', 'Bitcoin-Voting');?></option>
                             </select>
                         </td>
                     </tr>
                 <?php } ?>
                 <tr>
                     <th scope="row">
-                        <label for="coinsnap_bitcoin_voting_polls_custom_field_name"><?php echo esc_html__('Custom Field Name', 'coinsnap-bitcoin-voting');?></label>
+                        <label for="coinsnap_bitcoin_voting_polls_custom_field_name"><?php echo esc_html__('Custom Field Name', 'Bitcoin-Voting');?></label>
                     </th>
                     <td>
                         <input
@@ -691,10 +697,10 @@ class Coinsnap_Bitcoin_Voting_Polls_Metabox {
                 echo esc_html(get_post_meta($post_id, '_coinsnap_bitcoin_voting_polls_thank_you_message', true) ?: '');
                 break;
             case 'active':
-                echo get_post_meta($post_id, '_coinsnap_bitcoin_voting_polls_active', true) ? '✓' : '✗';
+                echo get_post_meta($post_id, '_coinsnap_bitcoin_voting_polls_active', true) ? 'âœ“' : 'âœ—';
                 break;
             case 'one_vote':
-                echo get_post_meta($post_id, '_coinsnap_bitcoin_voting_polls_one_vote', true) ? '✓' : '✗';
+                echo get_post_meta($post_id, '_coinsnap_bitcoin_voting_polls_one_vote', true) ? 'âœ“' : 'âœ—';
                 break;
             case 'shortcode':
                 echo '[coinsnap_bitcoin_voting id="' . esc_html($post_id) . '"]';

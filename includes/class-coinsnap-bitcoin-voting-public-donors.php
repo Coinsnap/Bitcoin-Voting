@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 if (!defined('ABSPATH')){ exit; }
 
 class Bitcoin_Voting_Public_Donors {
@@ -128,7 +128,7 @@ class Bitcoin_Voting_Public_Donors {
         <table class="form-table">
             <tr>
                 <th scope="row">
-                    <label for="coinsnap_bitcoin_voting_donor_name"><?php echo esc_html_e('Name', 'coinsnap-bitcoin-voting') ?></label>
+                    <label for="coinsnap_bitcoin_voting_donor_name"><?php echo esc_html_e('Name', 'Bitcoin-Voting') ?></label>
                 </th>
                 <td>
                     <input type="text" id="coinsnap_bitcoin_voting_donor_name" name="coinsnap_bitcoin_voting_donor_name" class="regular-text" value="<?php echo esc_attr($name); ?>" readonly>
@@ -136,7 +136,7 @@ class Bitcoin_Voting_Public_Donors {
             </tr>
             <tr>
                 <th scope="row">
-                    <label for="coinsnap_bitcoin_voting_amount"><?php echo esc_html_e('Amount', 'coinsnap-bitcoin-voting') ?></label>
+                    <label for="coinsnap_bitcoin_voting_amount"><?php echo esc_html_e('Amount', 'Bitcoin-Voting') ?></label>
                 </th>
                 <td>
                     <input type="text" id="coinsnap_bitcoin_voting_amount" name="coinsnap_bitcoin_voting_amount" class="regular-text" value="<?php echo esc_attr($amount); ?>" readonly>
@@ -144,7 +144,7 @@ class Bitcoin_Voting_Public_Donors {
             </tr>
             <tr>
                 <th scope="row">
-                    <label for="coinsnap_bitcoin_voting_message"><?php echo esc_html_e('Message', 'coinsnap-bitcoin-voting') ?></label>
+                    <label for="coinsnap_bitcoin_voting_message"><?php echo esc_html_e('Message', 'Bitcoin-Voting') ?></label>
                 </th>
                 <td>
                     <textarea id="coinsnap_bitcoin_voting_message" name="coinsnap_bitcoin_voting_message" class="regular-text" rows="3" readonly><?php echo esc_textarea($message); ?></textarea>
@@ -152,7 +152,7 @@ class Bitcoin_Voting_Public_Donors {
             </tr>
             <tr>
                 <th scope="row">
-                    <label for="coinsnap_bitcoin_voting_form_type"><?php echo esc_html_e('Form Type', 'coinsnap-bitcoin-voting') ?></label>
+                    <label for="coinsnap_bitcoin_voting_form_type"><?php echo esc_html_e('Form Type', 'Bitcoin-Voting') ?></label>
                 </th>
                 <td>
                     <input type="text" id="coinsnap_bitcoin_voting_form_type" name="coinsnap_bitcoin_voting_form_type" class="regular-text" value="<?php echo esc_attr($form_type); ?>" readonly>
@@ -160,7 +160,7 @@ class Bitcoin_Voting_Public_Donors {
             </tr>
             <tr>
                 <th scope="row">
-                    <label for="coinsnap_bitcoin_voting_email"><?php echo esc_html_e('Email', 'coinsnap-bitcoin-voting') ?></label>
+                    <label for="coinsnap_bitcoin_voting_email"><?php echo esc_html_e('Email', 'Bitcoin-Voting') ?></label>
                 </th>
                 <td>
                     <input type="email" id="coinsnap_bitcoin_voting_email" name="coinsnap_bitcoin_voting_email" class="regular-text" value="<?php echo esc_attr($email); ?>" readonly>
@@ -168,7 +168,7 @@ class Bitcoin_Voting_Public_Donors {
             </tr>
             <tr>
                 <th scope="row">
-                    <label for="coinsnap_bitcoin_voting_address"><?php echo esc_html_e('Address', 'coinsnap-bitcoin-voting') ?></label>
+                    <label for="coinsnap_bitcoin_voting_address"><?php echo esc_html_e('Address', 'Bitcoin-Voting') ?></label>
                 </th>
                 <td>
                     <input type="text" id="coinsnap_bitcoin_voting_address" name="coinsnap_bitcoin_voting_address" class="regular-text" value="<?php echo esc_attr($address); ?>" readonly>
@@ -176,7 +176,7 @@ class Bitcoin_Voting_Public_Donors {
             </tr>
             <tr>
                 <th scope="row">
-                    <label for="coinsnap_bitcoin_voting_payment_id"><?php echo esc_html_e('Payment ID', 'coinsnap-bitcoin-voting') ?></label>
+                    <label for="coinsnap_bitcoin_voting_payment_id"><?php echo esc_html_e('Payment ID', 'Bitcoin-Voting') ?></label>
                 </th>
                 <td>
                     <input type="text" id="coinsnap_bitcoin_voting_payment_id" name="coinsnap_bitcoin_voting_payment_id" class="regular-text" value="<?php echo esc_attr($payment_id); ?>" readonly>
@@ -184,7 +184,7 @@ class Bitcoin_Voting_Public_Donors {
             </tr>
             <tr>
                 <th scope="row">
-                    <label for="coinsnap_bitcoin_voting_custom_field"><?php echo esc_html_e('Custom Field', 'coinsnap-bitcoin-voting') ?></label>
+                    <label for="coinsnap_bitcoin_voting_custom_field"><?php echo esc_html_e('Custom Field', 'Bitcoin-Voting') ?></label>
                 </th>
                 <td>
                     <input type="text" id="coinsnap_bitcoin_voting_custom_field" name="coinsnap_bitcoin_voting_custom_field" class="regular-text" value="<?php echo esc_attr($custom_field); ?>" readonly>

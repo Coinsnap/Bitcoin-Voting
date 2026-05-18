@@ -3,19 +3,21 @@ if (!defined('ABSPATH')){ exit; }
 if (!defined('WP_UNINSTALL_PLUGIN')) { exit; }
 
 global $wpdb;
-$tables = array(
+$cbv_tables = array(
     $wpdb->prefix . 'voting_payments',
 );
 
-foreach ($tables as $table) {
-    $wpdb->query($wpdb->prepare("DROP TABLE IF EXISTS %s",$table));
+foreach ($cbv_tables as $cbv_table) {
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+    $wpdb->query( "DROP TABLE IF EXISTS `" . esc_sql( $cbv_table ) . "`" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 }
 
-$options = array(
+$cbv_options = array(
     'coinsnap_bitcoin_voting_options',
-    'coinsnap_webhook_secret'
+    'coinsnap_webhook_secret',
+    'cbv_webhook',
 );
 
-foreach ($options as $option) {
-    delete_option($option);
+foreach ($cbv_options as $cbv_option) {
+    delete_option($cbv_option);
 }
