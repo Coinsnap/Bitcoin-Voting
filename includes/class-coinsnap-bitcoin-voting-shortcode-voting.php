@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 if (!defined('ABSPATH')){ exit; }
 
 class Coinsnap_Bitcoin_Voting_Shortcode_Voting {
@@ -138,7 +138,7 @@ class Coinsnap_Bitcoin_Voting_Shortcode_Voting {
             $provider = ($coinsnap_bitcoin_voting_data['provider'] === 'btcpay')? 'btcpay' : 'coinsnap';
             
 
-            if($_provider === 'btcpay'){
+            if($provider === 'btcpay'){
                 try {
 
                     $storePaymentMethods = $client->getStorePaymentMethods($this->getApiUrl(), $this->getApiKey(), $this->getStoreId());

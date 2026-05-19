@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*
  * Plugin Name:        Coinsnap Bitcoin Voting
  * Plugin URI:         https://coinsnap.io/coinsnap-bitcoin-voting-plugin/
@@ -269,7 +269,10 @@ class Coinsnap_Bitcoin_Voting
             ]);
         }
         
-        wp_enqueue_style('coinsnap-bitcoin-voting-admin-style', COINSNAP_BITCOIN_VOTING_PLUGIN_DIR . 'assets/css/admin-style.css', [], COINSNAP_BITCOIN_VOTING_VERSION);
+        // Admin style only on plugin pages.
+        if (false !== strpos($page, 'coinsnap-bitcoin-voting') || $post_type === 'coinsnap-polls') {
+            wp_enqueue_style('coinsnap-bitcoin-voting-admin-style', COINSNAP_BITCOIN_VOTING_PLUGIN_DIR . 'assets/css/admin-style.css', [], COINSNAP_BITCOIN_VOTING_VERSION);
+        }
     }
 }
 new Coinsnap_Bitcoin_Voting();

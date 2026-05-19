@@ -1,6 +1,5 @@
 <?php
 if (!defined('ABSPATH')){ exit; }
-header('Access-Control-Allow-Origin: *');
 class Coinsnap_Bitcoin_Voting_Client {
 
     public function remoteRequest(string $method,string $url,array $headers = [],string $body = ''){

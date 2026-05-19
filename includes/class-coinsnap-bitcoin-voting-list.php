@@ -21,7 +21,7 @@ class Bitcoin_Donation_List {
 		} else {
 			$api_key = $options['btcpay_api_key'];
 			$store_id = $options['btcpay_store_id'];
-			$base_url = $options['btcpay_url'];
+			$base_url = $options['btcpay_host'];
 			$url = $base_url . '/api/v1/stores/' . $store_id . '/invoices';
 			$headers = array(
 				'headers' => array('Authorization' => 'token ' . $api_key, 'Content-Type' => 'application/json')
@@ -36,7 +36,7 @@ class Bitcoin_Donation_List {
 		}
 		$filtered_invoices = array_filter($invoices, function ($invoice) {
 			return isset($invoice['metadata']['referralCode'])
-				&& $invoice['metadata']['referralCode'] === "D19833"
+				&& $invoice['metadata']['referralCode'] === COINSNAP_BITCOIN_VOTING_REFERRAL_CODE
 				&& $invoice['status'] === 'Settled';
 		});
 		if ($provider == 'coinsnap') {
@@ -60,7 +60,7 @@ class Bitcoin_Donation_List {
 		$options          = get_option('coinsnap_bitcoin_voting_options');
 		$provider         = $options['provider'];
 		$btcpay_store_id  = $options['btcpay_store_id'];
-		$btcpay_url       = $options['btcpay_url'];
+		$btcpay_url       = $options['btcpay_host'];
 		$btcpay_href      = $btcpay_url . '/stores/' . $btcpay_store_id . '/invoices';
 		$donations        = $this->fetch_donations();
 
@@ -81,7 +81,7 @@ class Bitcoin_Donation_List {
 			<?php if ($provider === 'coinsnap'): ?>
 				<h4>Check <a href="https://app.coinsnap.io/transactions" target="_blank" rel="noopener noreferrer">Coinsnap app</a> for a detailed overview</h4>
 			<?php elseif ($provider === 'btcpay'): ?>
-				<h4>Check <a href="<?php echo esc_html($btcpay_href); ?>" target="_blank" rel="noopener noreferrer">BtcPay server</a> for a detailed overview</h4>
+				<h4>Check <a href="<?php echo esc_url($btcpay_href); ?>" target="_blank" rel="noopener noreferrer">BtcPay server</a> for a detailed overview</h4>
 			<?php else: ?>
 				<p>Provider not recognized.</p>
 			<?php endif; ?>

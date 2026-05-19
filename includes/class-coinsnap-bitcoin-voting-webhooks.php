@@ -31,7 +31,9 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
         register_rest_route('voting/v1', '/get-wh-secret', [
             'methods' => 'GET',
             'callback' => [$this, 'get_wh_secret'],
-            'permission_callback' => '__return_true', // TODO: Add proper permissions later
+            'permission_callback' => function() {
+                return current_user_can('manage_options');
+            },
         ]);
     }
 
@@ -91,48 +93,33 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
     function get_payment_status_long_poll($request)
     {
         $payment_id = $request['payment_id'];
-        $poll_id = $request['poll_id'];
-        $start_time = time();
-        $timeout = 5;
-
-        while (time() - $start_time < $timeout) {
-            global $wpdb;
+        $poll_id    = $request['poll_id'];
+        global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $status = $wpdb->get_var($wpdb->prepare(
+            "SELECT status FROM {$wpdb->prefix}voting_payments WHERE payment_id = %s",
+            $payment_id
+        ));
+        if ($status === 'completed') {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-            $status = $wpdb->get_var($wpdb->prepare(
-                "SELECT status FROM {$wpdb->prefix}voting_payments WHERE payment_id = %s",
-                $payment_id
-            ));
-            if ($status === 'completed') {
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-                $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$wpdb->prefix}voting_payments WHERE status = 'completed' AND poll_id = %d",$poll_id));
-
-                return ['status' => 'completed', 'results' => $results];
-            }
-            sleep(1);
+            $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$wpdb->prefix}voting_payments WHERE status = 'completed' AND poll_id = %d", $poll_id));
+            return ['status' => 'completed', 'results' => $results];
         }
-        // Timeout
         return ['status' => 'pending'];
     }
 
     function get_check_payment_status($request)
     {
         $payment_id = $request['payment_id'];
-        $start_time = time();
-        $timeout = 5;
-
-        while (time() - $start_time < $timeout) {
-            global $wpdb;
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-            $status = $wpdb->get_var($wpdb->prepare(
-                "SELECT status FROM {$wpdb->prefix}voting_payments WHERE payment_id = %s",
-                $payment_id
-            ));
-            if ($status === 'completed') {
-                return ['status' => 'completed'];
-            }
-            sleep(1);
+        global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $status = $wpdb->get_var($wpdb->prepare(
+            "SELECT status FROM {$wpdb->prefix}voting_payments WHERE payment_id = %s",
+            $payment_id
+        ));
+        if ($status === 'completed') {
+            return ['status' => 'completed'];
         }
-        // Timeout
         return ['status' => 'pending'];
     }
 
@@ -162,7 +149,6 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
     function verify_webhook_request($request){
         
             $secret = $this->get_webhook_secret();
-            //error_log('Webhook signature: ' . $request->get_header('X-Coinsnap-Sig'));
             $coinsnap_sig = $request->get_header('X-Coinsnap-Sig');
             $btcpay_sig = $request->get_header('btcpay_sig');
             $signature_header = !empty($coinsnap_sig) ? $coinsnap_sig : $btcpay_sig;

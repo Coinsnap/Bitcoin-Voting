@@ -1,4 +1,4 @@
-﻿<?php if (!defined('ABSPATH')){ exit;} ?>
+<?php if (!defined('ABSPATH')){ exit;} ?>
 
 <div id="<?php echo esc_html($prefix); ?>qr-container<?php echo esc_html($sufix); ?>" class="qr-container coinsnap-bitcoin-voting" data-public-donors="<?php echo esc_attr($public_donors); ?>">
     <div class="close-popup">Ã—</div>
