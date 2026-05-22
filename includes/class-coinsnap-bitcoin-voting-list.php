@@ -8,8 +8,8 @@ class Bitcoin_Donation_List {
 	}
 	
         private function fetch_donations(){
-		$options = get_option('coinsnap_bitcoin_voting_options');
-		$provider = $options['provider'];
+		$options  = get_option('coinsnap_bitcoin_voting_options', array());
+		$provider = isset( $options['provider'] ) ? $options['provider'] : '';
 
 		if ($provider == 'coinsnap') {
 			$api_key = $options['coinsnap_api_key'];
@@ -57,12 +57,17 @@ class Bitcoin_Donation_List {
 			return;
 		}
 
-		$options          = get_option('coinsnap_bitcoin_voting_options');
-		$provider         = $options['provider'];
-		$btcpay_store_id  = $options['btcpay_store_id'];
-		$btcpay_url       = $options['btcpay_host'];
+		$options          = get_option('coinsnap_bitcoin_voting_options', array());
+		$provider         = isset( $options['provider'] ) ? $options['provider'] : '';
+		$btcpay_store_id  = isset( $options['btcpay_store_id'] ) ? $options['btcpay_store_id'] : '';
+		$btcpay_url       = isset( $options['btcpay_host'] ) ? $options['btcpay_host'] : '';
 		$btcpay_href      = $btcpay_url . '/stores/' . $btcpay_store_id . '/invoices';
-		$donations        = $this->fetch_donations();
+		try {
+			$donations = $this->fetch_donations();
+		} catch ( Exception $e ) {
+			$donations = array();
+			add_settings_error( 'coinsnap_bitcoin_voting', 'api_error', esc_html( $e->getMessage() ), 'error' );
+		}
 
 		$donations_per_page = 20;
 		$paged = filter_input(INPUT_GET,'paged',FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -77,7 +82,7 @@ class Bitcoin_Donation_List {
 
 ?>
 		<div class="wrap">
-			<h1><?php echo esc_html(get_admin_page_title()); ?></h1>
+			<h1>Transactions</h1>
 			<?php if ($provider === 'coinsnap'): ?>
 				<h4>Check <a href="https://app.coinsnap.io/transactions" target="_blank" rel="noopener noreferrer">Coinsnap app</a> for a detailed overview</h4>
 			<?php elseif ($provider === 'btcpay'): ?>
@@ -91,8 +96,8 @@ class Bitcoin_Donation_List {
 					<tr>
 						<th>Date</th>
 						<th>Amount</th>
-						<th>Type</th>
-						<th>Message</th>
+						<th>Poll Option</th>
+						<th>Voter Name</th>
 						<th>Invoice ID</th>
 					</tr>
 				</thead>
@@ -133,21 +138,19 @@ class Bitcoin_Donation_List {
 	private function render_donation_row($donation)
 	{
 		$invoice_id = $donation['id'];
-		$options = get_option('coinsnap_bitcoin_voting_options');
-		$provider = $options['provider'];
+		$options = get_option('coinsnap_bitcoin_voting_options', array());
+		$provider = isset( $options['provider'] ) ? $options['provider'] : '';
 		$isBtcpay = $provider === 'btcpay';
 		$href = ($isBtcpay)
 			? "https://btcpay.coincharge.io/invoices/" . esc_html($invoice_id)
 			: "https://app.coinsnap.io/td/" . esc_html($invoice_id);
-		$message = isset($donation['metadata']['orderNumber']) ? $donation['metadata']['orderNumber'] : '';
-		$message = strlen($message) > 150 ? substr($message, 0, 150) . ' ...' : $message;
-		$type = isset($donation['metadata']['type']) ? $donation['metadata']['type'] : '';
+		$poll_option = isset($donation['metadata']['option']) ? $donation['metadata']['option'] : ( isset($donation['metadata']['orderNumber']) ? $donation['metadata']['orderNumber'] : '' );
+		$voter_name  = isset($donation['metadata']['donorName']) ? $donation['metadata']['donorName'] : ( isset($donation['metadata']['name']) ? $donation['metadata']['name'] : '' );
 	?>
 		<tr>
 			<td>
 				<?php echo esc_html(gmdate('Y-m-d H:i:s', (int)$donation[$isBtcpay ? 'createdTime' :  'createdAt'])); ?>
 			</td>
-
 			<td>
 				<?php
 				$amount =  $donation['amount'];
@@ -155,13 +158,12 @@ class Bitcoin_Donation_List {
 				echo esc_html(number_format($amount, $isBtcpay ? 2 : 0) . ' ' . ($isBtcpay ? $currency : 'sats'));
 				?>
 			</td>
-			<td><?php echo esc_html($type); ?></td>
-			<td><?php echo esc_html($message); ?></td>
+			<td><?php echo esc_html($poll_option); ?></td>
+			<td><?php echo esc_html($voter_name); ?></td>
 			<td>
 				<a href="<?php echo esc_url($href); ?>" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
 					<?php echo esc_html($invoice_id); ?>
 				</a>
-
 			</td>
 		</tr>
 <?php

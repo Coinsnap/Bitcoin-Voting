@@ -135,7 +135,7 @@ class Coinsnap_Bitcoin_Voting_Shortcode_Voting {
             $time_until_end = human_time_diff($now, $end_timestamp);
             $client = new Coinsnap_Bitcoin_Voting_Client();
             $coinsnap_bitcoin_voting_data = get_option('coinsnap_bitcoin_voting_options', []);
-            $provider = ($coinsnap_bitcoin_voting_data['provider'] === 'btcpay')? 'btcpay' : 'coinsnap';
+            $provider = ( isset( $coinsnap_bitcoin_voting_data['provider'] ) && $coinsnap_bitcoin_voting_data['provider'] === 'btcpay' ) ? 'btcpay' : 'coinsnap';
             
 
             if($provider === 'btcpay'){
@@ -183,7 +183,7 @@ class Coinsnap_Bitcoin_Voting_Shortcode_Voting {
                             };
                         }?>
                         <div class="poll-total-votes">
-                            <button id="check-results<?php echo esc_html($poll_id);?>" data-poll-id="<?php echo esc_html($poll_id);?>" class="check-results"><?php echo esc_html__('Check results','Bitcoin-Voting');?></button>
+                            <button id="cbv-check-results<?php echo esc_html($poll_id);?>" data-poll-id="<?php echo esc_html($poll_id);?>" class="cbv-check-results"><?php echo esc_html__('Check results','Bitcoin-Voting');?></button>
                             <div class="end-text"><?php echo esc_html__('Ends in:','Bitcoin-Voting');?> <?php echo esc_html($time_until_end); ?></div>
                         </div>
 

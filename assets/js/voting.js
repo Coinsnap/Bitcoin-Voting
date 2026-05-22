@@ -90,7 +90,7 @@ jQuery(document).ready(function($) {
                 });
             }
 
-            const checkResults = document.getElementById(`check-results${pollId}`);
+            const checkResults = document.getElementById(`cbv-check-results${pollId}`);
             if (checkResults) {
                 checkResults.addEventListener("click", function () {
                     showResultsFn(pollId, votingForm);

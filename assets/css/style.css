@@ -1,785 +1,983 @@
-/* Common Styles */
-.coinsnap-bitcoin-voting-voting-form {
-  margin: 20px auto;
-  border-radius: 8px;
-  font-family: Arial, sans-serif;
-  font-size: 14px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+/**
+ * Coinsnap Bitcoin Voting � frontend styles.
+ * Visual language matches coinsnap-bitcoin-booking-form and coinsnap-bitcoin-donation.
+ *
+ * @package Bitcoin-Voting
+ */
+
+/* ==========================================================================
+   Design Tokens
+   ========================================================================== */
+:root {
+--cbv-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+--cbv-color-bitcoin:         #f7931a;
+--cbv-color-bitcoin-hover:   #e8860f;
+--cbv-color-bitcoin-active:  #d67a0d;
+--cbv-color-text-primary:    #1e1e1e;
+--cbv-color-text-secondary:  #757575;
+--cbv-color-text-muted:      #a7a7a7;
+--cbv-color-border:          #e0e0e0;
+--cbv-color-border-hover:    #c0c0c0;
+--cbv-color-border-focus:    #f7931a;
+--cbv-color-bg-card:         #ffffff;
+--cbv-color-bg-input:        #ffffff;
+--cbv-color-bg-input-hover:  #fafafa;
+--cbv-color-bg-option:       #f5f5f5;
+--cbv-color-bg-option-hover: #ffe9d0;
+--cbv-color-error:           #cc1818;
+--cbv-color-success:         #1a7a3c;
+--cbv-color-success-bg:      #f0faf3;
+--cbv-color-success-border:  #b8dfc7;
+--cbv-color-focus-ring:      rgba(247, 147, 26, 0.25);
+--cbv-radius-sm:  4px;
+--cbv-radius-md:  8px;
+--cbv-radius-lg:  12px;
+--cbv-shadow:     0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+--cbv-transition: 200ms ease;
 }
 
-.narrow-form {
-  /* max-width: 220px;
-  padding: 30px; */
-  max-width: 268px;
-  padding: 42px 30px;
-}
+/* ==========================================================================
+   Outer wrappers
+   ========================================================================== */
 
-.narrow-form .currency-swapper {
-  width: 32%;
-}
-
-.coinsnap-bitcoin-voting-voting-form label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-.coinsnap-bitcoin-voting-voting-form input {
-  width: 100%;
-  padding: 8px !important;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px !important;
-  box-sizing: border-box;
-}
-
-.coinsnap-bitcoin-voting-voting-form button {
-  margin-top: 20px;
-  width: 100%;
-  padding: 10px;
-  background-color: #6393c7;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  justify-content: center;
-  align-items: center;
-  display: flex
-}
-
-.coinsnap-bitcoin-voting-voting-form button:hover {
-  transition: 250ms;
-  background-color: #f7a70a;
-}
-
-/* Light Theme */
-.coinsnap-bitcoin-voting-light-theme {
-  background-color: #f2f2f2 !important;
-  color: #333333 !important;
-}
-
-.coinsnap-bitcoin-voting-light-theme input {
-  background-color: #f9f9f9 !important;
-  border: 1px solid #ddd !important;
-  color: #333 !important;
-}
-
-.coinsnap-bitcoin-voting-light-theme textarea {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  color: #333;
-}
-
-.coinsnap-bitcoin-voting-light-theme textarea:focus {
-  /* border: 2px solid #5e5ad6d8 !important; */
-  background-color: #f9f9f9;
-}
-
-/* Dark Theme */
-.coinsnap-bitcoin-voting-dark-theme {
-  background-color: #2c2c2cf7 !important;
-  color: #f1f1f1 !important;
-}
-
-.coinsnap-bitcoin-voting-dark-theme input {
-  background-color: #3a3a3a !important;
-  border: 1px solid #555 !important;
-  color: #f1f1f1 !important;
-}
-
-.coinsnap-bitcoin-voting-dark-theme textarea {
-  background-color: #3a3a3a !important;
-  border: 1px solid #555 !important;
-  color: #f1f1f1 !important;
-}
-
-.coinsnap-bitcoin-voting-message {
-  width: 100%;
-  resize: none;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 8px;
-  box-sizing: border-box;
-  min-height: 30px !important;
-
-}
-
-.narrow-form .coinsnap-bitcoin-voting-message {
-  min-height: 100px !important;
-}
-
-.coinsnap-bitcoin-voting-title-wrapper {
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 22px;
-}
-
-.wide-form .coinsnap-bitcoin-voting-title-wrapper {
-  padding-left: 30px;
-  padding-right: 30px;
-  width: auto !important;
-}
-
-.coinsnap-bitcoin-voting-title-wrapper h3 {
-  font-weight: bold;
-  margin: 0;
-  max-width: 67%;
-  /* color: #f7a70a; */
-}
-
-.coinsnap-bitcoin-voting-dark-theme h3 {
-  color: white !important;
-}
-
-/* Multi amount */
-
-.amount-wrapper {
-  position: relative;
-
-}
-
-.multi-form {
-  max-width: 280px;
-  padding: 32px 34px 42px 34px;
-  display: flex;
-  flex-direction: column;
-}
-
-.secondary-amount {
-  position: absolute;
-  top: 10px;
-  right: 9px;
-  font-size: 11px;
-  color: #9d9d9d;
-  user-select: none;
-  z-index: 999;
-}
-
-.snap-button {
-  width: 31% !important;
-  margin-top: 8px !important;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.snap-container {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-.snap-title-container {
-  display: flex;
-  justify-content: center;
-}
-
-.snap-title-container h4 {
-  font-weight: bold;
-  font-size: 16px !important;
-  margin-bottom: 4px;
-  margin-top: 8px;
-
-}
-
-.snap-secondary-amount {
-  font-size: 10px;
-  font-weight: 300;
-}
-
-.snap-primary-amount {
-  font-size: 12px;
-}
-
-.currency-swapper {
-  padding: 4px 8px !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 6px !important;
-  background-color: #f3f3f3 !important;
-  font-size: 12px !important;
-  font-weight: 500;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  position: relative;
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="black" d="M7 10l5 5 5-5H7z"/></svg>');
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 16px;
-  color: #1a202cc6;
-  cursor: pointer;
-  width: 31%;
-  text-align: center;
-  margin: 0;
-}
-
-.currency-swapper:hover {
-  border-color: #cbd5e0;
-  background-color: #f7fafc;
-}
-
-.currency-swapper:focus {
-  outline: none;
-  border-color: #4299e1;
-  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
-}
-
-.coinsnap-bitcoin-voting-dark-theme .currency-swapper {
-  background-color: #3a3a3a !important;
-  border: 1px solid #555 !important;
-  color: #f1f1f1 !important;
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="white" d="M7 10l5 5 5-5H7z"/></svg>');
-
-}
-
-.coinsnap-bitcoin-voting-dark-theme .currency-swapper:hover {
-  background-color: #4a4a4a !important;
-  border: 1px solid #555 !important;
-  color: #f1f1f1 !important;
-}
-
-/* Voting */
-
-.poll-options {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.poll-option {
-  padding: 10px;
-  cursor: pointer;
-  background: #f2f2f2;
-  color: #3d3d3d;
-  /* font-weight: bold; */
-  outline: 1px solid rgba(61, 61, 61, 0.5);
-  border: none !important;
-  text-align: left;
-  border-radius: 5px;
-  transition: background 0.3s;
-}
-
-.poll-option:hover {
-  background: #d7d7d7;
-}
-
-.poll-results {
-  width: 100%;
-}
-
-.poll-result {
-  margin-bottom: 10px;
-}
-
-.voting-progress {
-  position: relative;
-  width: 100%;
-  height: 20px;
-  background: #ddd;
-  border-radius: 5px;
-  overflow: hidden;
-}
-
-.voting-progress-bar {
-  height: 100%;
-  background: #9d9d9d;
-  width: 0;
-  transition: width 0.5s ease-in-out;
-  position: relative;
-}
-
-.voting-progress-percentage {
-  font-size: 14px;
-}
-
-.poll-result-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.coinsnap-bitcoin-voting-form {
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: column;
+font-family: var(--cbv-font-family);
+font-size: 14px;
+line-height: 1.5;
 }
 
 .coinsnap-bitcoin-voting-form-container {
-  max-width: 645px;
-  width: 100%;
-  padding: 32px;
-  border-radius: 20px;
-  box-sizing: border-box;
-  background-color: #fafafa;
-  box-shadow: 1px 2px 12px -4px rgba(0, 0, 0, 0.75);
-  padding-bottom: 20px;
-
+max-width: 560px;
+width: 100%;
+padding: 28px;
+background: var(--cbv-color-bg-card);
+border: 1px solid var(--cbv-color-border);
+border-radius: var(--cbv-radius-lg);
+box-shadow: var(--cbv-shadow);
+box-sizing: border-box;
+color: var(--cbv-color-text-primary);
 }
 
-.coinsnap-bitcoin-voting-form {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-
+.coinsnap-bitcoin-voting-form-container *,
+.coinsnap-bitcoin-voting-form-container *::before,
+.coinsnap-bitcoin-voting-form-container *::after {
+box-sizing: border-box;
 }
 
-.qr-container h4 {
-  margin-bottom: 0px;
+.coinsnap-bitcoin-voting-form-container h3 {
+margin: 0 0 8px;
+font-size: 18px;
+font-weight: 700;
+color: var(--cbv-color-text-primary);
 }
 
-.qr-container {
-  display: none;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  z-index: 99999;
-  border-radius: 8px;
-  text-align: center;
-  flex-direction: column;
-  align-items: center;
-  width: 90%;
-  max-width: 720px;
-  max-height: 95%;
-  overflow: auto;
-  box-sizing: border-box;
-  gap: 12px;
+.coinsnap-bitcoin-voting-form-container h4 {
+margin: 0 0 6px;
+font-size: 15px;
+font-weight: 600;
+color: var(--cbv-color-text-primary);
 }
 
-.qr-container img {
-  max-width: 200px !important;
+.coinsnap-bitcoin-voting-form-container p {
+margin: 0 0 16px;
+color: var(--cbv-color-text-secondary);
+font-size: 13px;
 }
 
+/* ==========================================================================
+   Voting form inner
+   ========================================================================== */
 
-
-.close-popup {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 24px;
-  cursor: pointer;
-  color: black;
+.coinsnap-bitcoin-voting-voting-form {
+margin: 0;
+border-radius: 0;
+font-family: var(--cbv-font-family);
+font-size: 14px;
+box-shadow: none;
 }
 
-.loader {
-  border: 16px solid #f3f3f3;
-  border-top: 16px solid #3498db;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  animation: spin 2s linear infinite;
+.coinsnap-bitcoin-voting-voting-form label {
+display: block;
+margin-bottom: 6px;
+font-weight: 600;
+font-size: 13px;
+color: var(--cbv-color-text-primary);
+letter-spacing: 0.01em;
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
+.coinsnap-bitcoin-voting-voting-form input[type="text"],
+.coinsnap-bitcoin-voting-voting-form input[type="email"],
+.coinsnap-bitcoin-voting-voting-form input[type="number"] {
+width: 100%;
+padding: 10px 12px;
+border: 1px solid var(--cbv-color-border);
+border-radius: var(--cbv-radius-md);
+font-family: var(--cbv-font-family);
+font-size: 14px;
+line-height: 1.5;
+color: var(--cbv-color-text-primary);
+background: var(--cbv-color-bg-input);
+outline: none;
+margin-bottom: 14px;
+transition: border-color var(--cbv-transition), box-shadow var(--cbv-transition);
 }
 
-.poll-total-votes {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 4px;
-  margin-top: 16px;
+.coinsnap-bitcoin-voting-voting-form input[type="text"]:hover,
+.coinsnap-bitcoin-voting-voting-form input[type="email"]:hover,
+.coinsnap-bitcoin-voting-voting-form input[type="number"]:hover {
+border-color: var(--cbv-color-border-hover);
+background: var(--cbv-color-bg-input-hover);
 }
 
-.poll-total-wrapper {
-  display: flex;
-  gap: 6px;
-  color: #585858
+.coinsnap-bitcoin-voting-voting-form input[type="text"]:focus,
+.coinsnap-bitcoin-voting-voting-form input[type="email"]:focus,
+.coinsnap-bitcoin-voting-voting-form input[type="number"]:focus {
+border-color: var(--cbv-color-border-focus);
+box-shadow: 0 0 0 3px var(--cbv-color-focus-ring);
+background: var(--cbv-color-bg-input);
 }
 
-.qr-amount {
-  font-weight: bold;
+/* Message textarea */
+.coinsnap-bitcoin-voting-message {
+width: 100%;
+resize: vertical;
+border: 1px solid var(--cbv-color-border);
+border-radius: var(--cbv-radius-md);
+padding: 10px 12px;
+font-family: var(--cbv-font-family);
+font-size: 14px;
+line-height: 1.5;
+color: var(--cbv-color-text-primary);
+background: var(--cbv-color-bg-input);
+outline: none;
+min-height: 80px;
+box-sizing: border-box;
+transition: border-color var(--cbv-transition), box-shadow var(--cbv-transition);
 }
 
-.qr-lightning-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  color: #3d3d3d;
-  font-size: 14px !important;
+.coinsnap-bitcoin-voting-message:hover {
+border-color: var(--cbv-color-border-hover);
+background: var(--cbv-color-bg-input-hover);
 }
 
-.qr-address-title {
-  font-weight: bold;
-  text-align: left;
-  color: #3d3d3d;
-
+.coinsnap-bitcoin-voting-message:focus {
+border-color: var(--cbv-color-border-focus);
+box-shadow: 0 0 0 3px var(--cbv-color-focus-ring);
 }
 
-.qr-copy-icon {
-  cursor: pointer;
+.narrow-form .coinsnap-bitcoin-voting-message {
+min-height: 100px;
 }
 
-.qr-copy-icon:hover {
-  transition: 0.3s;
-  stroke: #555555;
-}
-
-.qr-help-text {
-  width: 300px;
-  color: #9d9d9d;
-}
-
-.end-text {
-  text-align: right;
-  color: #585858;
-}
-
-.qr-summary {
-  cursor: pointer;
-  color: #3498db;
-  display: none;
-  user-select: none;
-  gap: 4px;
-  justify-content: center;
-  align-items: center;
-  font-size: 14px !important;
-}
-
-.qr-details[open] .qr-lightning-container {
-  animation: slideDown 0.3s ease-out forwards;
-}
-
-.qr-details .qr-lightning-container {
-  max-height: 0;
-  transition: max-height 0.3s ease-out;
-}
-
-.qr-details[open] .qr-dropdown {
-  transform: rotate(180deg);
-}
-
-.qr-dropdown {
-  display: inline-block;
-  font-size: 8px;
-}
-
-@keyframes slideDown {
-  from {
-    max-height: 0;
-    opacity: 0;
-  }
-
-  to {
-    max-height: 100px;
-    opacity: 1;
-  }
-}
-
-.qr-address-wrapper {
-  display: flex;
-  flex-direction: column;
-
-}
-
+/* Primary button */
+.coinsnap-bitcoin-voting-voting-form button,
+.public-donor-form button[type="submit"],
 .qr-pay-in-wallet {
-  margin-top: 20px;
-  width: 100%;
-  padding: 10px;
-  background-color: #6393c7;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  justify-content: center;
-  align-items: center;
-  display: none
+margin-top: 20px;
+width: 100%;
+padding: 12px 20px;
+background: var(--cbv-color-bitcoin);
+color: #fff;
+border: none;
+border-radius: var(--cbv-radius-md);
+cursor: pointer;
+font-family: var(--cbv-font-family);
+font-size: 15px;
+font-weight: 600;
+letter-spacing: 0.02em;
+line-height: 1.4;
+display: flex;
+justify-content: center;
+align-items: center;
+transition: background-color var(--cbv-transition),
+            box-shadow var(--cbv-transition),
+            transform var(--cbv-transition);
 }
 
-.qr-fiat {
-  color: #585858;
-  margin-bottom: 2px;
-  display: none;
-  font-size: 14px !important;
+.coinsnap-bitcoin-voting-voting-form button:hover,
+.public-donor-form button[type="submit"]:hover,
+.qr-pay-in-wallet:hover {
+background: var(--cbv-color-bitcoin-hover);
+box-shadow: 0 2px 8px rgba(247, 147, 26, 0.35);
+transform: translateY(-1px);
 }
 
-.qr-code-btc {
-  display: none;
-  width: 42px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+.coinsnap-bitcoin-voting-voting-form button:active,
+.public-donor-form button[type="submit"]:active,
+.qr-pay-in-wallet:active {
+background: var(--cbv-color-bitcoin-active);
+box-shadow: none;
+transform: translateY(0);
 }
 
-#thank-you-popup {
-  display: none;
-  flex-direction: column;
-  justify-content: center;
+.coinsnap-bitcoin-voting-voting-form button:focus-visible,
+.public-donor-form button[type="submit"]:focus-visible,
+.qr-pay-in-wallet:focus-visible {
+outline: 2px solid var(--cbv-color-bitcoin);
+outline-offset: 2px;
 }
 
-.checkmark-img {
-  display: flex;
-  width: 120px;
+.coinsnap-bitcoin-voting-voting-form button:disabled {
+opacity: 0.6;
+cursor: not-allowed;
+transform: none;
+box-shadow: none;
 }
 
-.check-results {
-  border: none;
-  padding: 2px 8px;
-  border-radius: 3px;
-  color: #3d3d3d;
-  outline: 1px solid rgba(61, 61, 61, 0.5);
-  background-color: #f2f2f2;
-  cursor: pointer;
+/* ==========================================================================
+   Title row
+   ========================================================================== */
+
+.coinsnap-bitcoin-voting-title-wrapper {
+display: flex;
+width: 100%;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 20px;
 }
 
-.check-results:hover {
-  background-color: #dadada;
+.coinsnap-bitcoin-voting-title-wrapper h3 {
+margin: 0;
+max-width: 70%;
 }
 
 .title-container {
-  display: flex;
-  justify-content: space-between;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+/* ==========================================================================
+   Amount / currency area
+   ========================================================================== */
+
+.amount-wrapper {
+position: relative;
+}
+
+.secondary-amount {
+position: absolute;
+top: 10px;
+right: 9px;
+font-size: 11px;
+color: var(--cbv-color-text-muted);
+user-select: none;
+z-index: 999;
+}
+
+.currency-swapper {
+padding: 10px 28px 10px 12px !important;
+border: 1px solid var(--cbv-color-border) !important;
+border-radius: var(--cbv-radius-md) !important;
+background-color: var(--cbv-color-bg-input) !important;
+font-family: var(--cbv-font-family);
+font-size: 14px !important;
+font-weight: 500;
+color: var(--cbv-color-text-primary) !important;
+appearance: none;
+-webkit-appearance: none;
+-moz-appearance: none;
+background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="%23757575" d="M7 10l5 5 5-5H7z"/></svg>');
+background-repeat: no-repeat;
+background-position: right 8px center;
+background-size: 16px;
+cursor: pointer;
+width: 31%;
+margin: 0;
+outline: none;
+transition: border-color var(--cbv-transition), box-shadow var(--cbv-transition);
+}
+
+.currency-swapper:hover {
+border-color: var(--cbv-color-border-hover) !important;
+background-color: var(--cbv-color-bg-input-hover) !important;
+}
+
+.currency-swapper:focus {
+border-color: var(--cbv-color-border-focus) !important;
+box-shadow: 0 0 0 3px var(--cbv-color-focus-ring);
+}
+
+.narrow-form .currency-swapper {
+width: 32%;
+}
+
+/* Snap (preset) amount buttons */
+.snap-container {
+display: flex;
+justify-content: space-between;
+margin-bottom: 16px;
+}
+
+.snap-title-container {
+display: flex;
+justify-content: center;
+}
+
+.snap-title-container h4 {
+font-weight: 600;
+font-size: 15px !important;
+margin-bottom: 4px;
+margin-top: 8px;
+}
+
+.snap-button {
+width: 31% !important;
+margin-top: 8px !important;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+padding: 8px 6px !important;
+background: var(--cbv-color-bg-option) !important;
+border: 1px solid var(--cbv-color-border) !important;
+border-radius: var(--cbv-radius-md) !important;
+color: var(--cbv-color-text-primary) !important;
+font-size: 13px !important;
+cursor: pointer;
+transition: border-color var(--cbv-transition), background var(--cbv-transition);
+}
+
+.snap-button:hover {
+background: var(--cbv-color-bg-option-hover) !important;
+border-color: var(--cbv-color-bitcoin) !important;
+transform: none !important;
+box-shadow: none !important;
+}
+
+.snap-secondary-amount {
+font-size: 10px;
+font-weight: 300;
+color: var(--cbv-color-text-muted);
+}
+
+.snap-primary-amount {
+font-size: 12px;
+font-weight: 600;
+}
+
+/* Form layout variants */
+.narrow-form {
+max-width: 268px;
+padding: 42px 30px;
+}
+
+.multi-form {
+max-width: 280px;
+padding: 32px 34px 42px 34px;
+display: flex;
+flex-direction: column;
+}
+
+.wide-form .coinsnap-bitcoin-voting-title-wrapper {
+padding-left: 30px;
+padding-right: 30px;
+width: auto !important;
+}
+
+/* ==========================================================================
+   Poll options
+   ========================================================================== */
+
+.poll-options {
+display: flex;
+flex-direction: column;
+gap: 10px;
+margin-bottom: 4px;
+}
+
+.poll-option {
+padding: 11px 14px;
+cursor: pointer;
+background: var(--cbv-color-bg-option);
+color: var(--cbv-color-text-primary);
+font-family: var(--cbv-font-family);
+font-size: 14px;
+font-weight: 500;
+border: 1px solid var(--cbv-color-border) !important;
+border-radius: var(--cbv-radius-md);
+text-align: left;
+outline: none;
+width: 100%;
+transition: background var(--cbv-transition), border-color var(--cbv-transition),
+            box-shadow var(--cbv-transition), transform var(--cbv-transition);
+}
+
+.poll-option:hover {
+background: var(--cbv-color-bg-option-hover);
+border-color: var(--cbv-color-bitcoin) !important;
+}
+
+.poll-option:focus-visible {
+border-color: var(--cbv-color-bitcoin) !important;
+box-shadow: 0 0 0 3px var(--cbv-color-focus-ring);
+}
+
+/* ==========================================================================
+   Poll results
+   ========================================================================== */
+
+.poll-results {
+width: 100%;
+}
+
+.poll-result {
+margin-bottom: 12px;
+}
+
+.poll-result-title {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 5px;
+font-size: 13px;
+font-weight: 600;
+color: var(--cbv-color-text-primary);
+}
+
+.voting-progress {
+position: relative;
+width: 100%;
+height: 8px;
+background: var(--cbv-color-border);
+border-radius: 99px;
+overflow: hidden;
+}
+
+.voting-progress-bar {
+height: 100%;
+background: var(--cbv-color-bitcoin);
+width: 0;
+border-radius: 99px;
+transition: width 0.5s ease-in-out;
+}
+
+.voting-progress-percentage {
+font-size: 12px;
+color: var(--cbv-color-text-secondary);
+}
+
+.poll-total-votes {
+display: flex;
+justify-content: space-between;
+margin-bottom: 4px;
+margin-top: 16px;
+}
+
+.poll-total-wrapper {
+display: flex;
+gap: 6px;
+color: var(--cbv-color-text-secondary);
+font-size: 13px;
+}
+
+.end-text {
+text-align: right;
+color: var(--cbv-color-text-secondary);
+font-size: 13px;
+}
+
+/* ==========================================================================
+   Action buttons (check results / return)
+   ========================================================================== */
+
+.cbv-check-results {
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	padding: 10px 18px;
+	border: none;
+	border-radius: var(--cbv-radius-md);
+	background: var(--cbv-color-bitcoin);
+	color: #fff;
+	cursor: pointer;
+	font-family: var(--cbv-font-family);
+	font-size: 14px;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	transition: background-color var(--cbv-transition),
+	            box-shadow var(--cbv-transition),
+	            transform var(--cbv-transition);
+}
+
+.cbv-check-results:hover {
+	background: var(--cbv-color-bitcoin-hover);
+	box-shadow: 0 2px 8px rgba(247, 147, 26, 0.35);
+	transform: translateY(-1px);
+}
+
+.cbv-check-results:active {
+	background: var(--cbv-color-bitcoin-active);
+	box-shadow: none;
+	transform: translateY(0);
+}
+
+.cbv-check-results:focus-visible {
+	outline: 2px solid var(--cbv-color-bitcoin);
+	outline-offset: 2px;
 }
 
 .return-button {
-  height: 18px;
-  border: none;
-  padding: 0px 12px;
-  border-radius: 8px;
-  justify-content: center;
-  align-items: center;
-  padding-bottom: 1px;
-  color: #3d3d3d;
-  outline: 1px solid rgba(61, 61, 61, 0.24);
-  background-color: #f2f2f2;
-  cursor: pointer;
-}
-
-.return-buton-visible {
-  display: flex !important;
-}
-
-.return-button-hidden {
-  display: none !important;
+height: 24px;
+border: 1px solid var(--cbv-color-border);
+padding: 0 12px;
+border-radius: var(--cbv-radius-sm);
+display: flex;
+justify-content: center;
+align-items: center;
+color: var(--cbv-color-text-secondary);
+background: var(--cbv-color-bg-input);
+cursor: pointer;
+font-size: 12px;
+font-family: var(--cbv-font-family);
+transition: border-color var(--cbv-transition), background var(--cbv-transition);
 }
 
 .return-button:hover {
-  background-color: #dadada;
-  transition: 0.3s;
+border-color: var(--cbv-color-bitcoin);
+background: var(--cbv-color-bg-input-hover);
+color: var(--cbv-color-text-primary);
 }
 
-.dark-theme .qr-lightning-container,
-.dark-theme .qr-address-title {
-  color: #f2f2f2;
+.return-buton-visible { display: flex !important; }
+.return-button-hidden { display: none !important; }
+
+/* ==========================================================================
+   Fullscreen iframe payment modal (booking/donation style)
+   ========================================================================== */
+
+.cbv-modal-backdrop {
+	display: none;
+	position: fixed;
+	inset: 0;
+	z-index: 999999;
+	background: rgba(0, 0, 0, 0.65);
+	align-items: center;
+	justify-content: center;
+}
+
+.cbv-modal {
+	position: relative;
+	width: 100vw;
+	height: 100vh;
+	background: #fff;
+	overflow: hidden;
+}
+
+.cbv-modal-iframe {
+	width: 100%;
+	height: 100%;
+	border: none;
+	background: #fff;
+}
+
+/* ==========================================================================
+   Payment modal / QR popup
+   ========================================================================== */
+
+.blur-overlay {
+display: none;
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+backdrop-filter: blur(4px);
+background-color: rgba(0, 0, 0, 0.45);
+z-index: 9999;
+max-width: 100% !important;
+max-height: 100% !important;
+}
+
+#blur-overlay-outer { z-index: 99998; }
+#coinsnap-popup-outer { z-index: 99999; }
+
+.qr-container {
+display: none;
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+background: var(--cbv-color-bg-card);
+border: 1px solid var(--cbv-color-border);
+box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+z-index: 99999;
+border-radius: var(--cbv-radius-lg);
+text-align: center;
+flex-direction: column;
+align-items: center;
+width: 90%;
+max-width: 720px;
+max-height: 95%;
+overflow: auto;
+box-sizing: border-box;
+gap: 12px;
+}
+
+.qr-container h4 {
+margin-bottom: 0;
+}
+
+.qr-container img {
+max-width: 200px !important;
+}
+
+.close-popup {
+position: absolute;
+top: 10px;
+right: 15px;
+font-size: 24px;
+cursor: pointer;
+color: var(--cbv-color-text-secondary);
+line-height: 1;
+}
+
+.close-popup:hover {
+color: var(--cbv-color-text-primary);
+}
+
+.qr-amount {
+font-weight: 700;
+font-size: 16px;
+color: var(--cbv-color-text-primary);
+}
+
+.qr-fiat {
+color: var(--cbv-color-text-secondary);
+margin-bottom: 2px;
+display: none;
+font-size: 14px !important;
+}
+
+.qr-lightning-container {
+display: flex;
+justify-content: space-between;
+align-items: center;
+gap: 8px;
+color: var(--cbv-color-text-primary);
+font-size: 14px !important;
+}
+
+.qr-address-title {
+font-weight: 600;
+text-align: left;
+color: var(--cbv-color-text-secondary);
+font-size: 12px;
+}
+
+.qr-address-wrapper {
+display: flex;
+flex-direction: column;
+}
+
+.qr-copy-icon {
+cursor: pointer;
+color: var(--cbv-color-text-secondary);
+}
+
+.qr-copy-icon:hover {
+color: var(--cbv-color-bitcoin);
+transition: color var(--cbv-transition);
+}
+
+.qr-help-text {
+width: 300px;
+color: var(--cbv-color-text-muted);
+font-size: 12px;
+}
+
+.qr-summary {
+cursor: pointer;
+color: var(--cbv-color-bitcoin);
+display: none;
+user-select: none;
+gap: 4px;
+justify-content: center;
+align-items: center;
+font-size: 14px !important;
+}
+
+.qr-details[open] .qr-lightning-container {
+animation: slideDown 0.3s ease-out forwards;
+}
+
+.qr-details .qr-lightning-container {
+max-height: 0;
+transition: max-height 0.3s ease-out;
+}
+
+.qr-details[open] .qr-dropdown {
+transform: rotate(180deg);
+}
+
+.qr-dropdown {
+display: inline-block;
+font-size: 8px;
+}
+
+@keyframes slideDown {
+from { max-height: 0; opacity: 0; }
+to   { max-height: 100px; opacity: 1; }
+}
+
+.qr-code-btc {
+display: none;
+width: 42px;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+}
+
+/* ==========================================================================
+   Payment states inside popup
+   ========================================================================== */
+
+.payment-loading {
+display: none;
+padding: 20px;
+}
+
+.payment-popup {
+display: none;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+padding: 20px;
+}
+
+#thank-you-popup,
+.thank-you-popup {
+display: none;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+}
+
+.checkmark-img {
+display: flex;
+width: 120px;
+}
+
+.public-donor-popup {
+	text-align: left;
+	display: flex;
+	flex-direction: column;
+	width: -webkit-fill-available;
+	margin: 20px;
+}
+
+/* Donor form — inputs */
+.qr-container .public-donor-popup .public-donor-form label {
+	display: block;
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--cbv-color-text-secondary);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	margin-bottom: 6px;
+	margin-top: 4px;
+}
+
+.qr-container .public-donor-popup .public-donor-form input {
+	width: 100%;
+	padding: 10px 12px;
+	border: 1px solid var(--cbv-color-border);
+	border-radius: var(--cbv-radius-md);
+	font-family: var(--cbv-font-family);
+	font-size: 14px;
+	line-height: 1.5;
+	color: var(--cbv-color-text-primary);
+	background: var(--cbv-color-bg-input);
+	outline: none;
+	margin-bottom: 12px;
+	box-sizing: border-box;
+	transition: border-color var(--cbv-transition), box-shadow var(--cbv-transition);
+}
+
+.qr-container .public-donor-popup .public-donor-form input:hover {
+	border-color: var(--cbv-color-border-hover);
+	background: var(--cbv-color-bg-input-hover);
+}
+
+.qr-container .public-donor-popup .public-donor-form input:focus {
+	border-color: var(--cbv-color-border-focus);
+	box-shadow: 0 0 0 3px var(--cbv-color-focus-ring);
+	background: var(--cbv-color-bg-input);
+}
+
+.qr-container .public-donor-popup .public-donor-form input.error {
+	border-color: #e53e3e !important;
+	box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.2);
+}
+
+/* Person grid (First Name / Last Name / Email side by side) */
+.person-grid {
+	display: flex;
+	gap: 8px;
+}
+
+.person-grid .person-cell {
+	flex: 1;
+}
+
+.person-grid .person-cell input {
+	margin-bottom: 0 !important;
+}
+
+@media screen and (max-width: 600px) {
+	.person-grid {
+		flex-direction: column;
+	}
+}
+
+/* Address grid */
+.address-grid {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin-bottom: 12px;
+}
+
+.address-row {
+	display: flex;
+	gap: 8px;
+}
+
+.address-row .address-cell.half {
+	width: 50%;
+}
+
+.address-row .address-cell.quart {
+	flex: 1;
+}
+
+.address-row .address-cell input {
+	margin-bottom: 0 !important;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+/* ==========================================================================
+   Loader
+   ========================================================================== */
+
+.loader {
+border: 4px solid var(--cbv-color-border);
+border-top: 4px solid var(--cbv-color-bitcoin);
+border-radius: 50%;
+width: 40px;
+height: 40px;
+animation: cbv-spin 0.8s linear infinite;
+}
+
+@keyframes cbv-spin {
+0%   { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   Dark theme overrides
+   ========================================================================== */
+
+.dark-theme {
+--cbv-color-text-primary:   #f1f1f1;
+--cbv-color-text-secondary: #a0a0a0;
+--cbv-color-text-muted:     #6a6a6a;
+--cbv-color-border:         #3a3a3a;
+--cbv-color-border-hover:   #555555;
+--cbv-color-bg-card:        #2c2c2c;
+--cbv-color-bg-input:       #3a3a3a;
+--cbv-color-bg-input-hover: #444444;
+--cbv-color-bg-option:      #363636;
+--cbv-color-bg-option-hover:#4a3520;
 }
 
 .dark-theme .coinsnap-bitcoin-voting-form-container,
 .dark-theme .qr-container {
-  background-color: #2c2c2c;
-  color: white;
+background-color: var(--cbv-color-bg-card);
+color: var(--cbv-color-text-primary);
 }
 
-.dark-theme .coinsnap-bitcoin-voting-form-container h3,
-.dark-theme .check-results,
-.dark-theme .end-text,
-.dark-theme .qr-amount,
-.dark-theme .qr-fiat,
-.dark-theme h3,
-.dark-theme h4,
-.dark-theme .poll-total-wrapper,
-.dark-theme .close-popup {
-  color: white;
+.dark-theme .coinsnap-bitcoin-voting-voting-form input,
+.dark-theme .coinsnap-bitcoin-voting-message {
+background-color: var(--cbv-color-bg-input) !important;
+border-color: var(--cbv-color-border) !important;
+color: var(--cbv-color-text-primary) !important;
 }
 
-.dark-theme .poll-option,
-.dark-theme .check-results,
+.dark-theme .currency-swapper {
+background-color: var(--cbv-color-bg-input) !important;
+border-color: var(--cbv-color-border) !important;
+color: var(--cbv-color-text-primary) !important;
+background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="%23a0a0a0" d="M7 10l5 5 5-5H7z"/></svg>');
+}
+
+.dark-theme .poll-option {
+background: var(--cbv-color-bg-option);
+color: var(--cbv-color-text-primary);
+border-color: var(--cbv-color-border) !important;
+}
+
+.dark-theme .poll-option:hover {
+background: var(--cbv-color-bg-option-hover);
+}
+
+.dark-theme .voting-progress {
+background: var(--cbv-color-border);
+}
+
+.dark-theme .cbv-check-results {
+	background: var(--cbv-color-bitcoin);
+	color: #fff;
+	border: none;
+}
+
+.dark-theme .cbv-check-results:hover {
+	background: var(--cbv-color-bitcoin-hover);
+}
+
 .dark-theme .return-button {
-  background: #3a3a3a;
-  color: white;
+background: var(--cbv-color-bg-input);
+border-color: var(--cbv-color-border);
+color: var(--cbv-color-text-secondary);
 }
 
-.dark-theme .poll-option:hover,
-.dark-theme .check-results:hover,
 .dark-theme .return-button:hover {
-  background: #4a4a4a;
+background: var(--cbv-color-bg-input-hover);
 }
 
-#blur-overlay-outer {
-    z-index: 99998;
+/* Legacy theme class aliases */
+.coinsnap-bitcoin-voting-light-theme {
+background-color: transparent;
+color: var(--cbv-color-text-primary);
 }
 
-#coinsnap-popup-outer {
-    z-index: 99999;
+.coinsnap-bitcoin-voting-dark-theme {
+background-color: transparent;
+color: var(--cbv-color-text-primary);
 }
 
-.blur-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  backdrop-filter: blur(4px);
-  background-color: rgba(0, 0, 0, 0.3);
-  z-index: 9999;
-  max-width: 100%!important;
-  max-height: 100%!important;
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media ( max-width: 520px ) {
+.coinsnap-bitcoin-voting-form-container {
+padding: 20px 16px;
 }
 
-.public-donor-popup {
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  width: -webkit-fill-available;
-  margin: 20px;
+.narrow-form,
+.multi-form {
+max-width: 100%;
 }
 
-.payment-loading {
-  display: none;
-  padding:20px;
+.qr-container {
+width: 95%;
 }
-
-.payment-popup {
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding:20px;
-}
-
-.qr-container .public-donor-popup .public-donor-form input {
-  margin-bottom: 16px !important;
-}
-
-.thank-you-popup {
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding:20px;
-}
-
-.error {
-  border: 2px solid #ff4444 !important;
-}
-
-.error-message {
-  border: 2px solid #ff4444 !important; color:#ff4444; text-align:center;
-}
-
-.opt-out-wrapper {
-  display: flex;
-  gap: 12px;
-  justify-content: space-between;
-}
-
-.opt-out-wrapper input {
-  width: 10% !important;
-}
-
-.opt-out-wrapper label {
-  font-weight: normal;
-}
-
-.qr-container button {
-  width: 100% !important;
-}
-
-.public-donor-list-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.coinsnap-bitcoin-voting-pagination {
-  text-align: right;
-  margin-top: 12px;
-}
-
-.coinsnap-bitcoin-voting-pagination .current {
-  color: #3498db;
-}
-
-.person-grid {
-    display: flex;
-    gap: 8px;
-}
-
-@media screen and (max-width: 600px) {  
-    .person-grid {
-        flex-direction: column;
-    }
-}
-
-.address-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.address-row {
-  display: flex;
-  gap: 8px;
-  justify-content: space-between;
-}
-
-.address-row .address-cell.half {
-    width:50%;
-}
-
-.address-row .address-cell.quart {
-    width:25%;
-}
-
-.qr-container .public-donor-popup .public-donor-form .address-row input {
-  margin-bottom: 0px !important;
-}
-
-.public-donor-form input {
-  padding: 12px 12px 10px !important;
-  width: 100%;
-  transition: .2s linear;
-  -moz-transition: .2s linear;
-  -webkit-transition: .2s linear;
-  -o-transition: .2s linear;
-  outline: 0;
-  position: relative;
-  z-index: 9;
-  border-radius: 4px !important;
-  box-sizing: border-box;
-  background-color: #f9f9f9 !important;
-  border: 1px solid #ddd !important;
-  color: #333 !important;
-}
-
-.dark-theme .public-donor-form input {
-  background-color: #f9f9f9 !important;
-  border: 1px solid #ddd !important;
-  color: #333 !important;
-}
-
-.public-donor-form button {
-  margin-top: 20px;
-  width: 100%;
-  padding: 10px;
-  background-color: #6393c7;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-}
-
-.public-donor-form label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
 }

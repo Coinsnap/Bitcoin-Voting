@@ -37,14 +37,14 @@ class Bitcoin_Voting_Settings {
             'Settings',
             'Settings',
             'manage_options',
-            'coinsnap-bitcoin-voting-settings',
+            'coinsnap-bitcoin-voting',
             [ $this, 'render_settings_page' ]
         );
 
         add_submenu_page(
             'coinsnap-bitcoin-voting',
-            'Donations',
-            'Donations',
+            'Transactions',
+            'Transactions',
             'manage_options',
             'coinsnap-bitcoin-voting-donation-list',
             [ $this->donation_list, 'render_donations_page' ]

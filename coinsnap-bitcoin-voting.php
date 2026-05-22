@@ -17,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-if(!defined( 'COINSNAP_BITCOIN_VOTING_REFERRAL_CODE' ) ) { define( 'COINSNAP_BITCOIN_VOTING_REFERRAL_CODE', 'D46835' );}
+if(!defined( 'COINSNAP_BITCOIN_VOTING_REFERRAL_CODE' ) ) { define( 'COINSNAP_BITCOIN_VOTING_REFERRAL_CODE', 'D19833' );}
 if(!defined( 'COINSNAP_BITCOIN_VOTING_VERSION' ) ) { define( 'COINSNAP_BITCOIN_VOTING_VERSION', '1.2.3' );}
 if(!defined( 'COINSNAP_BITCOIN_VOTING_PHP_VERSION' ) ) { define( 'COINSNAP_BITCOIN_VOTING_PHP_VERSION', '8.0' );}
 if(!defined( 'COINSNAP_BITCOIN_VOTING_PLUGIN_DIR' ) ){ define('COINSNAP_BITCOIN_VOTING_PLUGIN_DIR', plugin_dir_url(__FILE__));}
@@ -211,11 +211,11 @@ class Coinsnap_Bitcoin_Voting
         global $post;
     
         if ( is_a($post, 'WP_Post') && has_shortcode($post->post_content, 'coinsnap_bitcoin_voting') ) {
-            wp_enqueue_style('coinsnap-bitcoin-voting-style', COINSNAP_BITCOIN_VOTING_PLUGIN_DIR . 'assets/css/style.css', [], COINSNAP_BITCOIN_VOTING_VERSION);
-            wp_enqueue_script('coinsnap-bitcoin-voting-script', COINSNAP_BITCOIN_VOTING_PLUGIN_DIR . 'assets/js/voting.js', ['jquery'], COINSNAP_BITCOIN_VOTING_VERSION, true);
+            wp_enqueue_style('coinsnap-bitcoin-voting-style', COINSNAP_BITCOIN_VOTING_PLUGIN_DIR . 'assets/css/style.css', [], filemtime( plugin_dir_path( __FILE__ ) . 'assets/css/style.css' ));
+            wp_enqueue_script('coinsnap-bitcoin-voting-script', COINSNAP_BITCOIN_VOTING_PLUGIN_DIR . 'assets/js/voting.js', ['jquery'], filemtime( plugin_dir_path( __FILE__ ) . 'assets/js/voting.js' ), true);
 
             $provider_options = \CoinsnapCore\Admin\SettingsPage::get_settings_for(coinsnap_bitcoin_voting_plugin_instance());
-            wp_enqueue_script('coinsnap-bitcoin-voting-popup-script', COINSNAP_BITCOIN_VOTING_PLUGIN_DIR . 'assets/js/popup.js', ['jquery'], COINSNAP_BITCOIN_VOTING_VERSION, true);
+            wp_enqueue_script('coinsnap-bitcoin-voting-popup-script', COINSNAP_BITCOIN_VOTING_PLUGIN_DIR . 'assets/js/popup.js', ['jquery'], filemtime( plugin_dir_path( __FILE__ ) . 'assets/js/popup.js' ), true);
             
             $sharedDataArray = [
                 'provider' => $provider_options['payment_provider'],
@@ -231,7 +231,7 @@ class Coinsnap_Bitcoin_Voting
                 $sharedDataArray['coinsnapApiKey']  = $provider_options['coinsnap_api_key'];
             }
 
-            wp_enqueue_script('coinsnap-bitcoin-voting-shared-script', COINSNAP_BITCOIN_VOTING_PLUGIN_DIR . 'assets/js/shared.js', ['jquery'], COINSNAP_BITCOIN_VOTING_VERSION, true);
+            wp_enqueue_script('coinsnap-bitcoin-voting-shared-script', COINSNAP_BITCOIN_VOTING_PLUGIN_DIR . 'assets/js/shared.js', ['jquery'], filemtime( plugin_dir_path( __FILE__ ) . 'assets/js/shared.js' ), true);
             wp_localize_script('coinsnap-bitcoin-voting-shared-script', 'Coinsnap_Bitcoin_Voting_sharedData', $sharedDataArray);
         }
     }
