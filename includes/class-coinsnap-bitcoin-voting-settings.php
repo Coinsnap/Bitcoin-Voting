@@ -69,7 +69,7 @@ class Bitcoin_Voting_Settings {
 
     public function render_settings_page(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'Insufficient permissions.', 'Bitcoin-Voting' ) );
+            wp_die( esc_html__( 'Insufficient permissions.', 'bitcoin-voting' ) );
         }
         \CoinsnapCore\Admin\SettingsPage::render_page_for( coinsnap_bitcoin_voting_plugin_instance() );
     }

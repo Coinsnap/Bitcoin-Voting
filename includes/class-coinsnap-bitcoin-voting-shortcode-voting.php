@@ -155,7 +155,7 @@ class Coinsnap_Bitcoin_Voting_Shortcode_Voting {
                 catch (\Exception $e) {
                     $response = [
                             'result' => false,
-                            'message' => __('Coinsnap Bitcoin Donation: API connection is not established', 'Bitcoin-Voting')
+                            'message' => __('Coinsnap Bitcoin Donation: API connection is not established', 'bitcoin-voting')
                     ];
                     $this->sendJsonResponse($response);
                 }
@@ -183,8 +183,8 @@ class Coinsnap_Bitcoin_Voting_Shortcode_Voting {
                             };
                         }?>
                         <div class="poll-total-votes">
-                            <button id="cbv-check-results<?php echo esc_html($poll_id);?>" data-poll-id="<?php echo esc_html($poll_id);?>" class="cbv-check-results"><?php echo esc_html__('Check results','Bitcoin-Voting');?></button>
-                            <div class="end-text"><?php echo esc_html__('Ends in:','Bitcoin-Voting');?> <?php echo esc_html($time_until_end); ?></div>
+                            <button id="cbv-check-results<?php echo esc_html($poll_id);?>" data-poll-id="<?php echo esc_html($poll_id);?>" class="cbv-check-results"><?php echo esc_html__('Check results','bitcoin-voting');?></button>
+                            <div class="end-text"><?php echo esc_html__('Ends in:','bitcoin-voting');?> <?php echo esc_html($time_until_end); ?></div>
                         </div>
 
                     </div><?php
@@ -195,12 +195,12 @@ class Coinsnap_Bitcoin_Voting_Shortcode_Voting {
                         if($checkInvoice['error'] === 'currencyError'){
                             $errorMessage = sprintf( 
                             /* translators: 1: Currency */
-                            __( 'Currency %1$s is not supported by Coinsnap', 'Bitcoin-Voting' ), strtoupper( $pmpro_currency ));
+                            __( 'Currency %1$s is not supported by Coinsnap', 'bitcoin-voting' ), strtoupper( $pmpro_currency ));
                         }      
                         elseif($checkInvoice['error'] === 'amountError'){
                                     $errorMessage = sprintf( 
                                     /* translators: 1: Amount, 2: Currency */
-                                    __( 'Invoice amount cannot be less than %1$s %2$s', 'Bitcoin-Voting' ), $checkInvoice['min_value'], strtoupper( $pmpro_currency ));
+                                    __( 'Invoice amount cannot be less than %1$s %2$s', 'bitcoin-voting' ), $checkInvoice['min_value'], strtoupper( $pmpro_currency ));
                         }
                         else {
                             $errorMessage = $checkInvoice['error'];
