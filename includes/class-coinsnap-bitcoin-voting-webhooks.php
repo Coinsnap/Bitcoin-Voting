@@ -7,7 +7,6 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
         add_action('rest_api_init', [$this, 'register_poll_check_endpoint']);
         add_action('rest_api_init', [$this, 'register_poll_results_endpoint']);
         add_action('rest_api_init', [$this, 'register_check_payment_endpoint']);
-        add_action('rest_api_init', [$this, 'register_get_wh_secret_endpoint']);
     }
 
     public function register_poll_results_endpoint(){
@@ -24,22 +23,6 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
                 ]
             ]
         ]);
-    }
-
-    public function register_get_wh_secret_endpoint()
-    {
-        register_rest_route('voting/v1', '/get-wh-secret', [
-            'methods' => 'GET',
-            'callback' => [$this, 'get_wh_secret'],
-            'permission_callback' => function() {
-                return current_user_can('manage_options');
-            },
-        ]);
-    }
-
-    function get_wh_secret()
-    {
-        return $this->get_webhook_secret();
     }
 
     public function register_poll_check_endpoint()
