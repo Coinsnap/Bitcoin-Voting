@@ -470,16 +470,16 @@ class Coinsnap_Bitcoin_Voting_Polls_Metabox {
                         <th scope="row"><?php echo esc_html($label); ?></th>
                         <td>
                             <select name="coinsnap_bitcoin_voting_polls_<?php echo esc_attr($field); ?>_visibility">
-                                <option value="mandatory" <?php selected($visibility_value, 'mandatory'); ?>><?php echo esc_html__('Mandatory', 'bitcoin-voting');?></option>
-                                <option value="optional" <?php selected($visibility_value, 'optional'); ?>><?php echo esc_html__('Optional', 'bitcoin-voting');?></option>
-                                <option value="hidden" <?php selected($visibility_value, 'hidden'); ?>><?php echo esc_html__('Hidden', 'bitcoin-voting');?></option>
+                                <option value="mandatory" <?php selected($visibility_value, 'mandatory'); ?>><?php echo esc_html__('Mandatory', 'coinsnap-bitcoin-voting');?></option>
+                                <option value="optional" <?php selected($visibility_value, 'optional'); ?>><?php echo esc_html__('Optional', 'coinsnap-bitcoin-voting');?></option>
+                                <option value="hidden" <?php selected($visibility_value, 'hidden'); ?>><?php echo esc_html__('Hidden', 'coinsnap-bitcoin-voting');?></option>
                             </select>
                         </td>
                     </tr>
                 <?php } ?>
                 <tr>
                     <th scope="row">
-                        <label for="coinsnap_bitcoin_voting_polls_custom_field_name"><?php echo esc_html__('Custom Field Name', 'bitcoin-voting');?></label>
+                        <label for="coinsnap_bitcoin_voting_polls_custom_field_name"><?php echo esc_html__('Custom Field Name', 'coinsnap-bitcoin-voting');?></label>
                     </th>
                     <td>
                         <input
