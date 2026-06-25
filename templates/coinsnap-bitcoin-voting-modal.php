@@ -6,13 +6,13 @@
         
         <form class="public-donor-form">
             <?php if ($first_name !== 'hidden' || $last_name !== 'hidden' || $email !== 'hidden'){?>
-            <label><?php esc_html_e('Donor Information', 'bitcoin-voting');?></label>
+            <label><?php esc_html_e('Donor Information', 'coinsnap-bitcoin-voting');?></label>
             <div class="person-grid">
             <?php if ($first_name !== 'hidden'): ?>
                 <div class="person-cell">
                 <input <?php echo $first_name === 'mandatory' ? 'required="required"' : ''; ?> type="text"
                     id="<?php echo esc_html($prefix); ?>first-name<?php echo esc_html($sufix); ?>"
-                    placeholder="<?php esc_html_e('First Name', 'bitcoin-voting'); echo $first_name === 'mandatory' ? '*' : ''; ?>">
+                    placeholder="<?php esc_html_e('First Name', 'coinsnap-bitcoin-voting'); echo $first_name === 'mandatory' ? '*' : ''; ?>">
                 </div>
             <?php endif; ?>
 
@@ -20,7 +20,7 @@
                 <div class="person-cell">
                     <input <?php echo $last_name === 'mandatory' ? 'required="required"' : ''; ?> type="text"
                     id="<?php echo esc_html($prefix); ?>last-name<?php echo esc_html($sufix); ?>"
-                    placeholder="<?php esc_html_e('Last Name', 'bitcoin-voting'); echo $last_name === 'mandatory' ? '*' : ''; ?>">
+                    placeholder="<?php esc_html_e('Last Name', 'coinsnap-bitcoin-voting'); echo $last_name === 'mandatory' ? '*' : ''; ?>">
                 </div>
             <?php endif; ?>
 
@@ -28,7 +28,7 @@
                 <div class="person-cell">
                 <input <?php echo $email === 'mandatory' ? 'required' : ''; ?> type="email"
                     id="<?php echo esc_html($prefix); ?>donor-email<?php echo esc_html($sufix); ?>"
-                    placeholder="<?php esc_html_e('Email', 'bitcoin-voting'); echo $email === 'mandatory' ? '*' : ''; ?>">
+                    placeholder="<?php esc_html_e('Email', 'coinsnap-bitcoin-voting'); echo $email === 'mandatory' ? '*' : ''; ?>">
                 </div>
             <?php endif; ?>
             </div>
@@ -38,23 +38,23 @@
             }?>
 
             <?php if ($address !== 'hidden'): ?>
-                <label><?php esc_html_e('Address', 'bitcoin-voting');?></label>
+                <label><?php esc_html_e('Address', 'coinsnap-bitcoin-voting');?></label>
                 <div class="address-grid">
                     <div class="address-row">
                         <div class="address-cell half">
                             <input <?php echo $address === 'mandatory' ? 'required="required"' : ''; ?> type="text"
                             id="<?php echo esc_html($prefix); ?>street<?php echo esc_html($sufix); ?>"
-                            placeholder="<?php esc_html_e('Street', 'bitcoin-voting'); echo ($address === 'mandatory')? '*' : '';?>" />
+                            placeholder="<?php esc_html_e('Street', 'coinsnap-bitcoin-voting'); echo ($address === 'mandatory')? '*' : '';?>" />
                         </div>
                         <div class="address-cell quart">
                         <input <?php echo $address === 'mandatory' ? 'required="required"' : ''; ?> type="text"
                             id="<?php echo esc_html($prefix); ?>house-number<?php echo esc_html($sufix); ?>"
-                            placeholder="<?php esc_html_e('No.', 'bitcoin-voting'); echo ($address === 'mandatory')? '*' : '';?>" />
+                            placeholder="<?php esc_html_e('No.', 'coinsnap-bitcoin-voting'); echo ($address === 'mandatory')? '*' : '';?>" />
                         </div>
                         <div class="address-cell quart">
                         <input <?php echo $address === 'mandatory' ? 'required="required"' : ''; ?> type="text"
                             id="<?php echo esc_html($prefix); ?>postal<?php echo esc_html($sufix); ?>"
-                            placeholder="<?php esc_html_e('ZIP', 'bitcoin-voting'); echo ($address === 'mandatory')? '*' : '';?>" />
+                            placeholder="<?php esc_html_e('ZIP', 'coinsnap-bitcoin-voting'); echo ($address === 'mandatory')? '*' : '';?>" />
                         </div>
                     </div>
                     <div class="address-row">
@@ -62,12 +62,12 @@
                         <input <?php echo $address === 'mandatory' ? 'required="required"' : ''; ?>
                             type="text"
                             id="<?php echo esc_html($prefix); ?>town<?php echo esc_html($sufix); ?>"
-                            placeholder="<?php esc_html_e('Town', 'bitcoin-voting'); echo ($address === 'mandatory')? '*' : '';?>" />
+                            placeholder="<?php esc_html_e('Town', 'coinsnap-bitcoin-voting'); echo ($address === 'mandatory')? '*' : '';?>" />
                         </div>
                         <div class="address-cell half">
                         <input <?php echo $address === 'mandatory' ? 'required="required"' : ''; ?> type="text"
                             id="<?php echo esc_html($prefix); ?>country<?php echo esc_html($sufix); ?>"
-                            placeholder="<?php esc_html_e('Country', 'bitcoin-voting'); echo ($address === 'mandatory')? '*' : '';?>" />
+                            placeholder="<?php esc_html_e('Country', 'coinsnap-bitcoin-voting'); echo ($address === 'mandatory')? '*' : '';?>" />
                         </div>
                     </div>
                 </div>
@@ -96,7 +96,7 @@
             <summary id="<?php echo esc_html($prefix); ?>qr-summary<?php echo esc_html($sufix); ?>" class="qr-summary">Details <span class="qr-dropdown">&#9660;</span></summary>
             <div class="qr-address-wrapper" id="<?php echo esc_html($prefix); ?>lightning-wrapper<?php echo esc_html($sufix); ?>" style="display: none; margin-top:8px">
                 <div class="qr-address-title">
-                    <?php esc_html_e('Lightning', 'bitcoin-voting');?>:
+                    <?php esc_html_e('Lightning', 'coinsnap-bitcoin-voting');?>:
                 </div>
                 <div id="<?php echo esc_html($prefix); ?>qr-lightning-container<?php echo esc_html($sufix); ?>" style="display: none;" class="qr-lightning-container">
                     <div class="qr-lightning" id="<?php echo esc_html($prefix); ?>qr-lightning<?php echo esc_html($sufix); ?>"></div>
@@ -108,7 +108,7 @@
             </div>
             <div id="<?php echo esc_html($prefix); ?>btc-wrapper<?php echo esc_html($sufix); ?>" style="display: none; margin-top:12px" class="qr-address-wrapper">
                 <div class="qr-address-title">
-                    <?php esc_html_e('Address', 'bitcoin-voting');?>:
+                    <?php esc_html_e('Address', 'coinsnap-bitcoin-voting');?>:
                 </div>
                 <div id="<?php echo esc_html($prefix); ?>qr-btc-container<?php echo esc_html($sufix); ?>" style="display: none;" class="qr-lightning-container">
                     <div class="qr-lightning" id="<?php echo esc_html($prefix); ?>qr-btc<?php echo esc_html($sufix); ?>"></div>

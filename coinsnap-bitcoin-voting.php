@@ -6,7 +6,7 @@
  * Version:            1.2.3
  * Author:             Coinsnap
  * Author URI:         https://coinsnap.io/
- * Text Domain:        bitcoin-voting
+ * Text Domain:        coinsnap-bitcoin-voting
  * Domain Path:         /languages
  * Tested up to:        7.0
  * License:             GPL2
