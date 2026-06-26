@@ -9,11 +9,22 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
         add_action('rest_api_init', [$this, 'register_check_payment_endpoint']);
     }
 
+    public function verify_rest_nonce(WP_REST_Request $request) {
+        $nonce = $request->get_header('X-WP-Nonce');
+        if (empty($nonce)) {
+            return new WP_Error('rest_forbidden', __('A valid nonce is required.'), ['status' => 403]);
+        }
+        if (!wp_verify_nonce($nonce, 'wp_rest')) {
+            return new WP_Error('rest_forbidden', __('Invalid or expired nonce.'), ['status' => 403]);
+        }
+        return true;
+    }
+
     public function register_poll_results_endpoint(){
         register_rest_route('voting/v1', '/voting_results/(?P<poll_id>\d+)', [
             'methods' => 'GET',
             'callback' => [$this, 'get_results'],
-            'permission_callback' => '__return_true', // TODO: Add proper permissions later
+            'permission_callback' => [$this, 'verify_rest_nonce'],
             'args' => [
                 'poll_id' => [
                     'required' => true,
@@ -30,7 +41,8 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
         register_rest_route('voting/v1', '/payment-status-long-poll/(?P<payment_id>[a-zA-Z0-9]+)/(?P<poll_id>\d+)', [
             'methods' => 'GET',
             'callback' => [$this, 'get_payment_status_long_poll'],
-            'permission_callback' => '__return_true', // TODO: Add proper permissions later
+            'permission_callback' => [$this, 'verify_rest_nonce'],
+
             'args' => [
                 'payment_id' => [
                     'required' => true,
@@ -53,7 +65,8 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
         register_rest_route('voting/v1', '/check-payment-status/(?P<payment_id>[a-zA-Z0-9]+)', [
             'methods' => 'GET',
             'callback' => [$this, 'get_check_payment_status'],
-            'permission_callback' => '__return_true', // TODO: Add proper permissions later
+            'permission_callback' => [$this, 'verify_rest_nonce'],
+
             'args' => [
                 'payment_id' => [
                     'required' => true,

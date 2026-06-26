@@ -27,7 +27,9 @@ jQuery(document).ready(function($) {
         
 
         const fetchResultsFromDb = (pollId, votingForm) => {
-            fetch(`/wp-json/voting/v1/voting_results/${pollId}`)
+            fetch(`/wp-json/voting/v1/voting_results/${pollId}`, {
+                    headers: { 'X-WP-Nonce': Coinsnap_Bitcoin_Voting_sharedData?.nonce || '' }
+                })
                 .then(response => response.json())
                 .then(data => {
                     const votesDb = data.results;
