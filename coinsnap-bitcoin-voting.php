@@ -414,6 +414,7 @@ class Coinsnap_Bitcoin_Voting
             $sharedDataArray = [
                 'provider' => $provider_options['payment_provider'],
                 'nonce'    => wp_create_nonce('wp_rest'),
+                'rest_url' => rest_url(),
             ];
             
             if ($provider_options['payment_provider'] === 'btcpay') {

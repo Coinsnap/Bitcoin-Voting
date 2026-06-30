@@ -65,6 +65,16 @@ class Bitcoin_Voting_Settings {
             'manage_options',
             'edit.php?post_type=coinsnap-pds'
         );
+
+        // Alias slug used by vendor BTCPayAuthorizer callback redirect.
+        add_submenu_page(
+            'coinsnap-bitcoin-voting',
+            'Settings',
+            '',
+            'manage_options',
+            'coinsnap-bitcoin-voting-settings',
+            [ $this, 'render_settings_page' ]
+        );
     }
 
     public function render_settings_page(): void {

@@ -223,7 +223,7 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
                     $post_data = array(
                         'post_title'    => $name,
                         'post_status'   => 'publish',
-                        'post_type'     => 'coinsnap-voting-pds',
+                        'post_type'     => 'coinsnap-pds',
                         'post_content'  => $message
                     );
 

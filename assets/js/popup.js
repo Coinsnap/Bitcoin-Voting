@@ -156,7 +156,7 @@ const popupButtonListener = (pollId, amount, amountFiat, currency, publicDonor) 
             var retryNum = 0;
 
             const checkPaymentStatus = () => {
-                fetch(`/wp-json/voting/v1/check-payment-status/${res.id}`, {
+                fetch(`${Coinsnap_Bitcoin_Voting_sharedData?.rest_url?.replace(/\/$/, '') || ''}/voting/v1/check-payment-status/${res.id}`, {
                         headers: { 'X-WP-Nonce': Coinsnap_Bitcoin_Voting_sharedData?.nonce || '' }
                     })
                     .then(response => response.json())

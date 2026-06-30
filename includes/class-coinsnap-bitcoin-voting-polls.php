@@ -694,13 +694,13 @@ class Coinsnap_Bitcoin_Voting_Polls_Metabox {
                 echo esc_html($date ?: '-');
                 break;
             case 'thank_you_message':
-                echo esc_html(get_post_meta($post_id, '_coinsnap_bitcoin_voting_polls_thank_you_message', true) ?: '');
+                echo esc_html(get_post_meta($post_id, '_coinsnap_bitcoin_voting_polls_thank_you_message', true) ?: '-');
                 break;
             case 'active':
-                echo get_post_meta($post_id, '_coinsnap_bitcoin_voting_polls_active', true) ? 'âœ“' : 'âœ—';
+                echo get_post_meta($post_id, '_coinsnap_bitcoin_voting_polls_active', true) ? '&#10004;' : '&#10008;';
                 break;
             case 'one_vote':
-                echo get_post_meta($post_id, '_coinsnap_bitcoin_voting_polls_one_vote', true) ? 'âœ“' : 'âœ—';
+                echo get_post_meta($post_id, '_coinsnap_bitcoin_voting_polls_one_vote', true) ? '&#10004;' : '&#10008;';
                 break;
             case 'shortcode':
                 echo '[coinsnap_bitcoin_voting id="' . esc_html($post_id) . '"]';

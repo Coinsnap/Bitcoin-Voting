@@ -9,7 +9,7 @@ class Bitcoin_Donation_List {
 	
         private function fetch_donations(){
 		$options  = get_option('coinsnap_bitcoin_voting_options', array());
-		$provider = isset( $options['provider'] ) ? $options['provider'] : '';
+		$provider = isset( $options['payment_provider'] ) ? $options['payment_provider'] : '';
 
 		if ($provider == 'coinsnap') {
 			$api_key = $options['coinsnap_api_key'];
@@ -58,7 +58,7 @@ class Bitcoin_Donation_List {
 		}
 
 		$options          = get_option('coinsnap_bitcoin_voting_options', array());
-		$provider         = isset( $options['provider'] ) ? $options['provider'] : '';
+		$provider         = isset( $options['payment_provider'] ) ? $options['payment_provider'] : '';
 		$btcpay_store_id  = isset( $options['btcpay_store_id'] ) ? $options['btcpay_store_id'] : '';
 		$btcpay_url       = isset( $options['btcpay_host'] ) ? $options['btcpay_host'] : '';
 		$btcpay_href      = $btcpay_url . '/stores/' . $btcpay_store_id . '/invoices';
@@ -139,11 +139,12 @@ class Bitcoin_Donation_List {
 	{
 		$invoice_id = $donation['id'];
 		$options = get_option('coinsnap_bitcoin_voting_options', array());
-		$provider = isset( $options['provider'] ) ? $options['provider'] : '';
+		$provider = isset( $options['payment_provider'] ) ? $options['payment_provider'] : '';
 		$isBtcpay = $provider === 'btcpay';
+		$btcpay_host = isset( $options['btcpay_host'] ) ? rtrim( $options['btcpay_host'], '/' ) : '';
 		$href = ($isBtcpay)
-			? "https://btcpay.coincharge.io/invoices/" . esc_html($invoice_id)
-			: "https://app.coinsnap.io/td/" . esc_html($invoice_id);
+			? $btcpay_host . '/invoices/' . esc_html($invoice_id)
+			: 'https://app.coinsnap.io/transactions/' . esc_html($invoice_id);
 		$poll_option = isset($donation['metadata']['option']) ? $donation['metadata']['option'] : ( isset($donation['metadata']['orderNumber']) ? $donation['metadata']['orderNumber'] : '' );
 		$voter_name  = isset($donation['metadata']['donorName']) ? $donation['metadata']['donorName'] : ( isset($donation['metadata']['name']) ? $donation['metadata']['name'] : '' );
 	?>
