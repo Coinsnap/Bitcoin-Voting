@@ -3,7 +3,7 @@
 Contributors: coinsnap
 Tags: Lightning, SATS, bitcoin, voting, polling, BTCPay
 Tested up to: 6.9
-Stable tag: 1.2.3
+Stable tag: 1.2.4
 License: GPL2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -179,6 +179,9 @@ Plugin's page on Coinsnap website: [https://coinsnap.io/modules/bitcoin-voting/]
 
 
 ## Changelog
+
+#### 1.2.4 :: 2026-07-02
+* New: Added Payment Confirmation page after successful vote payment.
 
 #### 1.0.0 :: 2025-01-31
 
