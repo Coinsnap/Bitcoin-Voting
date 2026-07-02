@@ -171,9 +171,6 @@ Plugin's page on Coinsnap website: [https://coinsnap.io/modules/bitcoin-voting/]
  
 === Changelog ===
 
-= 1.2.4 :: 2026-07-02 =
-* New: Added Payment Confirmation page after successful vote payment.
-
 = 1.0.0 :: 2025-04-30 =
 * Initial release.
 
@@ -200,3 +197,6 @@ Plugin's page on Coinsnap website: [https://coinsnap.io/modules/bitcoin-voting/]
 * Update: Added plugin isolation from other Coinsnap plugins in backend.
 * Update: Deleted currency exchange check on frontend.
 * Update: Added plugin isolation from other plugins in backend.
+
+= 1.2.4 :: 2026-07-02 =
+* New: Added Payment Confirmation page after successful vote payment.
