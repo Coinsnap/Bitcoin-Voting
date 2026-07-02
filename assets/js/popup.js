@@ -131,7 +131,8 @@ const popupButtonListener = (pollId, amount, amountFiat, currency, publicDonor) 
             modal:        true,
             optionId:     option,
             option:       optionName,
-            pollId:       pollId
+            pollId:       pollId,
+            pollTitle:    document.querySelector(`.coinsnap-bitcoin-voting-form[data-poll-id="${pollId}"]`)?.dataset?.pollTitle || ''
         };
 
         if (!validForm) { return; }
@@ -162,23 +163,14 @@ const popupButtonListener = (pollId, amount, amountFiat, currency, publicDonor) 
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 'completed') {
-                            // Close iframe modal
+                            // Close iframe modal if still open (shouldn't normally happen
+                            // since Coinsnap does a top-level redirect to confirmation page,
+                            // but handle edge cases where polling detects completed first).
                             if (votingModal && votingModal.backdrop) {
                                 votingModal.backdrop.remove();
                                 votingModal = null;
                             }
-                            // Show thank-you inside qr-container
-                            showVotingElementsById(['blur-overlay', 'qr-container'], 'flex', 'coinsnap-bitcoin-voting-', pollId);
-                            hideVotingElementById('public-donor-popup', 'coinsnap-bitcoin-voting-', pollId);
-                            showVotingElementById('thank-you-popup', 'flex', 'coinsnap-bitcoin-voting-', pollId);
                             setCookie(`coinsnap_poll_${pollId}`, option, 30 * 24 * 60);
-                            setTimeout(() => {
-                                resetPopup(pollId);
-                                document.getElementById(`cbv-check-results${pollId}`)?.click();
-                            }, 2000);
-                            setTimeout(() => {
-                                document.getElementById(`return-button${pollId}`)?.click();
-                            }, 7000);
 
                         } else if (!votingModal || !document.body.contains(votingModal.backdrop)) {
                             // Modal was closed by user � stop polling

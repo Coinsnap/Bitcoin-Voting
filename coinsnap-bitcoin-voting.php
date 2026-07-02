@@ -3,7 +3,7 @@
  * Plugin Name:        Coinsnap Bitcoin Voting
  * Plugin URI:         https://coinsnap.io/coinsnap-bitcoin-voting-plugin/
  * Description:        Easy Bitcoin voting on a WordPress website
- * Version:            1.2.3
+ * Version:            1.2.4
  * Author:             Coinsnap
  * Author URI:         https://coinsnap.io/
  * Text Domain:        coinsnap-bitcoin-voting
@@ -65,6 +65,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/class-coinsnap-bitcoin-voting
 require_once plugin_dir_path(__FILE__) . 'includes/class-coinsnap-bitcoin-voting-shortcode-voting.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-coinsnap-bitcoin-voting-webhooks.php';
 require_once plugin_dir_path(__FILE__) . 'includes/class-coinsnap-bitcoin-voting-client.php';
+require_once plugin_dir_path(__FILE__) . 'includes/class-coinsnap-bitcoin-voting-confirmation.php';
 
 register_activation_hook(__FILE__, 'coinsnap_bitcoin_voting_create_voting_payments_table');
 register_deactivation_hook(__FILE__, 'coinsnap_bitcoin_voting_deactivate');
@@ -412,9 +413,10 @@ class Coinsnap_Bitcoin_Voting
             wp_enqueue_script('coinsnap-bitcoin-voting-popup-script', COINSNAP_BITCOIN_VOTING_PLUGIN_DIR . 'assets/js/popup.js', ['jquery'], filemtime( plugin_dir_path( __FILE__ ) . 'assets/js/popup.js' ), true);
             
             $sharedDataArray = [
-                'provider' => $provider_options['payment_provider'],
-                'nonce'    => wp_create_nonce('wp_rest'),
-                'rest_url' => rest_url(),
+                'provider'         => $provider_options['payment_provider'],
+                'nonce'            => wp_create_nonce('wp_rest'),
+                'rest_url'         => rest_url(),
+                'confirmation_url' => Coinsnap_Bitcoin_Voting_Confirmation::get_url(),
             ];
             
             if ($provider_options['payment_provider'] === 'btcpay') {

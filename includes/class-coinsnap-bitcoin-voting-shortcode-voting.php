@@ -164,7 +164,7 @@ class Coinsnap_Bitcoin_Voting_Shortcode_Voting {
                 $checkInvoice = $client->checkPaymentData($amount,$currency,'coinsnap');
             }
         ?>
-            <div id="coinsnap-bitcoin-voting-form" class="coinsnap-bitcoin-voting-form <?php echo esc_attr($theme_class);?>" data-poll-id="<?php echo esc_attr($poll_id);?>"
+            <div id="coinsnap-bitcoin-voting-form" class="coinsnap-bitcoin-voting-form <?php echo esc_attr($theme_class);?>" data-poll-id="<?php echo esc_attr($poll_id);?>" data-poll-title="<?php echo esc_attr($title ?: 'Coinsnap Bitcoin Voting'); ?>"
                 data-poll-amountfiat="<?php echo esc_attr($amount ?: '0'); ?>" data-poll-amount="<?php if($checkInvoice['result']){ echo esc_attr(round($amount*$checkInvoice['rate']*100000000)); } ?>" data-poll-currency="<?php echo esc_attr($currency); ?>"
                 data-one-vote="<?php echo esc_attr($one_vote) ?>" data-donor-info="<?php echo esc_attr($collect_donor_info) ?> ">
 

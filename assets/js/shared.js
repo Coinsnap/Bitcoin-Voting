@@ -63,7 +63,19 @@ const createActualVotingInvoice = async (amount, message, lastInputCurrency, nam
     requestData.provider = (provider === 'coinsnap')? 'coinsnap' : 'btcpay';
     
     if (type === 'Coinsnap Bitcoin Voting') {
-        requestData.redirectUrl = requestData.checkout.redirectUrl = Coinsnap_Bitcoin_Voting_sharedData?.redirectUrl || window.location.href;
+        const confirmationUrl = Coinsnap_Bitcoin_Voting_sharedData?.confirmation_url;
+        if (confirmationUrl) {
+            const cbvParams = new URLSearchParams({
+                amount:     metadata.amount || '',
+                currency:   'SATS',
+                option:     metadata.option || '',
+                poll_id:    metadata.pollId || '',
+                poll_title: metadata.pollTitle || '',
+            });
+            requestData.redirectUrl = requestData.checkout.redirectUrl = confirmationUrl.replace(/\/$/, '') + '?' + cbvParams.toString();
+        } else {
+            requestData.redirectUrl = requestData.checkout.redirectUrl = window.location.href;
+        }
         requestData.metadata.orderNumber = `Voted for ${metadata.option}`;
     }
     
