@@ -12,10 +12,10 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
     public function verify_rest_nonce(WP_REST_Request $request) {
         $nonce = $request->get_header('X-WP-Nonce');
         if (empty($nonce)) {
-            return new WP_Error('rest_forbidden', __('A valid nonce is required.'), ['status' => 403]);
+            return new WP_Error('rest_forbidden', __('A valid nonce is required.', 'coinsnap-bitcoin-voting'), ['status' => 403]);
         }
         if (!wp_verify_nonce($nonce, 'wp_rest')) {
-            return new WP_Error('rest_forbidden', __('Invalid or expired nonce.'), ['status' => 403]);
+            return new WP_Error('rest_forbidden', __('Invalid or expired nonce.', 'coinsnap-bitcoin-voting'), ['status' => 403]);
         }
         return true;
     }
