@@ -200,6 +200,7 @@ Plugin's page on Coinsnap website: [https://coinsnap.io/modules/bitcoin-voting/]
 
 = 1.2.4 :: 2026-07-02 =
 * New: Added Payment Confirmation page after successful vote payment.
+* New: Integrated coinsnap-core shared vendor library for settings page, transactions page, logs, payment providers (Coinsnap and BTCPay), webhook helper, exchange rates, HTTP client, and logger.
 * Fix: Broken symbols in Active and One Vote admin columns.
 * Fix: Thank you message column showed empty instead of dash when not set.
 * Fix: Provider not recognized in Transactions list due to wrong settings key.
@@ -207,3 +208,8 @@ Plugin's page on Coinsnap website: [https://coinsnap.io/modules/bitcoin-voting/]
 * Fix: Donor records from payments never appeared in Donor Information list.
 * Fix: REST API NetworkError after payment caused by hardcoded /wp-json/ path.
 * Fix: Missing textdomain parameter in translation function calls.
+* Fix: Wrong BTCPay URL option key (btcpay_url) corrected to btcpay_host, fixing broken API calls for BTCPay users.
+* Fix: Blocking long-poll loops in payment status REST endpoints replaced with single database query, preventing PHP worker exhaustion.
+* Fix: Hardcoded referral code in Transactions filter replaced with plugin constant.
+* Fix: REST endpoint /get-wh-secret was publicly accessible; permission callback tightened to require manage_options.
+* Fix: Added alias submenu page slug required by coinsnap-core BTCPay OAuth callback redirect.
