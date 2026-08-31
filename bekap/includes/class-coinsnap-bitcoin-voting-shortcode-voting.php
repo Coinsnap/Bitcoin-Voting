@@ -7,26 +7,6 @@ class Coinsnap_Bitcoin_Voting_Shortcode_Voting {
         add_shortcode('coinsnap_bitcoin_voting', [$this, 'coinsnap_bitcoin_voting_render_shortcode_voting']);
     }
 
-    private function getPaymentProvider() {
-        $coinsnap_bitcoin_voting_data = get_option('coinsnap_bitcoin_voting_options', []);
-        return ( isset( $coinsnap_bitcoin_voting_data['provider'] ) && $coinsnap_bitcoin_voting_data['provider'] === 'btcpay' ) ? 'btcpay' : 'coinsnap';
-    }
-
-    private function getApiKey() {
-        $coinsnap_bitcoin_voting_data = get_option('coinsnap_bitcoin_voting_options', []);
-        return ( $this->getPaymentProvider() === 'btcpay' ) ? $coinsnap_bitcoin_voting_data['btcpay_api_key'] : $coinsnap_bitcoin_voting_data['coinsnap_api_key'];
-    }
-
-    private function getStoreId() {
-        $coinsnap_bitcoin_voting_data = get_option('coinsnap_bitcoin_voting_options', []);
-        return ( $this->getPaymentProvider() === 'btcpay' ) ? $coinsnap_bitcoin_voting_data['btcpay_store_id'] : $coinsnap_bitcoin_voting_data['coinsnap_store_id'];
-    }
-
-    private function getApiUrl() {
-        $coinsnap_bitcoin_voting_data = get_option('coinsnap_bitcoin_voting_options', []);
-        return ( $this->getPaymentProvider() === 'btcpay' ) ? $coinsnap_bitcoin_voting_data['btcpay_url'] : COINSNAP_SERVER_URL;
-    }
-
     private function get_template($template_name, $args = [])
     {
         if ($args && is_array($args)) {
@@ -155,10 +135,10 @@ class Coinsnap_Bitcoin_Voting_Shortcode_Voting {
             $time_until_end = human_time_diff($now, $end_timestamp);
             $client = new Coinsnap_Bitcoin_Voting_Client();
             $coinsnap_bitcoin_voting_data = get_option('coinsnap_bitcoin_voting_options', []);
-            $provider = ( isset( $coinsnap_bitcoin_voting_data['provider'] ) && $coinsnap_bitcoin_voting_data['provider'] === 'btcpay' ) ? 'btcpay' : 'coinsnap';
+            $provider = ($coinsnap_bitcoin_voting_data['provider'] === 'btcpay')? 'btcpay' : 'coinsnap';
             
 
-            if($provider === 'btcpay'){
+            if($_provider === 'btcpay'){
                 try {
 
                     $storePaymentMethods = $client->getStorePaymentMethods($this->getApiUrl(), $this->getApiKey(), $this->getStoreId());
@@ -184,7 +164,7 @@ class Coinsnap_Bitcoin_Voting_Shortcode_Voting {
                 $checkInvoice = $client->checkPaymentData($amount,$currency,'coinsnap');
             }
         ?>
-            <div id="coinsnap-bitcoin-voting-form" class="coinsnap-bitcoin-voting-form <?php echo esc_attr($theme_class);?>" data-poll-id="<?php echo esc_attr($poll_id);?>" data-poll-title="<?php echo esc_attr($title ?: 'Coinsnap Bitcoin Voting'); ?>"
+            <div id="coinsnap-bitcoin-voting-form" class="coinsnap-bitcoin-voting-form <?php echo esc_attr($theme_class);?>" data-poll-id="<?php echo esc_attr($poll_id);?>"
                 data-poll-amountfiat="<?php echo esc_attr($amount ?: '0'); ?>" data-poll-amount="<?php if($checkInvoice['result']){ echo esc_attr(round($amount*$checkInvoice['rate']*100000000)); } ?>" data-poll-currency="<?php echo esc_attr($currency); ?>"
                 data-one-vote="<?php echo esc_attr($one_vote) ?>" data-donor-info="<?php echo esc_attr($collect_donor_info) ?> ">
 
@@ -203,7 +183,7 @@ class Coinsnap_Bitcoin_Voting_Shortcode_Voting {
                             };
                         }?>
                         <div class="poll-total-votes">
-                            <button id="cbv-check-results<?php echo esc_html($poll_id);?>" data-poll-id="<?php echo esc_html($poll_id);?>" class="cbv-check-results"><?php echo esc_html__('Check results','coinsnap-bitcoin-voting');?></button>
+                            <button id="check-results<?php echo esc_html($poll_id);?>" data-poll-id="<?php echo esc_html($poll_id);?>" class="check-results"><?php echo esc_html__('Check results','coinsnap-bitcoin-voting');?></button>
                             <div class="end-text"><?php echo esc_html__('Ends in:','coinsnap-bitcoin-voting');?> <?php echo esc_html($time_until_end); ?></div>
                         </div>
 
