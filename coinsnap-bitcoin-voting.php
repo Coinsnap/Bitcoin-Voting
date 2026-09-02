@@ -81,7 +81,7 @@ function coinsnap_bitcoin_voting_create_voting_payments_table(){
 
     $sql = "CREATE TABLE IF NOT EXISTS $table_name (
         id BIGINT(20) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        payment_id VARCHAR(255) NOT NULL,
+        payment_id VARCHAR(255) NOT NULL UNIQUE,
         poll_id VARCHAR(255) NOT NULL,
         option_id INT(4) NOT NULL,
         option_title VARCHAR(255) NOT NULL,

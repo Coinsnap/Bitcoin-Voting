@@ -33,6 +33,62 @@ async function generateQRCodeDataURL(text) {
 const createActualVotingInvoice = async (amount, message, lastInputCurrency, name, coinsnap, type, redirect, metadata) => {
     deleteCookie('coinsnap_invoice_voting');
 
+    // SECURITY: For Coinsnap Bitcoin Voting, use server-side endpoint instead of direct API calls
+    if (type === 'Coinsnap Bitcoin Voting') {
+        const poll_id = metadata.pollId;
+        const option_id = metadata.optionId || metadata.option;
+
+        if (!poll_id || !option_id) {
+            console.error('Missing poll_id or option_id for voting');
+            return null;
+        }
+
+        try {
+            // Call server-side REST endpoint - server loads amount from post meta
+            const response = await fetch(Coinsnap_Bitcoin_Voting_sharedData.rest_url + 'voting/v1/create-invoice', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-WP-Nonce': Coinsnap_Bitcoin_Voting_sharedData.nonce
+                },
+                body: JSON.stringify({
+                    poll_id: poll_id,
+                    option_id: option_id
+                })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                console.error('Server error creating invoice:', error);
+                return null;
+            }
+
+            var responseData = await response.json();
+
+            // Prepare invoice cookie data
+            const invoiceCookieData = {
+                id: responseData.id,
+                amount: amount,
+                currency: lastInputCurrency,
+                checkoutLink: responseData.checkoutLink,
+                message: message,
+                name: name
+            };
+
+            setCookie('coinsnap_invoice_voting', JSON.stringify(invoiceCookieData), 15);
+
+            if (redirect) {
+                window.location.href = responseData.checkoutLink;
+            }
+
+            return responseData;
+        } catch (error) {
+            console.error('Error creating voting invoice:', error);
+            return null;
+        }
+    }
+
+    // For non-voting types, use existing logic...
     var orderId = 'VTNG_' + (Date.now()).toString(36);
     
     var provider = (coinsnap === true)? 'coinsnap' : 'btcpay';

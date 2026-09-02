@@ -7,6 +7,7 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
         add_action('rest_api_init', [$this, 'register_poll_check_endpoint']);
         add_action('rest_api_init', [$this, 'register_poll_results_endpoint']);
         add_action('rest_api_init', [$this, 'register_check_payment_endpoint']);
+        add_action('rest_api_init', [$this, 'register_create_invoice_endpoint']);
     }
 
     public function verify_rest_nonce(WP_REST_Request $request) {
@@ -76,6 +77,123 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
                 ]
             ]
         ]);
+    }
+
+    public function register_create_invoice_endpoint()
+    {
+        register_rest_route('voting/v1', '/create-invoice', [
+            'methods'  => 'POST',
+            'callback' => [$this, 'create_invoice'],
+            'permission_callback' => [$this, 'verify_rest_nonce'],
+            'args' => [
+                'poll_id' => [
+                    'required' => true,
+                    'validate_callback' => function ($param) {
+                        return is_numeric($param) && $param > 0;
+                    }
+                ],
+                'option_id' => [
+                    'required' => true,
+                    'validate_callback' => function ($param) {
+                        return is_numeric($param) && $param >= 1 && $param <= 4;
+                    }
+                ]
+            ]
+        ]);
+    }
+
+    public function create_invoice(WP_REST_Request $request)
+    {
+        $poll_id = absint($request->get_param('poll_id'));
+        $option_id = absint($request->get_param('option_id'));
+
+        // Verify poll exists and is of correct type
+        if ('coinsnap-polls' !== get_post_type($poll_id)) {
+            return new WP_Error('invalid_poll', __('Invalid poll ID', 'coinsnap-bitcoin-voting'), ['status' => 400]);
+        }
+
+        // Verify option ID is valid (1-4)
+        if ($option_id < 1 || $option_id > 4) {
+            return new WP_Error('invalid_option', __('Invalid option ID', 'coinsnap-bitcoin-voting'), ['status' => 400]);
+        }
+
+        // Verify poll is active
+        $poll_active = get_post_meta($poll_id, '_coinsnap_bitcoin_voting_polls_active', true);
+        if (!$poll_active) {
+            return new WP_Error('poll_inactive', __('Poll is not active', 'coinsnap-bitcoin-voting'), ['status' => 400]);
+        }
+
+        // Get amount from post meta (server-side, never from client)
+        $amount = get_post_meta($poll_id, '_coinsnap_bitcoin_voting_polls_amount', true);
+        $currency = get_post_meta($poll_id, '_coinsnap_bitcoin_voting_polls_currency', true);
+
+        if (!$amount || !$currency) {
+            return new WP_Error('missing_config', __('Poll configuration incomplete', 'coinsnap-bitcoin-voting'), ['status' => 400]);
+        }
+
+        // Get payment provider settings
+        $provider_options = \CoinsnapCore\Admin\SettingsPage::get_settings_for(coinsnap_bitcoin_voting_plugin_instance());
+        $provider = $provider_options['payment_provider'] ?? 'coinsnap';
+
+        // Prepare invoice data
+        $orderId = 'VTNG_' . dechex(time()) . dechex(rand());
+        $option_title = get_post_meta($poll_id, "_coinsnap_bitcoin_voting_polls_option_{$option_id}", true);
+
+        $invoice_data = [
+            'amount'      => $amount,
+            'currency'    => $currency,
+            'orderId'     => $orderId,
+            'metadata'    => [
+                'type'     => 'Coinsnap Bitcoin Voting',
+                'pollId'   => $poll_id,
+                'optionId' => $option_id,
+                'option'   => $option_title,
+            ]
+        ];
+
+        // Create invoice via provider (use existing Coinsnap Core client)
+        $client = new Coinsnap_Bitcoin_Voting_Client();
+        
+        if ($provider === 'coinsnap') {
+            $store_id = $provider_options['coinsnap_store_id'] ?? '';
+            $api_key = $provider_options['coinsnap_api_key'] ?? '';
+
+            if (!$store_id || !$api_key) {
+                return new WP_Error('missing_credentials', __('Coinsnap credentials not configured', 'coinsnap-bitcoin-voting'), ['status' => 400]);
+            }
+
+            $url = "https://app.coinsnap.io/api/v1/stores/{$store_id}/invoices";
+            $headers = [
+                'x-api-key'     => $api_key,
+                'Content-Type'  => 'application/json'
+            ];
+        } else {
+            $host = $provider_options['btcpay_host'] ?? '';
+            $store_id = $provider_options['btcpay_store_id'] ?? '';
+            $api_key = $provider_options['btcpay_api_key'] ?? '';
+
+            if (!$host || !$store_id || !$api_key) {
+                return new WP_Error('missing_credentials', __('BTCPay credentials not configured', 'coinsnap-bitcoin-voting'), ['status' => 400]);
+            }
+
+            $url = "{$host}/api/v1/stores/{$store_id}/invoices";
+            $headers = [
+                'Authorization' => "token {$api_key}",
+                'Content-Type'  => 'application/json'
+            ];
+        }
+
+        $response = $client->remoteRequest('POST', $url, $headers, json_encode($invoice_data));
+
+        if (isset($response['error'])) {
+            return new WP_Error('invoice_creation_failed', __('Failed to create invoice', 'coinsnap-bitcoin-voting'), ['status' => 400]);
+        }
+
+        if (isset($response['status']) && $response['status'] === 200) {
+            return new WP_REST_Response($response['body'], 200);
+        }
+
+        return new WP_Error('invoice_creation_failed', __('Failed to create invoice', 'coinsnap-bitcoin-voting'), ['status' => 400]);
     }
 
     function get_results($request){
