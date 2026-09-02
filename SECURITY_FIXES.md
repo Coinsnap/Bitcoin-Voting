@@ -152,11 +152,52 @@ if ( (float)$payload_data['amount'] + 0.0001 < $expected ) {
 - Update callback handler with nonce + auth check
 
 ### Step 2: Create REST Endpoint for Invoice Creation
-✅ File: `includes/class-coinsnap-bitcoin-voting-client.php`
+✅ File: `includes/class-coinsnap-bitcoin-voting-webhooks.php`
 - Register `POST /wp-json/voting/v1/create-invoice`
 - Validate poll_id and option_id
 - Load amount from post meta
 - Return invoice URL/QR only
+
+**New Code Added:**
+```php
+public function register_create_invoice_endpoint()
+{
+    register_rest_route('voting/v1', '/create-invoice', [
+        'methods'  => 'POST',
+        'callback' => [$this, 'create_invoice'],
+        'permission_callback' => [$this, 'verify_rest_nonce'],
+        'args' => [
+            'poll_id' => [
+                'required' => true,
+                'validate_callback' => function ($param) {
+                    return is_numeric($param) && $param > 0;
+                }
+            ],
+            'option_id' => [
+                'required' => true,
+                'validate_callback' => function ($param) {
+                    return is_numeric($param) && $param >= 1 && $param <= 4;
+                }
+            ]
+        ]
+    ]);
+}
+
+public function create_invoice(WP_REST_Request $request)
+{
+    $poll_id = absint($request->get_param('poll_id'));
+    $option_id = absint($request->get_param('option_id'));
+
+    // Server loads amount from post meta (never from client request)
+    $amount = get_post_meta($poll_id, '_coinsnap_bitcoin_voting_polls_amount', true);
+    $currency = get_post_meta($poll_id, '_coinsnap_bitcoin_voting_polls_currency', true);
+
+    // All validation happens server-side
+    // ... create invoice with credentials ...
+    
+    return new WP_REST_Response($invoice_response, 200);
+}
+```
 
 ### Step 3: Update CPT Registration
 ✅ File: `includes/class-coinsnap-bitcoin-voting-polls.php`
@@ -171,11 +212,103 @@ if ( (float)$payload_data['amount'] + 0.0001 < $expected ) {
 - Check poll is active
 - Add UNIQUE index on payment_id
 
+**Database Schema Update:**
+```php
+// In coinsnap_bitcoin_voting_create_voting_payments_table()
+$sql = "CREATE TABLE IF NOT EXISTS $table_name (
+    id BIGINT(20) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    payment_id VARCHAR(255) NOT NULL UNIQUE,  // ← UNIQUE prevents duplicate votes
+    poll_id VARCHAR(255) NOT NULL,
+    option_id INT(4) NOT NULL,
+    option_title VARCHAR(255) NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+) $charset_collate;";
+```
+
+**Webhook Validation in handle_webhook():**
+```php
+// Verify poll exists and is of correct type
+if ('coinsnap-polls' !== get_post_type($poll_id)) {
+    return new WP_REST_Response('Invalid poll', 400);
+}
+
+// Verify option_id is valid (1-4)
+if ($option_id < 1 || $option_id > 4) {
+    return new WP_REST_Response('Invalid option', 400);
+}
+
+// Verify poll is active
+$poll_active = get_post_meta($poll_id, '_coinsnap_bitcoin_voting_polls_active', true);
+if (!$poll_active) {
+    return new WP_REST_Response('Poll not active', 400);
+}
+
+// Verify amount is sufficient (server-side check against post meta)
+$expected_amount = floatval(get_post_meta($poll_id, '_coinsnap_bitcoin_voting_polls_amount', true));
+if ($amount + 0.0001 < $expected_amount) {
+    return new WP_REST_Response('Underpaid', 400);
+}
+
+// Check for duplicate (idempotency - UNIQUE index handles duplicates)
+$existing = $wpdb->get_var($wpdb->prepare(
+    "SELECT payment_id FROM {$wpdb->prefix}voting_payments WHERE payment_id = %s",
+    $invoiceId
+));
+if (!empty($existing)) {
+    return new WP_REST_Response('Already processed', 409);
+}
+
+// Safe to insert - all validations passed
+$wpdb->insert("{$wpdb->prefix}voting_payments", [
+    'payment_id' => $invoiceId,
+    'option_id' => $option_id,
+    'poll_id' => $poll_id,
+    'status' => 'completed'
+]);
+```
+
 ### Step 5: Update JavaScript
-✅ File: `assets/js/shared.js` (existing)
+✅ File: `assets/js/shared.js`
 - Remove reference to API keys
 - Call new REST endpoint for invoice
 - Handle response/errors
+
+**Before (VULNERABLE):**
+```javascript
+// Client had direct access to API keys
+const coinsnapKey = Coinsnap_Bitcoin_Voting_sharedData.coinsnapApiKey; // Exposed!
+const storeId = Coinsnap_Bitcoin_Voting_sharedData.coinsnapStoreId;
+
+// Client called Coinsnap API directly with credentials
+const response = await fetch(`https://app.coinsnap.io/api/v1/stores/${storeId}/invoices`, {
+    method: 'POST',
+    headers: {
+        'x-api-key': coinsnapKey,  // ← Credentials sent over network from browser
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(requestData)
+});
+```
+
+**After (SECURE):**
+```javascript
+// For Coinsnap Bitcoin Voting, use server-side endpoint
+if (type === 'Coinsnap Bitcoin Voting') {
+    const response = await fetch(Coinsnap_Bitcoin_Voting_sharedData.rest_url + 'voting/v1/create-invoice', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-WP-Nonce': Coinsnap_Bitcoin_Voting_sharedData.nonce  // ← Nonce only, no credentials
+        },
+        body: JSON.stringify({
+            poll_id: poll_id,           // ← Client sends poll and option only
+            option_id: option_id         // ← Amount loaded server-side from post meta
+        })
+    });
+    // Server returns invoice with checkout link
+    return await response.json();
+}
 
 ---
 
