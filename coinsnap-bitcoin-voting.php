@@ -8,7 +8,7 @@
  * Author URI:         https://coinsnap.io/
  * Text Domain:        coinsnap-bitcoin-voting
  * Domain Path:         /languages
- * Tested up to:        7.0
+ * Tested up to:        7.1
  * License:             GPL2
  * License URI:         https://www.gnu.org/licenses/gpl-2.0.html
  *

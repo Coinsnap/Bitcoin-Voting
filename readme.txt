@@ -2,7 +2,7 @@
 
 Contributors: coinsnap
 Tags: Lightning, bitcoin, voting, polling, BTCPay
-Tested up to: 7.0
+Tested up to: 7.1
 Stable tag: 1.3.0
 License: GPL2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
