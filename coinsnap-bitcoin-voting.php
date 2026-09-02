@@ -3,7 +3,7 @@
  * Plugin Name:        Coinsnap Bitcoin Voting
  * Plugin URI:         https://coinsnap.io/coinsnap-bitcoin-voting-plugin/
  * Description:        Easy Bitcoin voting on a WordPress website
- * Version:            1.2.4
+ * Version:            1.3.0
  * Author:             Coinsnap
  * Author URI:         https://coinsnap.io/
  * Text Domain:        coinsnap-bitcoin-voting
