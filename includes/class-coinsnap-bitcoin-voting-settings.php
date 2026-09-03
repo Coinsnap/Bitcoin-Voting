@@ -26,23 +26,23 @@ class Bitcoin_Voting_Settings {
             'Coinsnap Bitcoin Voting',
             'Coinsnap Bitcoin Voting',
             'manage_options',
-            'coinsnap-bitcoin-voting',
+            'Bitcoin-Voting',
             [ $this, 'render_settings_page' ],
             plugin_dir_url( dirname( __FILE__ ) ) . 'assets/images/bitcoin.svg',
             100
         );
 
         add_submenu_page(
-            'coinsnap-bitcoin-voting',
+            'Bitcoin-Voting',
             'Settings',
             'Settings',
             'manage_options',
-            'coinsnap-bitcoin-voting',
+            'Bitcoin-Voting',
             [ $this, 'render_settings_page' ]
         );
 
         add_submenu_page(
-            'coinsnap-bitcoin-voting',
+            'Bitcoin-Voting',
             'Transactions',
             'Transactions',
             'manage_options',
@@ -51,7 +51,7 @@ class Bitcoin_Voting_Settings {
         );
 
         add_submenu_page(
-            'coinsnap-bitcoin-voting',
+            'Bitcoin-Voting',
             'Polls',
             'Polls',
             'manage_options',
@@ -59,7 +59,7 @@ class Bitcoin_Voting_Settings {
         );
 
         add_submenu_page(
-            'coinsnap-bitcoin-voting',
+            'Bitcoin-Voting',
             'Donor Information',
             'Donor Information',
             'manage_options',
@@ -68,7 +68,7 @@ class Bitcoin_Voting_Settings {
 
         // Alias slug used by vendor BTCPayAuthorizer callback redirect.
         add_submenu_page(
-            'coinsnap-bitcoin-voting',
+            'Bitcoin-Voting',
             'Settings',
             '',
             'manage_options',
@@ -79,7 +79,7 @@ class Bitcoin_Voting_Settings {
 
     public function render_settings_page(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'Insufficient permissions.', 'coinsnap-bitcoin-voting' ) );
+            wp_die( esc_html__( 'Insufficient permissions.', 'Bitcoin-Voting' ) );
         }
         \CoinsnapCore\Admin\SettingsPage::render_page_for( coinsnap_bitcoin_voting_plugin_instance() );
     }
