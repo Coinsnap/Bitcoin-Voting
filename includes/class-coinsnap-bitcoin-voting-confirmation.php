@@ -22,7 +22,7 @@ class Coinsnap_Bitcoin_Voting_Confirmation {
         }
 
         $page_id = wp_insert_post( [
-            'post_title'   => __( 'Payment Confirmation', 'bitcoin-voting' ),
+            'post_title'   => __( 'Payment Confirmation', 'Bitcoin-Voting' ),
             'post_content' => '[coinsnap_bitcoin_voting_confirmation]',
             'post_status'  => 'publish',
             'post_type'    => 'page',
@@ -60,7 +60,7 @@ class Coinsnap_Bitcoin_Voting_Confirmation {
         $poll_id    = intval( filter_input( INPUT_GET, 'poll_id', FILTER_SANITIZE_NUMBER_INT ) ?? 0 );
 
         if ( ! $invoice_id && ! $poll_id && ! $option ) {
-            return '<p>' . esc_html__( 'No payment information found.', 'bitcoin-voting' ) . '</p>';
+            return '<p>' . esc_html__( 'No payment information found.', 'Bitcoin-Voting' ) . '</p>';
         }
 
         // Build invoice URL from saved settings
@@ -93,25 +93,25 @@ class Coinsnap_Bitcoin_Voting_Confirmation {
         <div class="cbv-confirmation-wrap">
             <div class="cbv-confirmation-card">
                 <div class="cbv-confirmation-icon">&#10004;</div>
-                <h2><?php esc_html_e( 'Payment Successful!', 'bitcoin-voting' ); ?></h2>
-                <p class="cbv-confirmation-sub"><?php esc_html_e( 'Your vote has been registered.', 'bitcoin-voting' ); ?></p>
+                <h2><?php esc_html_e( 'Payment Successful!', 'Bitcoin-Voting' ); ?></h2>
+                <p class="cbv-confirmation-sub"><?php esc_html_e( 'Your vote has been registered.', 'Bitcoin-Voting' ); ?></p>
 
                 <table class="cbv-confirmation-table">
                     <?php if ( $poll_title ) : ?>
                     <tr>
-                        <th><?php esc_html_e( 'Poll', 'bitcoin-voting' ); ?></th>
+                        <th><?php esc_html_e( 'Poll', 'Bitcoin-Voting' ); ?></th>
                         <td><?php echo esc_html( $poll_title ); ?></td>
                     </tr>
                     <?php endif; ?>
                     <?php if ( $option ) : ?>
                     <tr>
-                        <th><?php esc_html_e( 'Voted for', 'bitcoin-voting' ); ?></th>
+                        <th><?php esc_html_e( 'Voted for', 'Bitcoin-Voting' ); ?></th>
                         <td><?php echo esc_html( $option ); ?></td>
                     </tr>
                     <?php endif; ?>
                     <?php if ( $amount ) : ?>
                     <tr>
-                        <th><?php esc_html_e( 'Amount', 'bitcoin-voting' ); ?></th>
+                        <th><?php esc_html_e( 'Amount', 'Bitcoin-Voting' ); ?></th>
                         <td><?php echo esc_html( $amount . ( $currency ? ' ' . strtoupper( $currency ) : '' ) ); ?></td>
                     </tr>
                     <?php endif; ?>
@@ -119,11 +119,11 @@ class Coinsnap_Bitcoin_Voting_Confirmation {
 
                 <?php if ( $back_url ) : ?>
                 <a href="<?php echo esc_url( $back_url ); ?>" class="cbv-confirmation-back">
-                    &larr; <?php esc_html_e( 'Back to poll', 'bitcoin-voting' ); ?>
+                    &larr; <?php esc_html_e( 'Back to poll', 'Bitcoin-Voting' ); ?>
                 </a>
                 <?php else : ?>
                 <a href="<?php echo esc_url( home_url() ); ?>" class="cbv-confirmation-back">
-                    &larr; <?php esc_html_e( 'Back to home', 'bitcoin-voting' ); ?>
+                    &larr; <?php esc_html_e( 'Back to home', 'Bitcoin-Voting' ); ?>
                 </a>
                 <?php endif; ?>
             </div>

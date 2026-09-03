@@ -122,8 +122,8 @@ class Bitcoin_Donation_List {
 					'format'    => '',
 					'current'   => $current_page,
 					'total'     => $total_pages,
-					'prev_text' => esc_html('&laquo; ' . __('Previous','bitcoin-voting')),
-					'next_text' => esc_html(__('Next','bitcoin-voting') . ' &raquo;'),
+					'prev_text' => esc_html('&laquo; ' . __('Previous','Bitcoin-Voting')),
+					'next_text' => esc_html(__('Next','Bitcoin-Voting') . ' &raquo;'),
 				]);
 
 				if ($pagination_links) {
