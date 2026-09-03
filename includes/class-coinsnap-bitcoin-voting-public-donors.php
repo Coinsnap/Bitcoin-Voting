@@ -1,7 +1,7 @@
 <?php
 if (!defined('ABSPATH')){ exit; }
 
-class Bitcoin_Voting_Public_Donors {
+class Coinsnap_Bitcoin_Voting_Public_Donors {
     public function __construct(){
         add_action('init', [$this, 'register_public_donors_post_type']);
         add_action('init', [$this, 'register_custom_meta_fields']);
@@ -276,4 +276,4 @@ class Bitcoin_Voting_Public_Donors {
     }
 }
 
-new Bitcoin_Voting_Public_Donors();
+new Coinsnap_Bitcoin_Voting_Public_Donors();

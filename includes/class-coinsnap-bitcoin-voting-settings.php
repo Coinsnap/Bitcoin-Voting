@@ -7,13 +7,13 @@ require_once plugin_dir_path( __FILE__ ) . 'class-coinsnap-bitcoin-voting-list.p
  * Admin menu registration and settings page rendering for Coinsnap Bitcoin Voting.
  * Delegates settings UI to CoinsnapCore\Admin\SettingsPage for a consistent card-based look.
  */
-class Bitcoin_Voting_Settings {
+class Coinsnap_Bitcoin_Voting_Settings {
 
-    /** @var Bitcoin_Donation_List */
+    /** @var Coinsnap_Bitcoin_Voting_Donation_List */
     private $donation_list;
 
     public function __construct() {
-        $this->donation_list = new Bitcoin_Donation_List();
+        $this->donation_list = new Coinsnap_Bitcoin_Voting_Donation_List();
 
         add_action( 'admin_menu', [ $this, 'coinsnap_bitcoin_voting_add_admin_menu' ] );
         add_action( 'admin_init', function () {
@@ -93,4 +93,4 @@ class Bitcoin_Voting_Settings {
         return \CoinsnapCore\Admin\SettingsPage::get_settings_for( coinsnap_bitcoin_voting_plugin_instance() );
     }
 }
-new Bitcoin_Voting_Settings();
+new Coinsnap_Bitcoin_Voting_Settings();

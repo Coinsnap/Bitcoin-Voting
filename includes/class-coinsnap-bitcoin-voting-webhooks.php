@@ -136,7 +136,7 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
         $provider = $provider_options['payment_provider'] ?? 'coinsnap';
 
         // Prepare invoice data
-        $orderId = 'VTNG_' . dechex(time()) . dechex(rand());
+        $orderId = 'VTNG_' . dechex(time()) . dechex(wp_rand());
         $option_title = get_post_meta($poll_id, "_coinsnap_bitcoin_voting_polls_option_{$option_id}", true);
 
         $invoice_data = [
@@ -296,27 +296,23 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
 
                 // Verify poll exists and is coinsnap-polls type
                 if ('coinsnap-polls' !== get_post_type($poll_id)) {
-                    error_log('Webhook rejected: Invalid poll_id ' . $poll_id);
                     return new WP_REST_Response('Invalid poll', 400);
                 }
 
                 // Verify option_id is valid (1-4)
                 if ($option_id < 1 || $option_id > 4) {
-                    error_log('Webhook rejected: Invalid option_id ' . $option_id);
                     return new WP_REST_Response('Invalid option', 400);
                 }
 
                 // Verify poll is active
                 $poll_active = get_post_meta($poll_id, '_coinsnap_bitcoin_voting_polls_active', true);
                 if (!$poll_active) {
-                    error_log('Webhook rejected: Poll not active ' . $poll_id);
                     return new WP_REST_Response('Poll not active', 400);
                 }
 
                 // Verify amount meets minimum (with 0.0001 tolerance for rounding)
                 $expected_amount = floatval(get_post_meta($poll_id, '_coinsnap_bitcoin_voting_polls_amount', true));
                 if ($amount + 0.0001 < $expected_amount) {
-                    error_log('Webhook rejected: Underpaid. Expected ' . $expected_amount . ', got ' . $amount);
                     return new WP_REST_Response('Underpaid', 400);
                 }
 
@@ -325,12 +321,12 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
                 $optionTitle = get_post_meta($poll_id, "_coinsnap_bitcoin_voting_polls_option_{$option_id}", true);
 
                 // Check for duplicate webhook (idempotency)
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                 $existing = $wpdb->get_var($wpdb->prepare(
                     "SELECT payment_id FROM {$wpdb->prefix}voting_payments WHERE payment_id = %s",
                     $invoiceId
                 ));
                 if (!empty($existing)) {
-                    error_log('Webhook rejected: Duplicate payment_id ' . $invoiceId);
                     return new WP_REST_Response('Already processed', 409);
                 }
 
@@ -359,12 +355,12 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
                 $invoiceId = sanitize_text_field($payload_data['invoiceId'] ?? '');
 
                 // Check for duplicate webhook (idempotency)
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                 $existing = $wpdb->get_var($wpdb->prepare(
                     "SELECT payment_id FROM {$wpdb->prefix}voting_payments WHERE payment_id = %s",
                     $invoiceId
                 ));
                 if (!empty($existing)) {
-                    error_log('Webhook rejected: Duplicate payment_id ' . $invoiceId);
                     return new WP_REST_Response('Already processed', 409);
                 }
 

@@ -1,7 +1,7 @@
 <?php
 if (!defined('ABSPATH')){ exit; }
 
-class Bitcoin_Donation_List {
+class Coinsnap_Bitcoin_Voting_Donation_List {
 
 	public function __construct(){
 		add_action('wp_ajax_refresh_donations', array($this, 'refresh_donations_ajax'));
