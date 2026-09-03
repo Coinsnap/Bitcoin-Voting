@@ -13,10 +13,10 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
     public function verify_rest_nonce(WP_REST_Request $request) {
         $nonce = $request->get_header('X-WP-Nonce');
         if (empty($nonce)) {
-            return new WP_Error('rest_forbidden', __('A valid nonce is required.', 'Bitcoin-Voting'), ['status' => 403]);
+            return new WP_Error('rest_forbidden', __('A valid nonce is required.', 'bitcoin-voting'), ['status' => 403]);
         }
         if (!wp_verify_nonce($nonce, 'wp_rest')) {
-            return new WP_Error('rest_forbidden', __('Invalid or expired nonce.', 'Bitcoin-Voting'), ['status' => 403]);
+            return new WP_Error('rest_forbidden', __('Invalid or expired nonce.', 'bitcoin-voting'), ['status' => 403]);
         }
         return true;
     }
@@ -109,18 +109,18 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
 
         // Verify poll exists and is of correct type
         if ('coinsnap-polls' !== get_post_type($poll_id)) {
-            return new WP_Error('invalid_poll', __('Invalid poll ID', 'Bitcoin-Voting'), ['status' => 400]);
+            return new WP_Error('invalid_poll', __('Invalid poll ID', 'bitcoin-voting'), ['status' => 400]);
         }
 
         // Verify option ID is valid (1-4)
         if ($option_id < 1 || $option_id > 4) {
-            return new WP_Error('invalid_option', __('Invalid option ID', 'Bitcoin-Voting'), ['status' => 400]);
+            return new WP_Error('invalid_option', __('Invalid option ID', 'bitcoin-voting'), ['status' => 400]);
         }
 
         // Verify poll is active
         $poll_active = get_post_meta($poll_id, '_coinsnap_bitcoin_voting_polls_active', true);
         if (!$poll_active) {
-            return new WP_Error('poll_inactive', __('Poll is not active', 'Bitcoin-Voting'), ['status' => 400]);
+            return new WP_Error('poll_inactive', __('Poll is not active', 'bitcoin-voting'), ['status' => 400]);
         }
 
         // Get amount from post meta (server-side, never from client)
@@ -128,7 +128,7 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
         $currency = get_post_meta($poll_id, '_coinsnap_bitcoin_voting_polls_currency', true);
 
         if (!$amount || !$currency) {
-            return new WP_Error('missing_config', __('Poll configuration incomplete', 'Bitcoin-Voting'), ['status' => 400]);
+            return new WP_Error('missing_config', __('Poll configuration incomplete', 'bitcoin-voting'), ['status' => 400]);
         }
 
         // Get payment provider settings
@@ -159,7 +159,7 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
             $api_key = $provider_options['coinsnap_api_key'] ?? '';
 
             if (!$store_id || !$api_key) {
-                return new WP_Error('missing_credentials', __('Coinsnap credentials not configured', 'Bitcoin-Voting'), ['status' => 400]);
+                return new WP_Error('missing_credentials', __('Coinsnap credentials not configured', 'bitcoin-voting'), ['status' => 400]);
             }
 
             $url = "https://app.coinsnap.io/api/v1/stores/{$store_id}/invoices";
@@ -173,7 +173,7 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
             $api_key = $provider_options['btcpay_api_key'] ?? '';
 
             if (!$host || !$store_id || !$api_key) {
-                return new WP_Error('missing_credentials', __('BTCPay credentials not configured', 'Bitcoin-Voting'), ['status' => 400]);
+                return new WP_Error('missing_credentials', __('BTCPay credentials not configured', 'bitcoin-voting'), ['status' => 400]);
             }
 
             $url = "{$host}/api/v1/stores/{$store_id}/invoices";
@@ -186,14 +186,14 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
         $response = $client->remoteRequest('POST', $url, $headers, json_encode($invoice_data));
 
         if (isset($response['error'])) {
-            return new WP_Error('invoice_creation_failed', __('Failed to create invoice', 'Bitcoin-Voting'), ['status' => 400]);
+            return new WP_Error('invoice_creation_failed', __('Failed to create invoice', 'bitcoin-voting'), ['status' => 400]);
         }
 
         if (isset($response['status']) && $response['status'] === 200) {
             return new WP_REST_Response($response['body'], 200);
         }
 
-        return new WP_Error('invoice_creation_failed', __('Failed to create invoice', 'Bitcoin-Voting'), ['status' => 400]);
+        return new WP_Error('invoice_creation_failed', __('Failed to create invoice', 'bitcoin-voting'), ['status' => 400]);
     }
 
     function get_results($request){

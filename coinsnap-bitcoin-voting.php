@@ -6,7 +6,7 @@
  * Version:            1.3.0
  * Author:             Coinsnap
  * Author URI:         https://coinsnap.io/
- * Text Domain:        Bitcoin-Voting
+ * Text Domain:        bitcoin-voting
  * Domain Path:         /languages
  * Tested up to:        7.1
  * License:             GPL2
@@ -45,12 +45,12 @@ function coinsnap_bitcoin_voting_plugin_instance(): \CoinsnapCore\PluginInstance
             'rest_namespace'           => 'voting/v1',
             'table_suffix'             => 'voting_payments',
             'referral_code'            => COINSNAP_BITCOIN_VOTING_REFERRAL_CODE,
-            'text_domain'              => 'Bitcoin-Voting',
+            'text_domain'              => 'bitcoin-voting',
             'log_dir_name'             => 'cbv-logs',
             'log_file_name'            => 'cbv.log',
             'btcpay_callback_endpoint' => 'cbv-btcpay-callback',
             'btcpay_app_name'          => 'CoinsnapBitcoinVoting',
-            'menu_slug'                => 'Bitcoin-Voting',
+            'menu_slug'                => 'bitcoin-voting',
             'plugin_url'               => COINSNAP_BITCOIN_VOTING_PLUGIN_DIR,
             'plugin_dir'               => COINSNAP_BITCOIN_VOTING_PLUGIN_PATH,
         ) );
@@ -468,7 +468,7 @@ class Coinsnap_Bitcoin_Voting
         $page      = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '';
 
         // Vendor admin UI on settings pages.
-        if (false !== strpos($page, 'Bitcoin-Voting')) {
+        if (false !== strpos($page, 'bitcoin-voting')) {
             $inst = coinsnap_bitcoin_voting_plugin_instance();
             wp_register_style('coinsnap-core-admin', COINSNAP_CORE_PLUGIN_URL . 'assets/css/admin.css', [], COINSNAP_CORE_VERSION);
             wp_register_script('coinsnap-core-admin', COINSNAP_CORE_PLUGIN_URL . 'assets/js/admin.js', ['jquery'], COINSNAP_CORE_VERSION, true);
@@ -494,7 +494,7 @@ class Coinsnap_Bitcoin_Voting
         }
 
         // Old admin script for poll CPT pages.
-        if ($page === 'Bitcoin-Voting' || $post_type === 'coinsnap-polls') {
+        if ($page === 'bitcoin-voting' || $post_type === 'coinsnap-polls') {
             wp_enqueue_script('coinsnap-bitcoin-voting-admin-script', COINSNAP_BITCOIN_VOTING_PLUGIN_DIR . 'assets/js/admin.js', ['jquery'], COINSNAP_BITCOIN_VOTING_VERSION, true);
             wp_localize_script('coinsnap-bitcoin-voting-admin-script', 'coinsnap_bitcoin_voting_ajax', [
                 'ajax_url' => admin_url('admin-ajax.php'),
@@ -504,7 +504,7 @@ class Coinsnap_Bitcoin_Voting
         }
         
         // Admin style only on plugin pages.
-        if (false !== strpos($page, 'Bitcoin-Voting') || $post_type === 'coinsnap-polls') {
+        if (false !== strpos($page, 'bitcoin-voting') || $post_type === 'coinsnap-polls') {
             wp_enqueue_style('coinsnap-bitcoin-voting-admin-style', COINSNAP_BITCOIN_VOTING_PLUGIN_DIR . 'assets/css/admin-style.css', [], COINSNAP_BITCOIN_VOTING_VERSION);
         }
     }
