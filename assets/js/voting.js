@@ -42,18 +42,31 @@ jQuery(document).ready(function($) {
                     const maxVote = Math.max(...Object.values(votes));
                     const maxVoteOption = Object.keys(votes).find(key => votes[key] === maxVote);
 
-                    votingForm.querySelector(`.voting-progress-bar[data-option='${maxVoteOption}']`).style['background-color'] = '#f7a70a';
+                    // Safely highlight the option with max votes
+                    if (maxVoteOption !== undefined) {
+                        const maxBar = votingForm.querySelector(`.voting-progress-bar[data-option='${maxVoteOption}']`);
+                        if (maxBar) {
+                            maxBar.style['background-color'] = '#f7a70a';
+                        }
+                    }
                     document.getElementById(`total-votes${pollId}`).textContent = `${votesDb.length}`;
 
                     Object.keys(votes).forEach(opt => {
                         let percentage = votesLen > 0 ? (votes[opt] / votesLen) * 100 : 0;
                         if (percentage > 0) {
                             const percentageSpan = votingForm.querySelector(`.voting-progress-percentage[data-option='${opt}']`);
-
-                            percentageSpan.textContent = percentage.toFixed(1) + "%";
+                            if (percentageSpan) {
+                                percentageSpan.textContent = percentage.toFixed(1) + "%";
+                            }
                         }
-                        votingForm.querySelector(`.voting-progress-bar[data-option='${opt}']`).style.width = percentage + "%";
-                        votingForm.querySelector(`.vote-count[data-option='${opt}']`).textContent = votes[opt];
+                        const progressBar = votingForm.querySelector(`.voting-progress-bar[data-option='${opt}']`);
+                        if (progressBar) {
+                            progressBar.style.width = percentage + "%";
+                        }
+                        const voteCount = votingForm.querySelector(`.vote-count[data-option='${opt}']`);
+                        if (voteCount) {
+                            voteCount.textContent = votes[opt];
+                        }
                     });
                 });
         };
