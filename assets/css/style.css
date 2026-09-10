@@ -964,6 +964,37 @@ color: var(--cbv-color-text-primary);
 }
 
 /* ==========================================================================
+   Payment Info Display
+   ========================================================================== */
+
+.poll-payment-info {
+margin-top: 20px;
+padding: 12px 16px;
+background: var(--cbv-color-success-bg);
+border: 1px solid var(--cbv-color-success-border);
+border-radius: var(--cbv-radius-md);
+text-align: center;
+}
+
+.poll-payment-info .payment-amount {
+margin: 0 0 4px;
+font-size: 16px;
+font-weight: 700;
+color: var(--cbv-color-success);
+}
+
+.poll-payment-info .payment-note {
+margin: 0;
+font-size: 12px;
+color: var(--cbv-color-text-secondary);
+}
+
+.dark-theme .poll-payment-info {
+background: rgba(26, 122, 60, 0.1);
+border-color: rgba(26, 122, 60, 0.3);
+}
+
+/* ==========================================================================
    Responsive
    ========================================================================== */
 

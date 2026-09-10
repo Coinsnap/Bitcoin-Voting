@@ -206,6 +206,13 @@ class Coinsnap_Bitcoin_Voting_Shortcode_Voting {
                             <button id="cbv-check-results<?php echo esc_html($poll_id);?>" data-poll-id="<?php echo esc_html($poll_id);?>" class="cbv-check-results"><?php echo esc_html__('Check results','coinsnap-bitcoin-voting');?></button>
                             <div class="end-text"><?php echo esc_html__('Ends in:','coinsnap-bitcoin-voting');?> <?php echo esc_html($time_until_end); ?></div>
                         </div>
+                        
+                        <?php if($checkInvoice['result']): ?>
+                        <div class="poll-payment-info">
+                            <p class="payment-amount"><?php echo esc_html($amount . ' ' . $currency); ?></p>
+                            <p class="payment-note"><?php echo esc_html__('to cast your vote', 'coinsnap-bitcoin-voting'); ?></p>
+                        </div>
+                        <?php endif; ?>
 
                     </div><?php
                     

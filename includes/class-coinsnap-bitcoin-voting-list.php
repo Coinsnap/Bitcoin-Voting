@@ -8,47 +8,50 @@ class Coinsnap_Bitcoin_Voting_Donation_List {
 	}
 	
         private function fetch_donations(){
-		$options  = get_option('coinsnap_bitcoin_voting_options', array());
-		$provider = isset( $options['payment_provider'] ) ? $options['payment_provider'] : '';
-
-		if ($provider == 'coinsnap') {
-			$api_key = $options['coinsnap_api_key'];
-			$store_id = $options['coinsnap_store_id'];
-			$url = 'https://app.coinsnap.io/api/v1/stores/' . $store_id . '/invoices';
-			$headers = array(
-				'headers' => array('x-api-key' => $api_key, 'Content-Type' => 'application/json')
+		global $wpdb;
+		
+		// Check cache first
+		$cache_key = 'coinsnap_voting_donations';
+		$voting_payments = wp_cache_get($cache_key);
+		
+		if (false === $voting_payments) {
+			// Read voting transactions from shared PaymentTable
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$voting_payments = $wpdb->get_results(
+				"SELECT * FROM {$wpdb->prefix}coinsnapbbf_payments 
+				 WHERE description LIKE '%Vote:%' 
+				 ORDER BY created_at DESC",
+				ARRAY_A
 			);
-		} else {
-			$api_key = $options['btcpay_api_key'];
-			$store_id = $options['btcpay_store_id'];
-			$base_url = $options['btcpay_host'];
-			$url = $base_url . '/api/v1/stores/' . $store_id . '/invoices';
-			$headers = array(
-				'headers' => array('Authorization' => 'token ' . $api_key, 'Content-Type' => 'application/json')
+			
+			// Cache for 5 minutes
+			wp_cache_set($cache_key, $voting_payments, '', 300);
+		}
+		
+		if ( empty( $voting_payments ) ) {
+			return array();
+		}
+		
+		// Transform voting payments to match expected format
+		$donations = array();
+		foreach ( $voting_payments as $payment ) {
+			$donations[] = array(
+				'id'       => $payment['payment_invoice_id'] ?: $payment['invoice_number'],
+				'amount'   => (float) $payment['amount'],
+				'currency' => $payment['currency'] ?: 'EUR',
+				'status'   => 'Settled',
+				'createdAt' => strtotime( $payment['created_at'] ),
+				'createdTime' => strtotime( $payment['created_at'] ),
+				'metadata' => array(
+					'option'     => $payment['description'] ?: '',
+					'donorName'  => $payment['customer_name'] ?: '',
+					'name'       => $payment['customer_name'] ?: '',
+					'referralCode' => COINSNAP_BITCOIN_VOTING_REFERRAL_CODE
+				)
 			);
 		}
-
-		$response = wp_remote_get($url, $headers);
-		$body = wp_remote_retrieve_body($response);
-		$invoices = json_decode($body, true);
-		if (!is_array($invoices)) {
-			throw new Exception('Invalid API response');
-		}
-		$filtered_invoices = array_filter($invoices, function ($invoice) {
-			return isset($invoice['metadata']['referralCode'])
-				&& $invoice['metadata']['referralCode'] === COINSNAP_BITCOIN_VOTING_REFERRAL_CODE
-				&& $invoice['status'] === 'Settled';
-		});
-		if ($provider == 'coinsnap') {
-			usort($filtered_invoices, function ($a, $b) {
-				return $b['createdAt'] <=> $a['createdAt'];
-			});
-		} else {
-			usort($filtered_invoices, function ($a, $b) {
-				return $b['createdTime'] <=> $a['createdTime'];
-			});
-		}
-		return array_values($filtered_invoices);
+		
+		return $donations;
 	}
 
 	public function render_donations_page()

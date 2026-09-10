@@ -283,7 +283,9 @@ class Coinsnap_Bitcoin_Voting
     }
 
     public function maybe_show_setup_notice(): void {
-        \CoinsnapCore\Admin\SettingsPage::maybe_show_setup_notice(coinsnap_bitcoin_voting_plugin_instance());
+        if ( method_exists( '\CoinsnapCore\Admin\SettingsPage', 'maybe_show_setup_notice' ) ) {
+            \CoinsnapCore\Admin\SettingsPage::maybe_show_setup_notice(coinsnap_bitcoin_voting_plugin_instance());
+        }
     }
 
     public function handle_connection_check(): void {

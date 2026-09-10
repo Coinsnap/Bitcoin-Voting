@@ -48,16 +48,24 @@ class Coinsnap_Bitcoin_Voting_Confirmation {
      * Shortcode renderer — reads GET params and shows confirmation card.
      */
     public function render(): string {
-        $invoice_id = sanitize_text_field( filter_input( INPUT_GET, 'invoice_id',  FILTER_SANITIZE_FULL_SPECIAL_CHARS ) ?? '' );
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- GET params from Coinsnap redirect
+        $invoice_id = isset( $_GET['invoice_id'] ) ? sanitize_text_field( wp_unslash( $_GET['invoice_id'] ) ) : '';
         // Coinsnap appends ?invoiceId=xxx automatically on redirect
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         if ( ! $invoice_id ) {
-            $invoice_id = sanitize_text_field( filter_input( INPUT_GET, 'invoiceId', FILTER_SANITIZE_FULL_SPECIAL_CHARS ) ?? '' );
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+            $invoice_id = isset( $_GET['invoiceId'] ) ? sanitize_text_field( wp_unslash( $_GET['invoiceId'] ) ) : '';
         }
-        $amount     = sanitize_text_field( filter_input( INPUT_GET, 'amount',      FILTER_SANITIZE_FULL_SPECIAL_CHARS ) ?? '' );
-        $currency   = sanitize_text_field( filter_input( INPUT_GET, 'currency',    FILTER_SANITIZE_FULL_SPECIAL_CHARS ) ?? '' );
-        $option     = sanitize_text_field( filter_input( INPUT_GET, 'option',      FILTER_SANITIZE_FULL_SPECIAL_CHARS ) ?? '' );
-        $poll_title = sanitize_text_field( filter_input( INPUT_GET, 'poll_title',  FILTER_SANITIZE_FULL_SPECIAL_CHARS ) ?? '' );
-        $poll_id    = intval( filter_input( INPUT_GET, 'poll_id', FILTER_SANITIZE_NUMBER_INT ) ?? 0 );
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $amount     = isset( $_GET['amount'] ) ? sanitize_text_field( wp_unslash( $_GET['amount'] ) ) : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $currency   = isset( $_GET['currency'] ) ? sanitize_text_field( wp_unslash( $_GET['currency'] ) ) : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $option     = isset( $_GET['option'] ) ? sanitize_text_field( wp_unslash( $_GET['option'] ) ) : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $poll_title = isset( $_GET['poll_title'] ) ? sanitize_text_field( wp_unslash( $_GET['poll_title'] ) ) : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $poll_id    = isset( $_GET['poll_id'] ) ? intval( wp_unslash( $_GET['poll_id'] ) ) : 0;
 
         if ( ! $invoice_id && ! $poll_id && ! $option ) {
             return '<p>' . esc_html__( 'No payment information found.', 'coinsnap-bitcoin-voting' ) . '</p>';

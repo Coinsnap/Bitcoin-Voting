@@ -171,6 +171,8 @@ const popupButtonListener = (pollId, amount, amountFiat, currency, publicDonor) 
                                 votingModal = null;
                             }
                             setCookie(`coinsnap_poll_${pollId}`, option, 30 * 24 * 60);
+                            // Store payment info to trigger results refresh when page reloads
+                            localStorage.setItem('coinsnap_last_payment', JSON.stringify({ pollId: pollId, option: option, invoiceId: res.id }));
 
                         } else if (!votingModal || !document.body.contains(votingModal.backdrop)) {
                             // Modal was closed by user � stop polling

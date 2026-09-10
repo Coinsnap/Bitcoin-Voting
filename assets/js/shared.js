@@ -15,6 +15,52 @@ function setCookie(name, value, minutes) {
     document.cookie = name + "=" + value + ";" + expires + ";path=/";
 }
 
+/**
+ * Poll invoice status every 2 seconds and redirect to success page when payment is detected
+ */
+const pollInvoiceStatusAndRedirect = async (invoiceId, confirmationUrl, maxPollSeconds = 600) => {
+    let pollCount = 0;
+    const pollInterval = setInterval(async () => {
+        pollCount++;
+        
+        // Stop polling after 10 minutes
+        if (pollCount * 2 > maxPollSeconds) {
+            clearInterval(pollInterval);
+            console.warn('Invoice status polling timeout after ' + maxPollSeconds + ' seconds');
+            return;
+        }
+
+        try {
+            // Check invoice status via server-side endpoint (for security)
+            const response = await fetch(Coinsnap_Bitcoin_Voting_sharedData.rest_url + 'voting/v1/check-invoice-status', {
+                method: 'POST',
+                headers: {
+                    'X-WP-Nonce': Coinsnap_Bitcoin_Voting_sharedData?.nonce || '',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ invoice_id: invoiceId })
+            });
+
+            if (!response.ok) {
+                console.error('Error checking invoice status:', response.status);
+                return;
+            }
+
+            const data = await response.json();
+            
+            // If payment is confirmed (Settled status), redirect to confirmation
+            if (data.status === 'Settled' || data.status === 'settled' || data.paid) {
+                clearInterval(pollInterval);
+                console.log('Payment detected! Redirecting to confirmation page...');
+                window.location.href = confirmationUrl;
+            }
+        } catch (error) {
+            console.error('Error polling invoice status:', error);
+            // Continue polling on error
+        }
+    }, 2000); // Check every 2 seconds
+}
+
 async function generateQRCodeDataURL(text) {
     try {
         const response = await fetch(`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(text)}`);
@@ -65,8 +111,8 @@ const createActualVotingInvoice = async (amount, message, lastInputCurrency, nam
 
             var responseData = await response.json();
 
-            // Prepare invoice cookie data
-            const invoiceCookieData = {
+            // Prepare invoice data for localStorage
+            const invoiceData = {
                 id: responseData.id,
                 amount: amount,
                 currency: lastInputCurrency,
@@ -75,10 +121,20 @@ const createActualVotingInvoice = async (amount, message, lastInputCurrency, nam
                 name: name
             };
 
-            setCookie('coinsnap_invoice_voting', JSON.stringify(invoiceCookieData), 15);
+            // Save to localStorage (NOT cookie) so voting.js can find it
+            localStorage.setItem('coinsnap_invoice_voting', JSON.stringify(invoiceData));
+            console.log('DEBUG: Saved invoice to localStorage:', invoiceData);
 
             if (redirect) {
                 window.location.href = responseData.checkoutLink;
+            }
+
+            // Start polling for payment confirmation - will auto-redirect when payment detected
+            if (Coinsnap_Bitcoin_Voting_sharedData.confirmation_url) {
+                const confirmationUrl = Coinsnap_Bitcoin_Voting_sharedData.confirmation_url + 
+                    '?invoice_id=' + encodeURIComponent(responseData.id) + 
+                    '&poll_id=' + encodeURIComponent(metadata.pollId);
+                pollInvoiceStatusAndRedirect(responseData.id, confirmationUrl);
             }
 
             return responseData;
@@ -209,67 +265,46 @@ const createActualVotingInvoice = async (amount, message, lastInputCurrency, nam
 };
 
 const checkVotingInvoiceStatus = async (invoiceId, amount, message, lastInputCurrency, name, coinsnap, type, redirect, metadata) => {
+    // For voting, check server-side status instead of direct API access
+    if (type === 'Coinsnap Bitcoin Voting') {
+        try {
+            const response = await fetch(Coinsnap_Bitcoin_Voting_sharedData.rest_url + 'voting/v1/check-invoice-status', {
+                method: 'POST',
+                headers: {
+                    'X-WP-Nonce': Coinsnap_Bitcoin_Voting_sharedData?.nonce || '',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ invoice_id: invoiceId })
+            });
 
+            if (!response.ok) {
+                console.error('Error checking invoice status:', response.status);
+                return null;
+            }
+
+            const data = await response.json();
+            
+            // If already paid, create a new invoice instead of returning cached one
+            if (data.paid) {
+                return await createActualVotingInvoice(amount, message, lastInputCurrency, name, coinsnap, type, redirect, metadata);
+            }
+
+            // If still pending, return null to trigger new invoice creation
+            return null;
+        } catch (error) {
+            console.error('Error checking invoice status:', error);
+            return null;
+        }
+    }
+
+    // Original logic for non-voting invoices (fallback)
+    // Note: For Bitcoin Voting we only use server-side invoice creation
     var provider = (coinsnap === true)? 'coinsnap' : 'btcpay';
     
-    const url = (provider === 'coinsnap')
-        ? `https://app.coinsnap.io/api/v1/stores/${Coinsnap_Bitcoin_Voting_sharedData.coinsnapStoreId}/invoices/${invoiceId}`
-        : `${Coinsnap_Bitcoin_Voting_sharedData.btcpayUrl}/api/v1/stores/${Coinsnap_Bitcoin_Voting_sharedData.btcpayStoreId}/invoices/${invoiceId}`;
-
-    const headers = (provider === 'coinsnap')
-        ? {
-            'x-api-key': Coinsnap_Bitcoin_Voting_sharedData.coinsnapApiKey,
-            'Content-Type': 'application/json'
-
-        }
-        : {
-            'Authorization': 'token '+Coinsnap_Bitcoin_Voting_sharedData.btcpayApiKey,
-            'Content-Type': 'application/json'
-        };
-
-    try {
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: headers
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        var responseData = await response.json();
-
-        if (provider === 'btcpay') {
-            const url = `${Coinsnap_Bitcoin_Voting_sharedData?.btcpayUrl}/api/v1/stores/${Coinsnap_Bitcoin_Voting_sharedData?.btcpayStoreId}/invoices/${responseData.id}/payment-methods`;
-            const response2 = await fetch(url, {
-                method: 'GET',
-                headers: headers
-            });
-            const responseData2 = await response2.json();
-            const paymentLink = responseData2[0].paymentLink;
-            responseData.lightningInvoice = paymentLink?.replace('lightning:', '');
-            responseData.onchainAddress = '';
-
-            // Generate QR code image from lightning invoice
-            const qrCodeImage = await generateQRCodeDataURL(paymentLink);
-            responseData.qrCodes = {
-                lightningQR: qrCodeImage || paymentLink
-            }
-        }
-
-        if (responseData?.status === 'Settled') {
-            return await createActualVotingInvoice(amount, message, lastInputCurrency, name, coinsnap, type, redirect, metadata);
-        } else if (responseData?.status === 'New') {
-            if (redirect) {
-                window.location.href = responseData.checkoutLink;
-            }
-            return responseData;
-        }
-
-    } catch (error) {
-        console.error('Error creating invoice:', error);
-        return null;
-    }
+    // For non-voting types or other providers, we'd need API keys
+    // But for Bitcoin Voting, this should never be reached
+    console.warn('checkVotingInvoiceStatus called for non-voting type');
+    return null;
 };
 
 //  Invoice creation
@@ -297,7 +332,21 @@ const createVotingInvoice = async (amount, message, amountFiat, lastInputCurrenc
                 redirect,
                 metadata
             );
-            return cs;
+            // If status check returns null or falsy, create a new invoice
+            if (cs) {
+                return cs;
+            } else {
+                return await createActualVotingInvoice(
+                    amount,
+                    message,
+                    lastInputCurrency,
+                    name,
+                    Coinsnap_Bitcoin_Voting_sharedData.provider === 'coinsnap',
+                    type,
+                    redirect,
+                    metadata
+                );
+            }
         }
         else {
             return await createActualVotingInvoice(
