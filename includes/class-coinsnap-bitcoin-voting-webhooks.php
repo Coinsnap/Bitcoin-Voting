@@ -1,5 +1,6 @@
 <?php
 if (!defined('ABSPATH')){ exit; }
+
 class Coinsnap_Bitcoin_Voting_Webhooks {
 
     public function __construct(){
@@ -105,6 +106,20 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
             'callback' => [$this, 'create_invoice'],
             'permission_callback' => '__return_true'
         ]);
+    }
+
+    /**
+     * Collect version information for invoice metadata
+     * 
+     * @return array Array with wpVersion and coinsnapVotingVersion
+     */
+    private static function get_version_info() {
+        $version_info = [
+            'wpVersion' => get_bloginfo('version'),
+            'coinsnapVotingVersion' => (defined('COINSNAP_BITCOIN_VOTING_VERSION')) ? COINSNAP_BITCOIN_VOTING_VERSION : 'unknown',
+        ];
+
+        return $version_info;
     }
 
     public function create_invoice(WP_REST_Request $request)
@@ -245,10 +260,12 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
         if (empty($redirect_url)) {
             return new WP_REST_Response([
                 'success' => false,
-                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
-                'message' => 'DEBUG: No redirect URL (confirmation_url=' . var_export($confirmation_url, true) . ', home_url=' . home_url() . ')'
+                'message' => 'Failed to determine redirect URL for poll ' . $poll_id
             ], 400);
         }
+
+        // Collect version information for metadata
+        $version_info = self::get_version_info();
 
         // Prepare invoice data for Coinsnap/BTCPay API
         $invoice_body = [
@@ -257,12 +274,15 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
             'orderId' => $order_id,
             'redirectUrl' => $redirect_url,
             'redirectAutomatically' => true,
-            'metadata' => [
-                'type' => 'Coinsnap Bitcoin Voting',
-                'pollId' => $poll_id,
-                'optionId' => $option_id,
-                'option' => $option_title,
-            ]
+            'metadata' => array_merge(
+                [
+                    'type' => 'Coinsnap Bitcoin Voting',
+                    'pollId' => $poll_id,
+                    'optionId' => $option_id,
+                    'option' => $option_title,
+                ],
+                $version_info
+            )
         ];
 
         // For Coinsnap, add Lightning Network as default payment method
