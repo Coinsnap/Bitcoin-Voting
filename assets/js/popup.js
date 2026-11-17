@@ -67,19 +67,16 @@ const popupButtonListener = (pollId, amount, amountFiat, currency, publicDonor) 
         const customNameField = document.getElementById(`coinsnap-bitcoin-voting-custom-name${pollId}`);
         const customContent = customNameField?.textContent && customField?.value ? `${customNameField.textContent}: ${customField.value}` : '';
         const validForm = !publicDonor || checkRequiredVotingFieds([firstNameField, lastNameField, emailField, streetField, houseNumberField, postalCodeField, cityField, countryField, customField]);
-        const metadata = {
-            donorName: `${firstNameField.value} ${lastNameField?.value ?? ''}`,
-            donorEmail: emailField?.value,
-            donorAddress: (address !== ' ,  , ')? address : '',
-            donorCustom: customContent,
-            formType: 'Coinsnap Bitcoin Voting',
-            amount: `${amount} SATS`,
-            amountFiat: `${amountFiat} ${currency}`,
-            publicDonor: publicDonor || 0,
-            modal: true,
-            optionId: option,
-            option: optionName,
-            pollId: pollId
+        const donor = {
+            first_name: firstNameField?.value ?? '',
+            last_name: lastNameField?.value ?? '',
+            email: emailField?.value ?? '',
+            street: streetField?.value ?? '',
+            house_number: houseNumberField?.value ?? '',
+            postal: postalCodeField?.value ?? '',
+            town: cityField?.value ?? '',
+            country: countryField?.value ?? '',
+            custom: customField?.value ?? ''
         };
         
         if (!validForm){ return; }
@@ -88,12 +85,18 @@ const popupButtonListener = (pollId, amount, amountFiat, currency, publicDonor) 
         hideVotingElementById('public-donor-popup', 'coinsnap-bitcoin-voting-', pollId)
 
 
-        const res = await createVotingInvoice(amount, 'VOTED for {IDK}', amountFiat, currency, undefined, 'Coinsnap Bitcoin Voting', false, metadata);
+        const res = await createVotingInvoice(pollId, option, donor);
+
+        if (res && res.error) {
+            hideVotingElementById('payment-loading', 'coinsnap-bitcoin-voting-', pollId);
+            showVotingElementById('public-donor-popup', 'flex', 'coinsnap-bitcoin-voting-', pollId);
+            return;
+        }
 
         if (res) {
             // Update addresses 
-            const qrLightning = res.lightningInvoice;
-            const qrBitcoin = res.onchainAddress;
+            const qrLightning = res.lightningInvoice || '';
+            const qrBitcoin = res.onchainAddress || '';
 
             if (qrBitcoin) {
                 showVotingElementsById(['btc-wrapper', 'qr-btc-container'], 'flex', 'coinsnap-bitcoin-voting-', pollId);
@@ -106,7 +109,7 @@ const popupButtonListener = (pollId, amount, amountFiat, currency, publicDonor) 
             showVotingElementById('payment-popup', 'flex', 'coinsnap-bitcoin-voting-', pollId);
             
             // Update actual data
-            document.getElementById(`coinsnap-bitcoin-voting-qrCode${pollId}`).src = res.qrCodes.lightningQR;
+            document.getElementById(`coinsnap-bitcoin-voting-qrCode${pollId}`).src = res.qrCodes?.lightningQR || '';
             document.getElementById(`coinsnap-bitcoin-voting-qr-lightning${pollId}`).textContent = `${qrLightning.substring(0, 20)}...${qrLightning.slice(-15)}`;
             document.getElementById(`coinsnap-bitcoin-voting-qr-btc${pollId}`).textContent = `${qrBitcoin.substring(0, 20)}...${qrBitcoin.slice(-15)}`;
             document.getElementById(`coinsnap-bitcoin-voting-qr-amount${pollId}`).textContent = `Amount: ${res.amount} sats`;
@@ -127,7 +130,7 @@ const popupButtonListener = (pollId, amount, amountFiat, currency, publicDonor) 
             retryId = res.id
 
             const checkPaymentStatus = () => {
-                fetch(`/wp-json/voting/v1/check-payment-status/${res.id}`)
+                fetch(`${Coinsnap_Bitcoin_Voting_sharedData.statusUrl}${encodeURIComponent(res.id)}`)
                     .then(response => response.json())
                     .then(data => {
                         const qrContainer = document.getElementById(`coinsnap-bitcoin-voting-qr-container${pollId}`);
@@ -154,8 +157,7 @@ const popupButtonListener = (pollId, amount, amountFiat, currency, publicDonor) 
                             //TODO Invoice expired
                         }
                     })
-                    .catch(error => {
-                        console.error('Error checking payment status:', error);
+                    .catch(() => {
                         retryNum++;
                         if (retryId === res.id) {
                             setTimeout(checkPaymentStatus, 5000);
@@ -166,7 +168,8 @@ const popupButtonListener = (pollId, amount, amountFiat, currency, publicDonor) 
 
         }
         else {
-            console.error('Error creating invoice');
+            hideVotingElementById('payment-loading', 'coinsnap-bitcoin-voting-', pollId);
+            showVotingElementById('public-donor-popup', 'flex', 'coinsnap-bitcoin-voting-', pollId);
         }
 
     });

@@ -1,6 +1,5 @@
 <?php
 if (!defined('ABSPATH')){ exit; }
-header('Access-Control-Allow-Origin: *');
 class Coinsnap_Bitcoin_Voting_Client {
 
     public function remoteRequest(string $method,string $url,array $headers = [],string $body = ''){
@@ -41,14 +40,14 @@ class Coinsnap_Bitcoin_Voting_Client {
         $method = 'GET';
         $response = $this->remoteRequest($method, $url, $headers);
         
-        if ($response['status'] === 200) {
+        if (($response['status'] ?? 0) === 200) {
             $body = $response['body'];
         }
         else {
             return array('result' => false, 'error' => 'ratesLoadingError');
         }
         
-        if (count($body)<1 || !isset($body['rates'])){
+        if (!is_array($body) || count($body)<1 || !isset($body['rates'])){
             return array('result' => false, 'error' => 'ratesListError');
         }
     
@@ -140,7 +139,7 @@ class Coinsnap_Bitcoin_Voting_Client {
             return array('code' => $response['status'], 'result' => $response['body']);
         }
         else {
-            return ['code' => $response['status'], 'result' => $response['body']];
+            return ['code' => $response['status'] ?? 0, 'result' => []];
         }
     }
     
@@ -150,7 +149,7 @@ class Coinsnap_Bitcoin_Voting_Client {
      */
     public function getStorePaymentMethods($storeURL,$apiKey,$storeId){
         
-        $url = $storeURL.COINSNAP_API_PATH.COINSNAP_SERVER_PATH.'/' . urlencode($storeId) . '/payment-methods';
+        $url = rtrim((string) $storeURL, '/').COINSNAP_API_PATH.COINSNAP_SERVER_PATH.'/' . rawurlencode((string) $storeId) . '/payment-methods';
         $headers = ['Accept' => 'application/json','Content-Type' => 'application/json','x-api-key' => $apiKey,'Authorization' => 'token '.$apiKey];
         $method = 'GET';
         $response = $this->remoteRequest($method, $url, $headers);
@@ -186,7 +185,7 @@ class Coinsnap_Bitcoin_Voting_Client {
             return array('code' => $response['status'], 'result' => $result);
         }
         else {
-            return ['code' => $response['status'], 'result' => $result];
+            return ['code' => $response['status'] ?? 0, 'result' => []];
         }
     }
 }

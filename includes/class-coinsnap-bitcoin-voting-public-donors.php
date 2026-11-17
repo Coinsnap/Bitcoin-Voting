@@ -37,7 +37,8 @@ class Bitcoin_Voting_Public_Donors {
             'has_archive'        => false,
             'hierarchical'       => false,
             'supports'           => ['title'],
-            'show_in_rest'       => true
+            // Donor details are personal data: never served by the public REST API.
+            'show_in_rest'       => false
         ]);
     }
 
@@ -47,56 +48,56 @@ class Bitcoin_Voting_Public_Donors {
             'object_subtype' => 'coinsnap-pds',
             'type' => 'string',
             'single' => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
         ]);
 
         register_meta('post', '_coinsnap_bitcoin_voting_amount', [
             'object_subtype' => 'coinsnap-pds',
             'type' => 'string',
             'single' => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
         ]);
 
         register_meta('post', '_coinsnap_bitcoin_voting_message', [
             'object_subtype' => 'coinsnap-pds',
             'type' => 'string',
             'single' => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
         ]);
 
         register_meta('post', '_coinsnap_bitcoin_voting_form_type', [
             'object_subtype' => 'coinsnap-pds',
             'type' => 'string',
             'single' => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
         ]);
 
         register_meta('post', '_coinsnap_bitcoin_voting_email', [
             'object_subtype' => 'coinsnap-pds',
             'type' => 'string',
             'single' => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
         ]);
 
         register_meta('post', '_coinsnap_bitcoin_voting_address', [
             'object_subtype' => 'coinsnap-pds',
             'type' => 'string',
             'single' => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
         ]);
 
         register_meta('post', '_coinsnap_bitcoin_voting_payment_id', [
             'object_subtype' => 'coinsnap-pds',
             'type' => 'string',
             'single' => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
         ]);
 
         register_meta('post', '_coinsnap_bitcoin_voting_custom_field', [
             'object_subtype' => 'coinsnap-pds',
             'type' => 'string',
             'single' => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
         ]);
     }
 

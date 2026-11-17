@@ -27,21 +27,27 @@ jQuery(document).ready(function($) {
         
 
         const fetchResultsFromDb = (pollId, votingForm) => {
-            fetch(`/wp-json/voting/v1/voting_results/${pollId}`)
+            const resultsUrl = (typeof Coinsnap_Bitcoin_Voting_sharedData !== 'undefined' && Coinsnap_Bitcoin_Voting_sharedData.resultsUrl)
+                ? Coinsnap_Bitcoin_Voting_sharedData.resultsUrl
+                : '/wp-json/voting/v1/voting_results/';
+            fetch(`${resultsUrl}${encodeURIComponent(pollId)}`)
                 .then(response => response.json())
                 .then(data => {
-                    const votesDb = data.results;
-                    const votesLen = votesDb.length;
+                    // The server returns only the number of votes per option.
+                    const votesLen = parseInt(data.total, 10) || 0;
                     let votes = {};
-                    votesDb.forEach(result => {
-                        const vote = parseInt(result.option_id);
-                        votes[vote] = (votes[vote] || 0) + 1;
+                    (data.results || []).forEach(result => {
+                        votes[parseInt(result.option_id, 10)] = parseInt(result.votes, 10) || 0;
                     });
+                    if (votesLen === 0) {
+                        document.getElementById(`total-votes${pollId}`).textContent = '0';
+                        return;
+                    }
                     const maxVote = Math.max(...Object.values(votes));
                     const maxVoteOption = Object.keys(votes).find(key => votes[key] === maxVote);
 
                     votingForm.querySelector(`.voting-progress-bar[data-option='${maxVoteOption}']`).style['background-color'] = '#f7a70a';
-                    document.getElementById(`total-votes${pollId}`).textContent = `${votesDb.length}`;
+                    document.getElementById(`total-votes${pollId}`).textContent = `${votesLen}`;
 
                     Object.keys(votes).forEach(opt => {
                         let percentage = votesLen > 0 ? (votes[opt] / votesLen) * 100 : 0;

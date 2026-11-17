@@ -152,7 +152,7 @@ class Bitcoin_Voting_Settings{
             'coinsnap_bitcoin_voting_coinsnap_section',
             [
                 'label_for' => 'coinsnap_api_key',
-                'type'      => 'text'
+                'type'      => 'secret'
             ]
         );
 
@@ -211,7 +211,7 @@ class Bitcoin_Voting_Settings{
             'coinsnap_bitcoin_voting_btcpay_section',
             [
                 'label_for' => 'btcpay_api_key',
-                'type'      => 'text'
+                'type'      => 'secret'
             ]
         );
         
@@ -231,45 +231,54 @@ class Bitcoin_Voting_Settings{
 
     public function sanitize_options($options)
     {
+        $options = is_array($options) ? $options : [];
+        $stored = (array) get_option('coinsnap_bitcoin_voting_options', []);
         $sanitized = [];
 
-        if (isset($options['provider'])) {
-            $sanitized['provider'] = sanitize_text_field($options['provider']);
+        foreach (['provider', 'theme', 'coinsnap_store_id', 'btcpay_store_id'] as $key) {
+            if (isset($options[$key])) {
+                $sanitized[$key] = sanitize_text_field($options[$key]);
+            } elseif (isset($stored[$key])) {
+                $sanitized[$key] = $stored[$key];
+            }
+        }
+        foreach (['btcpay_url', 'ngrok_url'] as $key) {
+            if (isset($options[$key])) {
+                $sanitized[$key] = rtrim(esc_url_raw($options[$key]), '/');
+            } elseif (isset($stored[$key])) {
+                $sanitized[$key] = $stored[$key];
+            }
         }
 
-        if (isset($options['theme'])) {
-            $sanitized['theme'] = sanitize_text_field($options['theme']);
+        // An empty key field keeps the stored key.
+        foreach (['coinsnap_api_key', 'btcpay_api_key'] as $key) {
+            $submitted = isset($options[$key]) ? trim(sanitize_text_field($options[$key])) : '';
+            $sanitized[$key] = $submitted !== '' ? $submitted : (string) ($stored[$key] ?? '');
         }
 
-        if (isset($options['coinsnap_store_id'])) {
-            $sanitized['coinsnap_store_id'] = sanitize_text_field($options['coinsnap_store_id']);
+        // A BTCPay key belongs to one server: a new URL without a new key drops it (6.14).
+        $oldUrl = rtrim((string) ($stored['btcpay_url'] ?? ''), '/');
+        $newUrl = (string) ($sanitized['btcpay_url'] ?? '');
+        $newBtcpayKey = $sanitized['btcpay_api_key'] !== (string) ($stored['btcpay_api_key'] ?? '');
+        if ($newUrl !== $oldUrl && !$newBtcpayKey) {
+            $sanitized['btcpay_api_key'] = '';
         }
 
-        if (isset($options['coinsnap_api_key'])) {
-            $sanitized['coinsnap_api_key'] = sanitize_text_field($options['coinsnap_api_key']);
-        }
-
-        if (isset($options['btcpay_store_id'])) {
-            $sanitized['btcpay_store_id'] = sanitize_text_field($options['btcpay_store_id']);
-        }
-
-        if (isset($options['btcpay_api_key'])) {
-            $sanitized['btcpay_api_key'] = sanitize_text_field($options['btcpay_api_key']);
-        }
-
-        if (isset($options['btcpay_url'])) {
-            $sanitized['btcpay_url'] = esc_url_raw($options['btcpay_url']);
-        }
-
-        if (isset($options['ngrok_url'])) {
-            $sanitized['ngrok_url'] = esc_url_raw($options['ngrok_url']);
+        // A pasted BTCPay key is accepted only if it is limited to the configured store.
+        if ($newBtcpayKey && $sanitized['btcpay_api_key'] !== '') {
+            $permissions = Coinsnap_Bitcoin_Voting_Security::btcpay_key_permissions($newUrl, $sanitized['btcpay_api_key']);
+            if ($permissions === null || !Coinsnap_Bitcoin_Voting_Security::btcpay_key_is_acceptable($permissions, (string) ($sanitized['btcpay_store_id'] ?? ''))) {
+                add_settings_error('coinsnap_bitcoin_voting_settings', 'btcpay_key_refused',
+                    __('This BTCPay API key was refused. Use a key limited to this one store, with only the permissions the plugin needs.', 'coinsnap-bitcoin-voting'), 'error');
+                $sanitized['btcpay_api_key'] = ($newUrl === $oldUrl) ? (string) ($stored['btcpay_api_key'] ?? '') : '';
+            }
         }
 
         // Check if provider is working
-        if (isset($sanitized['provider']) && $sanitized['provider'] === 'coinsnap') {
+        if (($sanitized['provider'] ?? '') === 'coinsnap' && !empty($sanitized['coinsnap_store_id']) && $sanitized['coinsnap_api_key'] !== '') {
             $this->check_coinsnap_connection($sanitized['coinsnap_store_id'], $sanitized['coinsnap_api_key']);
-        } else if (isset($sanitized['provider']) && $sanitized['provider'] === 'btcpay') {
-            $this->check_btcpay_connection($sanitized['btcpay_store_id'], $sanitized['btcpay_api_key'], $sanitized['btcpay_url']);
+        } elseif (($sanitized['provider'] ?? '') === 'btcpay' && !empty($sanitized['btcpay_store_id']) && $sanitized['btcpay_api_key'] !== '' && $newUrl !== '') {
+            $this->check_btcpay_connection($sanitized['btcpay_store_id'], $sanitized['btcpay_api_key'], $newUrl);
         }
 
         return $sanitized;
@@ -277,7 +286,7 @@ class Bitcoin_Voting_Settings{
 
     public function check_coinsnap_connection($coinsnap_store_id, $coinsnap_api_key)
     {
-        $response = wp_remote_get("https://app.coinsnap.io/api/v1/stores/{$coinsnap_store_id}", [
+        $response = wp_remote_get("https://app.coinsnap.io/api/v1/stores/" . rawurlencode($coinsnap_store_id), [
             'headers' => [
                 'X-api-key' => $coinsnap_api_key,
             ],
@@ -308,7 +317,7 @@ class Bitcoin_Voting_Settings{
     public function check_btcpay_connection($btcpay_store_id, $btcpay_api_key, $btcpay_url)
     {
 
-        $response = wp_remote_get("{$btcpay_url}/api/v1/stores/{$btcpay_store_id}/invoices", [
+        $response = wp_remote_get(rtrim($btcpay_url, '/') . "/api/v1/stores/" . rawurlencode($btcpay_store_id), [
             'headers' => [
                 'Authorization' => 'token ' . $btcpay_api_key,
             ],
@@ -423,7 +432,17 @@ class Bitcoin_Voting_Settings{
             case 'check_connection':
                 $id = isset($args['id']) ? $args['id'] : 'check_connection';
 
-                echo '<div ><button id="' . esc_attr($id) . '_button">Check</button><span style="" id="' . esc_attr($id) .  '"></span></div>';
+                $url = wp_nonce_url(admin_url('admin-post.php?action=coinsnap_bitcoin_voting_register_webhook'), 'coinsnap_bitcoin_voting_register_webhook');
+                echo '<div><a class="button" id="' . esc_attr($id) . '_button" href="' . esc_url($url) . '">' . esc_html__('Check and connect webhook','coinsnap-bitcoin-voting') . '</a> <span id="' . esc_attr($id) . '"></span></div>';
+                break;
+
+            case 'secret':
+                // Proves a key exists; never shows it (1).
+                $hint = Coinsnap_Bitcoin_Voting_Security::secret_hint((string) $field_value);
+                echo '<input type="password" id="' . esc_attr($field_id) . '" name="coinsnap_bitcoin_voting_options[' . esc_attr($field_id) . ']" value="" autocomplete="new-password" class="regular-text" placeholder="' . esc_attr($hint !== '' ? $hint : __('Paste your API key', 'coinsnap-bitcoin-voting')) . '">';
+                if ($hint !== '') {
+                    echo '<p class="description">' . esc_html__('Leave empty to keep the saved key.', 'coinsnap-bitcoin-voting') . '</p>';
+                }
                 break;
 
             case 'text':
@@ -452,6 +471,15 @@ class Bitcoin_Voting_Settings{
         <div class="wrap">
             <h1>Coinsnap Bitcoin Voting Settings</h1>
             <?php settings_errors('coinsnap_bitcoin_voting_settings'); ?>
+            <?php
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display only
+            $voting_webhook = isset($_GET['voting_webhook']) ? sanitize_key(wp_unslash($_GET['voting_webhook'])) : '';
+            if ($voting_webhook === 'ok') {
+                echo '<div class="notice notice-success"><p>' . esc_html__('Webhook connected.', 'coinsnap-bitcoin-voting') . '</p></div>';
+            } elseif ($voting_webhook === 'failed') {
+                echo '<div class="notice notice-error"><p>' . esc_html__('Could not connect the webhook. Check the store ID and API key.', 'coinsnap-bitcoin-voting') . '</p></div>';
+            }
+            ?>
             <div class="coinsnapConnectionStatus"></div>
             <form method="post" action="options.php">
                 <?php
