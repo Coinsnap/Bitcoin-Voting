@@ -146,7 +146,7 @@ class Coinsnap_Bitcoin_Voting_Security {
             'currency'              => 'SATS',
             'orderId'               => $orderId,
             'redirectAutomatically' => true,
-            'metadata'              => array_merge($metadata, ['orderId' => $orderId]),
+            'metadata'              => array_merge(self::without_empty($metadata), ['orderId' => $orderId]),
             'checkout'              => ['redirectAutomatically' => true],
         ];
         if ($redirectUrl !== '') {
@@ -197,6 +197,24 @@ class Coinsnap_Bitcoin_Voting_Security {
             }
         }
         return $out;
+    }
+
+    /** Metadata without '' / null / empty arrays (also nested); a list stays a list. */
+    public static function without_empty(array $data): array {
+        $isList = $data === [] || array_keys($data) === range(0, count($data) - 1);
+        $out = [];
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $value = self::without_empty($value);
+                if ($value === []) {
+                    continue;
+                }
+            } elseif ($value === null || (is_string($value) && trim($value) === '') || is_object($value)) {
+                continue;
+            }
+            $out[$key] = $value;
+        }
+        return $isList ? array_values($out) : $out;
     }
 
     /* ---------------------------------------------------------------------
