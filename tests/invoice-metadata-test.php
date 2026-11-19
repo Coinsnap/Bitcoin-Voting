@@ -55,7 +55,7 @@ add_filter( 'pre_http_request', function ( $pre, $args, $url ) {
 global $wpdb;
 $table = $wpdb->prefix . 'voting_payments';
 
-$poll_id = wp_insert_post( array( 'post_type' => 'coinsnap-polls', 'post_status' => 'publish', 'post_title' => 'Next meetup topic' ) );
+$poll_id = wp_insert_post( array( 'post_type' => 'coinsnap-polls', 'post_status' => 'publish', 'post_title' => 'Next meetup\'s topic' ) );
 foreach ( array(
 	'active' => '1', 'amount' => '2', 'currency' => 'EUR', 'option_1' => 'Lightning', 'option_2' => 'Mining',
 	'collect_donor_info' => '1', 'first_name_visibility' => 'optional', 'last_name_visibility' => 'optional',
@@ -95,8 +95,8 @@ foreach ( array( 'coinsnap', 'btcpay' ) as $provider ) {
 	t_ok( "$provider: matching keys unchanged", (string) $poll_id === ( $m['pollId'] ?? null ) && '2' === ( $m['optionId'] ?? null )
 		&& 'Coinsnap Bitcoin Voting' === ( $m['type'] ?? '' ) && 'D19833' === ( $m['referralCode'] ?? '' )
 		&& 'Voted for Mining' === ( $m['orderNumber'] ?? '' ) && 'Mining' === ( $m['option'] ?? '' ) && '2 EUR' === ( $m['amountFiat'] ?? '' ) );
-	t_ok( "$provider: item fields", 'Vote for Mining (Next meetup topic)' === ( $m['itemDesc'] ?? '' ) && "poll-$poll_id-option-2" === ( $m['itemCode'] ?? '' )
-		&& 'Next meetup topic' === ( $m['pollTitle'] ?? '' ) && 'Mining' === ( $m['voteOption'] ?? '' ) && home_url( '/vote/' ) === ( $m['pageUrl'] ?? '' ) );
+	t_ok( "$provider: item fields", 'Vote for Mining (Next meetup\'s topic)' === ( $m['itemDesc'] ?? '' ) && "poll-$poll_id-option-2" === ( $m['itemCode'] ?? '' )
+		&& 'Next meetup\'s topic' === ( $m['pollTitle'] ?? '' ) && 'Mining' === ( $m['voteOption'] ?? '' ) && home_url( '/vote/' ) === ( $m['pageUrl'] ?? '' ) );
 	$li = $m['lineItems'][0] ?? array();
 	t_ok( "$provider: lineItems", 1 === count( $m['lineItems'] ?? array() ) && 4000 === ( $li['total'] ?? 0 ) && 'SATS' === ( $li['currency'] ?? '' ) && 1 === ( $li['quantity'] ?? 0 ) );
 	t_ok( "$provider: voter fields", 'Jane Doe' === ( $m['customerName'] ?? '' ) && 'Jane Doe' === ( $m['buyerName'] ?? '' ) && 'jane@example.test' === ( $m['buyerEmail'] ?? '' )

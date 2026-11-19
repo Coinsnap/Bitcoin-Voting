@@ -227,7 +227,7 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
      */
     private function standard_metadata(int $poll_id, int $option_id, string $option, int $sats, array $price, array $donor, string $pageUrl): array
     {
-        $pollTitle = wp_strip_all_tags((string) get_the_title($poll_id));
+        $pollTitle = trim((string) get_post_field('post_title', $poll_id, 'raw'));
         $itemDesc = $pollTitle !== '' ? sprintf('Vote for %s (%s)', $option, $pollTitle) : sprintf('Vote for %s', $option);
         $itemCode = 'poll-' . $poll_id . '-option-' . $option_id;
         $name = trim(($donor['first_name'] ?? '') . ' ' . ($donor['last_name'] ?? ''));
