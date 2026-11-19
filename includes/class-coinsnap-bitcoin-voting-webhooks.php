@@ -198,6 +198,8 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
             'option'       => $options[$option_id],
             'amountFiat'   => $price['amount'] . ' ' . $price['currency'],
         ];
+        // Standard invoice fields (BTCPay/Coinsnap names) next to the keys above, which stay as they are.
+        $metadata += $this->standard_metadata($poll_id, $option_id, $options[$option_id], $sats, $price, $donor, $pageUrl);
 
         $invoice = Coinsnap_Bitcoin_Voting_Security::create_invoice($cfg, $sats, $metadata, (string) ($donor['email'] ?? ''), (string) $redirectUrl);
         if ($invoice === null) {
@@ -217,6 +219,52 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
         ], ['%s', '%s', '%d', '%s', '%d', '%s', '%s', '%s']);
 
         return $invoice;
+    }
+
+    /**
+     * What the vote is for and the voter's fields, under the BTCPay/Coinsnap names. Plain values;
+     * empty ones are left out when the invoice is created.
+     */
+    private function standard_metadata(int $poll_id, int $option_id, string $option, int $sats, array $price, array $donor, string $pageUrl): array
+    {
+        $pollTitle = trim((string) get_post_field('post_title', $poll_id, 'raw'));
+        $itemDesc = $pollTitle !== '' ? sprintf('Vote for %s (%s)', $option, $pollTitle) : sprintf('Vote for %s', $option);
+        $itemCode = 'poll-' . $poll_id . '-option-' . $option_id;
+        $name = trim(($donor['first_name'] ?? '') . ' ' . ($donor['last_name'] ?? ''));
+        $formFields = [];
+        if (($donor['custom'] ?? '') !== '') {
+            $label = (string) get_post_meta($poll_id, '_coinsnap_bitcoin_voting_polls_custom_field_name', true);
+            $formFields[$label !== '' ? $label : 'custom'] = $donor['custom'];
+        }
+        $page = $pageUrl !== '' ? wp_validate_redirect($pageUrl, '') : '';
+
+        return [
+            'itemDesc'      => $itemDesc,
+            'itemCode'      => $itemCode,
+            'lineItems'     => [[
+                'name'     => $itemDesc,
+                'sku'      => $itemCode,
+                'quantity' => 1,
+                'price'    => $sats,
+                'total'    => $sats,
+                'currency' => 'SATS',
+            ]],
+            'pollTitle'     => $pollTitle,
+            'voteOption'    => $option,
+            'pageUrl'       => is_string($page) ? $page : '',
+            'customerName'  => $name,
+            'buyerName'     => $name,
+            'buyerEmail'    => (string) ($donor['email'] ?? ''),
+            'buyerAddress1' => trim(($donor['street'] ?? '') . ' ' . ($donor['house_number'] ?? '')),
+            'buyerZip'      => (string) ($donor['postal'] ?? ''),
+            'buyerCity'     => (string) ($donor['town'] ?? ''),
+            'buyerCountry'  => (string) ($donor['country'] ?? ''),
+            'formFields'    => $formFields,
+            'platform'      => 'wordpress',
+            'plugin'        => 'coinsnap-bitcoin-voting',
+            'pluginVersion' => COINSNAP_BITCOIN_VOTING_VERSION,
+            'language'      => (string) get_locale(),
+        ];
     }
 
     /* ---------------------------------------------------------------------
