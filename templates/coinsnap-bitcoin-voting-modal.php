@@ -79,6 +79,7 @@
                     id="<?php echo esc_html($prefix); ?>custom<?php echo esc_html($sufix); ?>"
                     placeholder="<?php echo esc_html($custom_name); echo ($custom === 'mandatory')? '*' : '';?>">
         <?php endif; ?>
+            <div class="error-message" style="display: none;" role="alert" id="<?php echo esc_html($prefix); ?>invoice-error<?php echo esc_html($sufix); ?>" data-default-message="<?php esc_attr_e('The payment could not be created. Please try again later.', 'coinsnap-bitcoin-voting'); ?>"></div>
             <button type="submit" id="<?php echo esc_html($prefix); ?>public-donors-pay<?php echo esc_html($sufix); ?>"><?php esc_html_e('Pay with Bitcoin', 'coinsnap-bitcoin-voting');?></button>
         </form>
     </div>
@@ -120,6 +121,7 @@
             </div>
         </details>
         <a id="<?php echo esc_html($prefix);?>pay-in-wallet<?php echo esc_html($sufix);?>" class="qr-pay-in-wallet"><?php esc_html_e('Pay in wallet','coinsnap-bitcoin-voting'); ?></a>
+        <a id="<?php echo esc_html($prefix);?>checkout-link<?php echo esc_html($sufix);?>" class="qr-checkout-link" style="display: none; margin-top: 10px; text-align: center; font-size: 14px;" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Open the payment page','coinsnap-bitcoin-voting'); ?></a>
     </div>
     <div id="<?php echo esc_html($prefix); ?>thank-you-popup<?php echo esc_html($sufix); ?>" class="thank-you-popup">
         <img class="checkmark-img" id="checkmark" alt="Checkmark" src="<?php echo esc_url(COINSNAP_BITCOIN_VOTING_PLUGIN_DIR . 'assets/images/checkmark.svg'); ?>">

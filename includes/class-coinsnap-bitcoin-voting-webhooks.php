@@ -86,6 +86,9 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
     {
         global $wpdb;
         $payment_id = (string) $request['payment_id'];
+        if ($this->confirm_from_api($payment_id)) {
+            return ['status' => 'completed'];
+        }
         $start_time = time();
         $timeout = 5;
 
@@ -100,6 +103,83 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
             sleep(1);
         }
         return ['status' => 'pending'];
+    }
+
+    /**
+     * Fallback for when no webhook arrives (e.g. it could not be registered): ask the
+     * API about an invoice this plugin created and count the vote with the same checks
+     * as the webhook. Only for pending rows in our table, at most every few seconds per
+     * invoice, so the public route can't be used to hammer the API.
+     */
+    private function confirm_from_api(string $invoiceId): bool
+    {
+        global $wpdb;
+        $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i WHERE payment_id = %s", $this->table(), $invoiceId), ARRAY_A);
+        if (!$row) {
+            return false;
+        }
+        if ($row['status'] === 'completed') {
+            return true;
+        }
+        if ($row['status'] !== 'pending') {
+            return false;
+        }
+        $throttle = 'coinsnap_bitcoin_voting_chk_' . md5($invoiceId);
+        if (get_transient($throttle)) {
+            return false;
+        }
+        set_transient($throttle, 1, 10);
+
+        $cfg = Coinsnap_Bitcoin_Voting_Security::config();
+        if (!Coinsnap_Bitcoin_Voting_Security::is_configured($cfg)) {
+            return false;
+        }
+        try {
+            $invoice = Coinsnap_Bitcoin_Voting_Security::fetch_invoice($cfg, $invoiceId);
+        } catch (RuntimeException $e) {
+            return false;
+        }
+        if ($invoice === null || ($invoice['id'] ?? '') !== $invoiceId) {
+            return false;
+        }
+        return $this->complete_vote($row, $invoice, $cfg, false, false) === 'completed';
+    }
+
+    /**
+     * Count the vote of a stored row if the invoice fetched from the API pays it.
+     * Returns 'completed', 'already', 'not_ours' or 'unpaid'. Same rules for the webhook and the status check.
+     */
+    private function complete_vote(array $row, array $invoice, array $cfg, bool $fromWebhook, bool $claimsPaid): string
+    {
+        global $wpdb;
+        $invoiceId = (string) $invoice['id'];
+        $metaPoll = (string) ($invoice['metadata']['pollId'] ?? '');
+        if ($metaPoll !== (string) $row['poll_id']) {
+            Coinsnap_Bitcoin_Voting_Security::log('info', 'not ours', $invoiceId);
+            return 'not_ours';
+        }
+
+        if (!Coinsnap_Bitcoin_Voting_Security::invoice_pays($invoice, (int) $row['amount'], (string) $row['currency'], $cfg['provider'] === 'btcpay')) {
+            $forged = $claimsPaid && ($invoice['additionalStatus'] ?? '') !== 'Marked';
+            if ($fromWebhook) {
+                Coinsnap_Bitcoin_Voting_Security::log($forged ? 'security' : 'info',
+                    $forged ? 'forged status' : 'status ' . preg_replace('/[^A-Za-z]/', '', (string) ($invoice['status'] ?? '?')), $invoiceId);
+            }
+            return 'unpaid';
+        }
+
+        // Act once, and only move pending -> completed: the vote counts once.
+        $updated = $wpdb->query($wpdb->prepare(
+            "UPDATE %i SET status = 'completed' WHERE payment_id = %s AND status = 'pending'",
+            $this->table(), $invoiceId
+        ));
+        if ($updated !== 1) {
+            Coinsnap_Bitcoin_Voting_Security::log('info', 'already processed', $invoiceId);
+            return 'already';
+        }
+
+        $this->create_donor_post($row, $invoiceId);
+        return 'completed';
     }
 
     /* ---------------------------------------------------------------------
@@ -154,12 +234,13 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
 
         $cfg = Coinsnap_Bitcoin_Voting_Security::config();
         if (!Coinsnap_Bitcoin_Voting_Security::is_configured($cfg)) {
-            return new WP_Error('unavailable', 'Unavailable', ['status' => 503]);
+            return new WP_Error('unavailable', __('Voting is temporarily unavailable. Please try again later.', 'coinsnap-bitcoin-voting'), ['status' => 503]);
         }
 
         $price = Coinsnap_Bitcoin_Voting_Security::poll_price($poll_id, $cfg);
         if (empty($price['result'])) {
-            return new WP_Error('unavailable', 'Unavailable', ['status' => 503]);
+            $currency = (string) get_post_meta($poll_id, '_coinsnap_bitcoin_voting_polls_currency', true);
+            return new WP_Error('unavailable', Coinsnap_Bitcoin_Voting_Security::price_error_message($price, $currency), ['status' => 503]);
         }
         $sats = (int) $price['sats'];
 
@@ -203,7 +284,7 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
 
         $invoice = Coinsnap_Bitcoin_Voting_Security::create_invoice($cfg, $sats, $metadata, (string) ($donor['email'] ?? ''), (string) $redirectUrl);
         if ($invoice === null) {
-            return new WP_Error('unavailable', 'Unavailable', ['status' => 503]);
+            return new WP_Error('unavailable', __('The payment could not be created. Please try again later.', 'coinsnap-bitcoin-voting'), ['status' => 503]);
         }
 
         global $wpdb;
@@ -308,30 +389,12 @@ class Coinsnap_Bitcoin_Voting_Webhooks {
         if (!$row) {
             $row = $this->legacy_row($invoice);
         }
-        $metaPoll = (string) ($invoice['metadata']['pollId'] ?? '');
-        if (!$row || $metaPoll !== (string) $row['poll_id']) {
+        if (!$row) {
             Coinsnap_Bitcoin_Voting_Security::log('info', 'not ours', $invoiceId);
             return new WP_REST_Response(null, 200);
         }
 
-        if (!Coinsnap_Bitcoin_Voting_Security::invoice_pays($invoice, (int) $row['amount'], (string) $row['currency'], $cfg['provider'] === 'btcpay')) {
-            $forged = $claimsPaid && ($invoice['additionalStatus'] ?? '') !== 'Marked';
-            Coinsnap_Bitcoin_Voting_Security::log($forged ? 'security' : 'info',
-                $forged ? 'forged status' : 'status ' . preg_replace('/[^A-Za-z]/', '', (string) ($invoice['status'] ?? '?')), $invoiceId);
-            return new WP_REST_Response(null, 200);
-        }
-
-        // Act once, and only move pending -> completed: the vote counts once.
-        $updated = $wpdb->query($wpdb->prepare(
-            "UPDATE %i SET status = 'completed' WHERE payment_id = %s AND status = 'pending'",
-            $this->table(), $invoiceId
-        ));
-        if ($updated !== 1) {
-            Coinsnap_Bitcoin_Voting_Security::log('info', 'already processed', $invoiceId);
-            return new WP_REST_Response(null, 200);
-        }
-
-        $this->create_donor_post($row, $invoiceId);
+        $this->complete_vote($row, $invoice, $cfg, true, $claimsPaid);
         return new WP_REST_Response(null, 200);
     }
 

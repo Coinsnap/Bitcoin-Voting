@@ -163,21 +163,7 @@ class Coinsnap_Bitcoin_Voting_Shortcode_Voting {
                     
                     //  Poll amount and currency error
                     if(!$checkInvoice['result']){
-                        
-                        if($checkInvoice['error'] === 'currencyError'){
-                            $errorMessage = sprintf( 
-                            /* translators: 1: Currency */
-                            __( 'Currency %1$s is not supported by Coinsnap', 'coinsnap-bitcoin-voting' ), strtoupper( (string) $currency ));
-                        }      
-                        elseif($checkInvoice['error'] === 'amountError'){
-                                    $errorMessage = sprintf( 
-                                    /* translators: 1: Amount, 2: Currency */
-                                    __( 'Invoice amount cannot be less than %1$s %2$s', 'coinsnap-bitcoin-voting' ), $checkInvoice['min_value'], strtoupper( (string) $currency ));
-                        }
-                        else {
-                            $errorMessage = $checkInvoice['error'];
-                        }
-                        
+                        $errorMessage = Coinsnap_Bitcoin_Voting_Security::price_error_message($checkInvoice, (string) $currency);
                         echo '<div class="error-message">'.esc_html($errorMessage).'</div>';
                     }
                     

@@ -167,15 +167,25 @@ class Coinsnap_Bitcoin_Voting_Security {
             return null;
         }
 
+        $onchain = (string) ($inv['onchainAddress'] ?? '');
+        $bip21QR = '';
+        foreach (['bip21QR', 'bitcoinQR', 'onchainQR'] as $qrKey) {
+            $qr = (string) ($inv['qrCodes'][$qrKey] ?? '');
+            if (strpos($qr, 'data:image/') === 0) {
+                $bip21QR = $qr;
+                break;
+            }
+        }
         $out = [
             'id'               => $inv['id'],
             'amount'           => $sats,
-            'checkoutLink'     => (string) ($inv['checkoutLink'] ?? ''),
+            'checkoutLink'     => self::https_url((string) ($inv['checkoutLink'] ?? '')),
             'lightningInvoice' => (string) ($inv['lightningInvoice'] ?? ''),
-            'onchainAddress'   => (string) ($inv['onchainAddress'] ?? ''),
+            'onchainAddress'   => $onchain,
+            'bip21'            => self::bip21((string) ($inv['bip21'] ?? ''), $onchain, $sats),
             'qrCodes'          => [
                 'lightningQR' => (string) ($inv['qrCodes']['lightningQR'] ?? ''),
-                'onchainQR'   => (string) ($inv['qrCodes']['onchainQR'] ?? ''),
+                'bip21QR'     => $bip21QR,
             ],
             'paymentLink'      => '',
         ];
@@ -185,18 +195,35 @@ class Coinsnap_Bitcoin_Voting_Security {
             if ($pm['code'] === 200 && is_array($pm['body'])) {
                 foreach ($pm['body'] as $method) {
                     $link = (string) ($method['paymentLink'] ?? '');
-                    if ($link !== '' && stripos($link, 'lightning:') === 0) {
-                        $out['paymentLink'] = $link;
+                    if ($out['lightningInvoice'] === '' && stripos($link, 'lightning:') === 0) {
                         $out['lightningInvoice'] = substr($link, strlen('lightning:'));
-                        break;
-                    }
-                    if ($out['paymentLink'] === '' && $link !== '') {
-                        $out['paymentLink'] = $link;
+                    } elseif ($out['bip21'] === '' && stripos($link, 'bitcoin:') === 0) {
+                        $out['bip21'] = $link;
+                        if ($out['onchainAddress'] === '') {
+                            $out['onchainAddress'] = (string) ($method['destination'] ?? '');
+                        }
                     }
                 }
+                $out['paymentLink'] = $out['lightningInvoice'] !== '' ? 'lightning:' . $out['lightningInvoice'] : $out['bip21'];
             }
         }
         return $out;
+    }
+
+    /** The invoice's BIP21 link, or one built from the address and the amount in sats. */
+    public static function bip21(string $bip21, string $address, int $sats): string {
+        if (stripos($bip21, 'bitcoin:') === 0) {
+            return $bip21;
+        }
+        if ($address === '' || !preg_match('/^[A-Za-z0-9]{14,90}$/', $address)) {
+            return '';
+        }
+        $btc = rtrim(rtrim(sprintf('%d.%08d', intdiv($sats, 100000000), $sats % 100000000), '0'), '.');
+        return 'bitcoin:' . $address . '?amount=' . $btc;
+    }
+
+    private static function https_url(string $url): string {
+        return (stripos($url, 'https://') === 0 || stripos($url, 'http://') === 0) ? esc_url_raw($url) : '';
     }
 
     /** Metadata without '' / null / empty arrays (also nested); a list stays a list. */
@@ -235,6 +262,14 @@ class Coinsnap_Bitcoin_Voting_Security {
         if ($amount <= 0) {
             return ['result' => false, 'error' => 'amountError', 'min_value' => ''];
         }
+        if ($currency === 'SATS') {
+            // Priced in sats already: no exchange rate needed.
+            $sats = (int) round($amount);
+            if ($sats < 1 || abs($amount - $sats) > 0.000001) {
+                return ['result' => false, 'error' => 'amountError', 'min_value' => 1];
+            }
+            return ['result' => true, 'sats' => $sats, 'amount' => $amount, 'currency' => $currency];
+        }
 
         $client = new Coinsnap_Bitcoin_Voting_Client();
         $kind = 'coinsnap';
@@ -262,6 +297,29 @@ class Coinsnap_Bitcoin_Voting_Security {
             return ['result' => false, 'error' => 'amountError', 'min_value' => ''];
         }
         return ['result' => true, 'sats' => $sats, 'amount' => $amount, 'currency' => $currency];
+    }
+
+    /** A message a voter can read for a poll_price() error code. */
+    public static function price_error_message(array $price, string $currency): string {
+        $error = (string) ($price['error'] ?? '');
+        if ($error === 'currencyError') {
+            /* translators: 1: Currency */
+            return sprintf(__('Currency %1$s is not supported by Coinsnap', 'coinsnap-bitcoin-voting'), strtoupper($currency));
+        }
+        if ($error === 'amountError') {
+            if (($price['min_value'] ?? '') === '') {
+                return __('The vote amount of this poll is not valid.', 'coinsnap-bitcoin-voting');
+            }
+            /* translators: 1: Amount, 2: Currency */
+            return sprintf(__('Invoice amount cannot be less than %1$s %2$s', 'coinsnap-bitcoin-voting'), $price['min_value'], strtoupper($currency));
+        }
+        if ($error === 'ratesLoadingError' || $error === 'ratesListError') {
+            return __('The exchange rate is temporarily unavailable. Please try again in a few minutes.', 'coinsnap-bitcoin-voting');
+        }
+        if ($error === 'paymentMethodError') {
+            return __('No payment method is available for this store right now.', 'coinsnap-bitcoin-voting');
+        }
+        return __('Voting is temporarily unavailable. Please try again later.', 'coinsnap-bitcoin-voting');
     }
 
     /* ---------------------------------------------------------------------
