@@ -29,29 +29,49 @@ class Coinsnap_Bitcoin_Voting_Client {
         }
     }
     
-    /*  Invoice::loadExchangeRates() method loads exchange rates 
-     *  for fiat and crypto currencies from coingecko.com server in real time.
-     *  We don't send any data from the plugin or Wordpress database.
+    const RATES_CACHE = 'coinsnap_bitcoin_voting_rates';
+    const RATES_LAST_GOOD = 'coinsnap_bitcoin_voting_rates_last_good';
+    const RATES_TTL = 10 * MINUTE_IN_SECONDS;
+    const RATES_RETRY = 2 * MINUTE_IN_SECONDS;
+    const RATES_MAX_AGE = DAY_IN_SECONDS;
+
+    /*  loadExchangeRates() loads exchange rates for fiat and crypto currencies
+     *  from coingecko.com. We don't send any data from the plugin or WordPress database.
+     *  The rates are cached for a few minutes, so one page view or vote doesn't call
+     *  CoinGecko again; if CoinGecko fails (e.g. 429 Too Many Requests), the last rates
+     *  that worked are used for up to a day.
      *  Method returns array with result code, exchange rates or error
      */
     public function loadExchangeRates(): array {
+        $cached = get_transient(self::RATES_CACHE);
+        if (is_array($cached) && isset($cached['rates']) && is_array($cached['rates'])) {
+            return array('result' => true, 'data' => $cached['rates']);
+        }
+
         $url = 'https://api.coingecko.com/api/v3/exchange_rates';
-        $headers = [];
-        $method = 'GET';
-        $response = $this->remoteRequest($method, $url, $headers);
-        
-        if (($response['status'] ?? 0) === 200) {
-            $body = $response['body'];
+        $response = $this->remoteRequest('GET', $url, []);
+        $body = $response['body'] ?? null;
+        $error = '';
+        if (($response['status'] ?? 0) !== 200) {
+            $error = 'ratesLoadingError';
         }
-        else {
-            return array('result' => false, 'error' => 'ratesLoadingError');
+        elseif (!is_array($body) || !isset($body['rates']) || !is_array($body['rates']) || count($body['rates']) < 1) {
+            $error = 'ratesListError';
         }
-        
-        if (!is_array($body) || count($body)<1 || !isset($body['rates'])){
-            return array('result' => false, 'error' => 'ratesListError');
+
+        if ($error === '') {
+            set_transient(self::RATES_CACHE, ['rates' => $body['rates']], self::RATES_TTL);
+            update_option(self::RATES_LAST_GOOD, ['rates' => $body['rates'], 'time' => time()], false);
+            return array('result' => true, 'data' => $body['rates']);
         }
-    
-        return array('result' => true, 'data' => $body['rates']);
+
+        $last = get_option(self::RATES_LAST_GOOD, []);
+        if (is_array($last) && isset($last['rates']) && is_array($last['rates']) && time() - (int) ($last['time'] ?? 0) <= self::RATES_MAX_AGE) {
+            // Ask CoinGecko again in a short while, not on every request.
+            set_transient(self::RATES_CACHE, ['rates' => $last['rates']], self::RATES_RETRY);
+            return array('result' => true, 'data' => $last['rates']);
+        }
+        return array('result' => false, 'error' => $error);
     }
     
     public function checkPaymentData($amount,$currency,$provider = 'coinsnap',$mode = 'invoice'): array {

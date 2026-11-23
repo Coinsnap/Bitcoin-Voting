@@ -51,15 +51,46 @@ const createVotingInvoice = async (pollId, optionId, donor) => {
             return { error: responseData?.message || 'Error' };
         }
 
-        if (Coinsnap_Bitcoin_Voting_sharedData.provider === 'btcpay' && responseData.paymentLink) {
-            const qrCodeImage = await generateQRCodeDataURL(responseData.paymentLink);
-            responseData.qrCodes = { lightningQR: qrCodeImage || responseData.paymentLink };
+        if (Coinsnap_Bitcoin_Voting_sharedData.provider === 'btcpay') {
+            responseData.qrCodes = responseData.qrCodes || {};
+            if (responseData.lightningInvoice && !responseData.qrCodes.lightningQR) {
+                responseData.qrCodes.lightningQR = await generateQRCodeDataURL(`lightning:${responseData.lightningInvoice}`) || '';
+            } else if (!responseData.lightningInvoice && responseData.bip21 && !responseData.qrCodes.bip21QR) {
+                responseData.qrCodes.bip21QR = await generateQRCodeDataURL(responseData.bip21) || '';
+            }
         }
         return responseData;
     } catch (error) {
         return null;
     }
 };
+
+/*
+ * What the payment popup shows. Lightning only when the invoice has a Lightning
+ * invoice; otherwise the on-chain BIP21 link (address and amount). The checkout
+ * page is offered as a fallback, and is the wallet link when there is nothing else.
+ */
+const votingPaymentView = (res) => {
+    const qrCodes = (res && res.qrCodes) || {};
+    const lightning = (res && res.lightningInvoice) || '';
+    const bip21 = (res && typeof res.bip21 === 'string' && res.bip21.toLowerCase().indexOf('bitcoin:') === 0) ? res.bip21 : '';
+    const checkoutLink = (res && typeof res.checkoutLink === 'string' && /^https?:\/\//i.test(res.checkoutLink)) ? res.checkoutLink : '';
+    const view = { lightning, address: (res && res.onchainAddress) || '', checkoutLink, qr: '', walletHref: '' };
+    if (lightning) {
+        view.qr = qrCodes.lightningQR || '';
+        view.walletHref = `lightning:${lightning}`;
+    } else if (bip21) {
+        view.qr = qrCodes.bip21QR || qrCodes.bitcoinQR || '';
+        view.walletHref = bip21;
+    } else {
+        view.walletHref = checkoutLink;
+    }
+    return view;
+};
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { votingPaymentView };
+}
 
 const hideVotingElementById = (id, prefix = '', sufix = '') => {
     document.getElementById(`${prefix}${id}${sufix}`).style.display = 'none'

@@ -87,43 +87,69 @@ const popupButtonListener = (pollId, amount, amountFiat, currency, publicDonor) 
 
         const res = await createVotingInvoice(pollId, option, donor);
 
-        if (res && res.error) {
+        const errorBox = document.getElementById(`coinsnap-bitcoin-voting-invoice-error${pollId}`);
+        if (errorBox) {
+            errorBox.style.display = 'none';
+        }
+        if (!res || res.error) {
             hideVotingElementById('payment-loading', 'coinsnap-bitcoin-voting-', pollId);
             showVotingElementById('public-donor-popup', 'flex', 'coinsnap-bitcoin-voting-', pollId);
+            if (errorBox) {
+                errorBox.textContent = (res && res.error) || errorBox.dataset.defaultMessage || '';
+                errorBox.style.display = 'block';
+            }
             return;
         }
 
         if (res) {
-            // Update addresses 
-            const qrLightning = res.lightningInvoice || '';
-            const qrBitcoin = res.onchainAddress || '';
+            const view = votingPaymentView(res);
+            const short = (text) => text.length > 40 ? `${text.substring(0, 20)}...${text.slice(-15)}` : text;
 
-            if (qrBitcoin) {
+            hideVotingElementsById(['lightning-wrapper', 'qr-lightning-container', 'btc-wrapper', 'qr-btc-container', 'qrCode', 'qrCodeBtc', 'checkout-link'], 'coinsnap-bitcoin-voting-', pollId);
+            if (view.lightning) {
+                showVotingElementById('lightning-wrapper', 'block', 'coinsnap-bitcoin-voting-', pollId);
+                showVotingElementById('qr-lightning-container', 'flex', 'coinsnap-bitcoin-voting-', pollId);
+            }
+            if (view.address) {
                 showVotingElementsById(['btc-wrapper', 'qr-btc-container'], 'flex', 'coinsnap-bitcoin-voting-', pollId);
+            }
+            if (view.qr) {
+                showVotingElementsById(['qrCode', 'qrCodeBtc'], 'block', 'coinsnap-bitcoin-voting-', pollId);
             }
 
             // Hide spinner and show qr code stuff
-            showVotingElementsById(['qrCode', 'lightning-wrapper', 'qr-fiat', 'qrCodeBtc'], 'block', 'coinsnap-bitcoin-voting-', pollId);
-            showVotingElementsById(['qr-summary', 'qr-lightning-container', 'pay-in-wallet'], 'flex', 'coinsnap-bitcoin-voting-', pollId);
+            showVotingElementById('qr-fiat', 'block', 'coinsnap-bitcoin-voting-', pollId);
+            showVotingElementById('qr-summary', 'flex', 'coinsnap-bitcoin-voting-', pollId);
             hideVotingElementById('payment-loading', 'coinsnap-bitcoin-voting-', pollId);
             showVotingElementById('payment-popup', 'flex', 'coinsnap-bitcoin-voting-', pollId);
-            
+
             // Update actual data
-            document.getElementById(`coinsnap-bitcoin-voting-qrCode${pollId}`).src = res.qrCodes?.lightningQR || '';
-            document.getElementById(`coinsnap-bitcoin-voting-qr-lightning${pollId}`).textContent = `${qrLightning.substring(0, 20)}...${qrLightning.slice(-15)}`;
-            document.getElementById(`coinsnap-bitcoin-voting-qr-btc${pollId}`).textContent = `${qrBitcoin.substring(0, 20)}...${qrBitcoin.slice(-15)}`;
+            document.getElementById(`coinsnap-bitcoin-voting-qrCode${pollId}`).src = view.qr;
+            document.getElementById(`coinsnap-bitcoin-voting-qr-lightning${pollId}`).textContent = short(view.lightning);
+            document.getElementById(`coinsnap-bitcoin-voting-qr-btc${pollId}`).textContent = short(view.address);
             document.getElementById(`coinsnap-bitcoin-voting-qr-amount${pollId}`).textContent = `Amount: ${res.amount} sats`;
 
             // Copy address functionallity 
             const copyLightning = document.querySelector(`#coinsnap-bitcoin-voting-qr-lightning-container${pollId} .qr-copy-icon`);
             const copyBtc = document.querySelector(`#coinsnap-bitcoin-voting-qr-btc-container${pollId} .qr-copy-icon`);
-            copyLightning.addEventListener('click', () => { navigator.clipboard.writeText(qrLightning); });
-            copyBtc.addEventListener('click', () => { navigator.clipboard.writeText(qrBitcoin); });
+            copyLightning.onclick = () => { navigator.clipboard.writeText(view.lightning); };
+            copyBtc.onclick = () => { navigator.clipboard.writeText(view.address); };
 
             // Add fiat amount
-                document.getElementById(`coinsnap-bitcoin-voting-qr-fiat${pollId}`).textContent = `≈ ${amountFiat} ${currency}`;
-                document.getElementById(`coinsnap-bitcoin-voting-pay-in-wallet${pollId}`).setAttribute('href', `lightning:${qrLightning}`);
-            
+            document.getElementById(`coinsnap-bitcoin-voting-qr-fiat${pollId}`).textContent = `≈ ${amountFiat} ${currency}`;
+            const payInWallet = document.getElementById(`coinsnap-bitcoin-voting-pay-in-wallet${pollId}`);
+            if (view.walletHref) {
+                payInWallet.setAttribute('href', view.walletHref);
+                showVotingElementById('pay-in-wallet', 'flex', 'coinsnap-bitcoin-voting-', pollId);
+            } else {
+                payInWallet.removeAttribute('href');
+                hideVotingElementById('pay-in-wallet', 'coinsnap-bitcoin-voting-', pollId);
+            }
+            const checkoutLink = document.getElementById(`coinsnap-bitcoin-voting-checkout-link${pollId}`);
+            if (checkoutLink && view.checkoutLink && view.checkoutLink !== view.walletHref) {
+                checkoutLink.setAttribute('href', view.checkoutLink);
+                showVotingElementById('checkout-link', 'block', 'coinsnap-bitcoin-voting-', pollId);
+            }
 
             // Reset retry counter
             var retryNum = 0;
@@ -166,10 +192,6 @@ const popupButtonListener = (pollId, amount, amountFiat, currency, publicDonor) 
             }
             checkPaymentStatus();
 
-        }
-        else {
-            hideVotingElementById('payment-loading', 'coinsnap-bitcoin-voting-', pollId);
-            showVotingElementById('public-donor-popup', 'flex', 'coinsnap-bitcoin-voting-', pollId);
         }
 
     });
